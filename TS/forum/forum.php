@@ -4,12 +4,9 @@ $errors = array();
 session_start();
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
-    if (!isset($_GET['ids'])) {
-        header ('location: dashboard.php');
-        exit;
-    }
-} else {
-    header ('location: ../../index.php');
+};
+if (!isset($_GET['ids'])) {
+    header ('location: dashboard.php');
     exit;
 }
 $fids = $_GET['ids'];
@@ -39,16 +36,12 @@ if ($result_check_forums->num_rows == 1) {
     $dates = $value['ForumDates'];
     $descs = $value['ForumContents'];
     $attachs = $value['ForumAttachment'];
-}
+} else {
+    $_SESSION['corsmsg'] = "The forum you try to open does not exist";
+    header('location: dashboard.php');
+    exit;
+};
 
-$check_profile = $connects->prepare("SELECT * FROM profiles WHERE profileTags = ? ;");
-$check_profile->bind_param("s", $uDs);
-$check_profile->execute();
-$result_check_profile = $check_profile->get_result();
-if ($result_check_profile->num_rows == 1) {
-    $value = $result_check_profile->fetch_assoc();
-    $name = $value['profileNames'];
-}
 ?>
 
 <!DOCTYPE html>
@@ -108,16 +101,16 @@ if ($result_check_profile->num_rows == 1) {
     </div>
 <!-- forum content -->
     <div class="pad-n w100p minh100 flex fld">
-        <h1 class="sideMg w95p txt-b"><?php echo $titles;?></h1>
+        <h1 class="sideMg bottomMg-s5 w95p txt-b"><?php echo $titles;?></h1>
         <?php
-        $getUser = $connects->prepare("SELECT profileTags FROM user WHERE username = ?");
+        $getUser = $connects->prepare("SELECT profileNames FROM profiles WHERE profileTags = ?");
         $getUser->bind_param("s", $creators);
         $getUser->execute();
         $resultGetUser = $getUser->get_result();
         if ($resultGetUser->num_rows == 1) {
-            $take = $resultGetUser->fetch_assoc();
+            $getname = $resultGetUser->fetch_assoc();
         ?>
-            <a href="../../profile.php?user=<?php echo $take['profileTags']; ?>" class="sideMg w95p txt-s"><?php echo $creators;?> | <?php echo $dates; ?></a>
+            <a href="../../profile.php?user=<?php echo $creators; ?>" class="sideMg w95p txt-s"><?php echo $getname['profileNames'];?> | <?php echo $dates; ?></a>
         <?php
         };
         ?>

@@ -10,7 +10,7 @@ $_SESSION['prev_loc'] = "index.php";
 
 $State = "publics";
 $tempLibsArr = array();
-$stmt_check_software = $connects->prepare("SELECT libsIds, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = ? LIMIT 10;");
+$stmt_check_software = $connects->prepare("SELECT libsIds, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = ? ORDER BY addedDates DESC LIMIT 10;");
 $stmt_check_software->bind_param("s", $State);
 $stmt_check_software->execute();
 $result_check_software = $stmt_check_software->get_result();
@@ -158,7 +158,6 @@ if ($result_check_category->num_rows > 0) {
         <?php
         foreach ($tempLibsArr as $id => $value) {
             $ids = $value['libsIds'];
-            $attachs = $value['libsAttachs'];
             $banners = $value['libsBanners'];
             $titles = $value['libsTitles'];
             $Desc = $value['libsDesc'];
@@ -168,7 +167,7 @@ if ($result_check_category->num_rows > 0) {
             $catgList = $tempCatgArray[$category] ?? null;
             ?>
         <div class="posr pad-s w100p flex gap5 border-1">
-            <img src="Library/libsImg/<?php echo $attachs;?>" alt="<?php echo $attachs;?>" class="h10 r16-9 objfit">
+            <img src="Library/libsImg/<?php echo $banners;?>" alt="<?php echo $banners;?>" class="h10 r16-9 objfit">
             <div class="h100p flex fld">
                 <h2 class="rightMg txt-n"><?php echo $titles;?></h2>
                 <h2 class="rightMg txt-s c-lightgray"><?php echo $Desc;?></h2>

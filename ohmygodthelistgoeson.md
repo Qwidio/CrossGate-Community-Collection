@@ -3,16 +3,17 @@
 - Mark software to user MarkOut
 - software lister 
 - search feature
-- _category page (Worked on - 23/1/26)_
+- _category page (Worked on - 24/1/26)_
 - special event page
-- _fixing universal view page (Worked on - 23/1/26)_
-- _groups profile page (Finished - 21/1/26)_
-- group management
+- _fixing universal view page (Worked on - 24/1/26)_
+- _groups profile page (worked on - 24/1/26)_
+- group management (Worked on - 24/1/26)_
 - software publishing
 - software management
-- forum dashboard
-- forum topic page
-- full documentation
+- forum dashboard (Worked on - 24/1/26)_
+- forum topic page (Worked on - 24/1/26)_
 - forum post name based on group name
+- library homepage
+- full documentation
 
 - Achievement System (worked on after the desktop app goes into beta)

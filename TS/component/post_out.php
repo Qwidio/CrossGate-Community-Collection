@@ -76,9 +76,20 @@ if (isset($_SESSION['profileTags'])) {
                         exit;
                     };
                 } else {
-                    $_SESSION['corsmsg'] = 'Missing File, please choose the file to be the forum attachment';
-                    header ('location: ../forum/dashboard.php');
-                    exit;
+                    $Fattach = "empty.png";
+                    $stmt_frmPost = $connects->prepare("INSERT INTO forums (ForumIds, ForumTitles, ForumCreator, ForumTopics, ForumContents, ForumAttachment, ForumDates, ForumState,ForumHighlight) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
+                    $stmt_frmPost->bind_param("ssssssss", $FoIds, $Ftitles, $Fcreators, $Ftopics, $Fdescs, $Fattach, $Fstate, $FHighlight);
+                    if($stmt_frmPost->execute()){
+                        $_SESSION['corsmsg'] = 'Forum got posted';
+                        $stmt_frmPost->close();
+                        header ('location: ../forum/forum.php?ids=' . $FoIds);
+                        exit;
+                    } else {
+                        $_SESSION['corsmsg'] = 'The Forum failed to post';
+                        header ('location: ../forum/dashboard.php');
+                        $stmt_frmPost->close();
+                        exit;
+                    };
                 };
             } else {
                 $Fattach = "empty.png";

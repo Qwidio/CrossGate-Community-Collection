@@ -27,6 +27,7 @@ switch ($Reqtype) {
     case 'category':
         $nolibs = "no";
         $State = "publics";
+        $tempLibsArr = [];
         $tempCatgArray = [];
         $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryIds = ? AND categoryState = ?;");
         $stmt_check_category->bind_param("ss", $targetIds, $State);
@@ -37,22 +38,29 @@ switch ($Reqtype) {
             $catgIds = $value['categoryIds'];
             $catgTitles = $value['categoryTitles'];
             $uniTitles = $catgTitles;
-            $check_software = $connects->prepare("SELECT * FROM libslist WHERE libsCategorys = ? AND libsState = ? ;");
+            $check_software = $connects->prepare("SELECT libsIds, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs FROM libslist WHERE libsCategorys = ? AND libsState = ? ORDER BY addedDates DESC;");
             $check_software->bind_param("ss", $catgIds, $State);
             $check_software->execute();
             $result_check_software = $check_software->get_result();
             if ($result_check_software->num_rows > 0) {
                 while ($value = $result_check_software->fetch_assoc()) {
                     $libsIds = $value['libsIds'];
-                    $libsAttachs = $value['libsAttachs'];
                     $libsBanners = $value['libsBanners'];
+                    $libsBanners = str_replace('"', "", $libsBanners);
                     $libsTitles = $value['libsTitles'];
                     $libsDesc = $value['libsDesc'];
-                    $libsMds = $value['libsMD'];
                     $addedDates = $value['addedDates'];
                     $cltNumbs = $value['cltNumbs'];
-                    $fdrLibs = $value['fdrLibs'];
-                    $libsForum = $value['libsForum'];
+                    if (!in_array($libsIds, $tempLibsArr)) {
+                        $tempLibsArr[$libsIds] = [
+                        "libsIds"        => "$libsIds",
+                        "libsBanners"    => "$libsBanners",
+                        "libsTitles"     => "$libsTitles",
+                        "libsDesc"       => "$libsDesc",
+                        "addedDates"     => "$addedDates",
+                        "cltNumbs"       =>  $cltNumbs
+                        ];
+                    };
                 };
             } else {
                 $nolibs = "No Collection in this Category";
@@ -144,7 +152,6 @@ switch ($Reqtype) {
     <link rel="stylesheet" href="../../styling/pallate.css">
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <link rel="stylesheet" href="../../styling/footer.css">
-    <link rel="stylesheet" href="../MPMT/stylesheets/github_md.min.css">
     <title><?php echo $uniTitles;?> || CrossGate Library</title>
 </head>
 <body class="wh100p bg-2 flex fld">
@@ -196,18 +203,40 @@ switch ($Reqtype) {
     case 'category':
 ?>
     <section class="topMg-5 w100p flex fld">
-        <div class="sideMg w75p flex">
+        <div class="bottomMg-s10 sideMg w75p flex">
             <div class="w100p h30 flex acjc bg-5 border-1">
-                <h2 class="w100p txt-b txtc"><?php echo $catgTitles?></h2>
+                <h2 class="w100p txt-30 txtc"><?php echo $catgTitles?></h2>
             </div>
         </div>
-        <div class="sideMg w75p flex fld acjc gap-s">
+        <div class="sideMg w75p minh40 flex fld gap5">
             <?php
             if ($nolibs === "no") {
             ?>
-            <div class="pad-s w100p h50 flex fld bora-s">
-                .
-            </div>
+                <h2 class="pad-sb w100p txt-n">New Releases</h2>
+                <?php
+                foreach ($tempLibsArr as $id => $value) {
+                    $libsIds = $value['libsIds'];
+                    $libsBanners = $value['libsBanners'];
+                    $libsTitles = $value['libsTitles'];
+                    $libsDesc = $value['libsDesc'];
+                    $addedDates = $value['addedDates'];
+                    $cltNumbs = $value['cltNumbs'];
+                    ?>
+                <div class="posr pad-s w100p flex gap5 border-1">
+                    <img src="../libsImg/<?php echo $libsBanners;?>" class="h10 r16-9 objfit">
+                    <div class="h100p flex fld">
+                        <h2 class="rightMg txt-n"><?php echo $libsTitles;?></h2>
+                        <h2 class="rightMg txt-s c-lightgray"><?php echo $libsDesc;?></h2>
+                        <p class="topMg rightMg txt-s c-semiwhite"><?php echo $catgTitles;?></p>
+                        <a href="view.php?type=clts&ids=<?php echo $libsIds;?>" class="link-cover hover-white">.</a>
+                    </div>
+                    <div class="leftMg h100p flex fld">
+                        <p class="topMg leftMg txt-s c-semiwhite"><?php echo $addedDates;?></p>
+                    </div>
+                </div>
+                <?php
+                };
+                ?>
             <?php
             } else {
             ?>
@@ -316,8 +345,7 @@ switch ($Reqtype) {
         echo "</script>";
         $_SESSION['corsmsg'] = "";
     };
-    switch ($Reqtype) {
-        case 'clts':
+    if ($Reqtype === "clts") {
     ?>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script> 

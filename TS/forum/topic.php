@@ -4,10 +4,7 @@ $errors = array();
 session_start();
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
-} else {
-    header ('location: ../../index.php');
-    exit;
-};
+}
 $page = 'topic';
 if (isset($_GET['item']) && isset($_GET['onsearch'])) {
     $searchTrigger = $_GET['onsearch'];
@@ -74,7 +71,11 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         ?>
     </div>
     <!-- the list goes on -->
-    <section class="topMg-10 bottomMg-10 w100p minh70 flex wrap acjc gap">
+    <div class="posr w100p r4-1 flex fld acjc bg-3 border-1">
+        <h2 class="w100p txtc txt-30 bold">TOPIC</h2>
+        <p class="w100p txtc txt-s">When I have nothing to talk about</p>
+    </div>
+    <section class="topMg-5 bottomMg-5 w100p flex wrap acjc gap">
         <?php
         $topicState = "Publics";
         if (isset($requestedItem) && isset($searchTrigger)) {

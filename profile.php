@@ -228,7 +228,17 @@ if (isset($_SESSION['profileTags']) && $uDs === "self") {
                     if (!in_array($OgIdentific, $uniqueItem)) {
             ?>
             <div class="posr bottomMg-s5 pad-m-v pad-s-s w100p flex z4">
-                <img src="Groups/img/<?php echo $logo;?>" class="r1-1 w20p flex acjc border-1 objfit z4">
+                <?php
+                if (empty($logo) || $logo === "empty") {
+                ?>
+                <img src="img/business-outline.svg" class="r1-1 w20p flex acjc border-1 objfit z4">
+                <?php
+                } else {
+                ?>
+                <img src="Groups/img/<?php echo $logo;?>" alt="<?php echo $OgName;?>" class="autoMg r1-1 h80p flex acjc bg-blur objfit border-1 bora-s z4">
+                <?php
+                };
+                ?>
                 <div class="posr w80p flex fld">
                     <h2 class="topMg rightMg pad-s-s txt-s"><?php echo $OgName;?></h2>
                     <h2 class="bottomMg rightMg pad-s-s txt-s c-gray"><?php echo $member_count;?> Members</h2>

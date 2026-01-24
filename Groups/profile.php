@@ -47,22 +47,23 @@ if ($result_check_software->num_rows > 0) {
         $check_forum->execute();
         $result_check_forum = $check_forum->get_result();
         if ($result_check_forum->num_rows > 0) {
-            $data = $result_check_forum->fetch_assoc();
-            $ForumIds = $data['ForumIds'];
-            $ForumCreator = $data['ForumCreator'];
-            $ForumTitles = $data['ForumTitles'];
-            $ForumTopics = $data['ForumTopics'];
-            $ForumDates = $data['ForumDates'];
-            $ForumContents = $data['ForumContents'];
-            $ForumAttachment = $data['ForumAttachment'];
-            if (!in_array($ids, $tempLibsArr)) {
-                $tempForumArr[$ForumIds] = [
-                "ForumIds"        => "$ForumIds",
-                "ForumCreator"    => "$ForumCreator",
-                "ForumTitles"     => "$ForumTitles",
-                "ForumDates"      => "$ForumDates",
-                "ForumContents"   => "$ForumContents",
-                ];
+            while ($data = $result_check_forum->fetch_assoc()) {
+                $ForumIds = $data['ForumIds'];
+                $ForumCreator = $data['ForumCreator'];
+                $ForumTitles = $data['ForumTitles'];
+                $ForumTopics = $data['ForumTopics'];
+                $ForumDates = $data['ForumDates'];
+                $ForumContents = $data['ForumContents'];
+                $ForumAttachment = $data['ForumAttachment'];
+                if (!in_array($ids, $tempLibsArr)) {
+                    $tempForumArr[$ForumIds] = [
+                    "ForumIds"        => "$ForumIds",
+                    "ForumCreator"    => "$ForumCreator",
+                    "ForumTitles"     => "$ForumTitles",
+                    "ForumDates"      => "$ForumDates",
+                    "ForumContents"   => "$ForumContents",
+                    ];
+                };
             };
         }
         if (!in_array($ids, $tempLibsArr)) {

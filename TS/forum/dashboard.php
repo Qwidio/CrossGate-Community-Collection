@@ -74,6 +74,15 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
 <div class="posr bottomMg-s10 w100p flex">
 <!-- topic on right of the page -->
     <div class="posr pad-s w20p flex fld gap-s border-r z2">
+        <?php
+        if (isset($aidis)) {
+        ?>
+        <div class="pad-n-s pad-s-v w100p flex fld border-b">
+            <button onclick="SetDialog('add');" class="pad-s w100p txtc txt-s bg-gold c-black">Post New Forum</button>
+        </div>
+        <?php
+        };
+        ?>
         <div class="pad-n-s pad-st w100p flex fld border-b">
             <h2 class="pad-sb w100p txt-n semibold">Highlight</h2>
             <div class="posr pad-s-s pad-r pad-sb w100p flex fld">
@@ -82,7 +91,7 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
             </div>
         </div>
         <div class="pad-n-s pad-st w100p maxh30 flex fld border-b ovs-v">
-            <h2 class="pad-sb w100p txt-n semibold points" onclick="linker('topic')">Topic</h2>
+            <a href="topic.php" class="pad-sb w100p txt-n semibold points">Topic</a>
             <?php
             $stmt_check_topic = $connects->prepare("SELECT * FROM topics WHERE topicState = ?;");
             $stmt_check_topic->bind_param("s", $State);
@@ -117,6 +126,60 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
 <!-- forum there -->
     <div class="leftMg-s10 rightMg-s10 w50p minh50 flex wrap gap10 acjc z1">
     <?php
+    if (isset($requestedItem) && isset($searchTrigger)) {
+        $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumTitles LIKE '%$requestedItem%' ORDER BY ForumDates DESC;");
+        $check_Forum->bind_param("s", $State);
+    } else {
+        $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumHighlight = 'NOs' ORDER BY ForumDates DESC;");
+        $check_Forum->bind_param("s", $State);
+    };
+    $check_Forum->execute();
+    $result_check_Forum = $check_Forum->get_result();
+    if ($result_check_Forum->num_rows > 0) {
+        $uniqueItem = [];
+        while ($value = $result_check_Forum->fetch_assoc()) {
+            $ids = $value['ForumIds'];
+            $creators = $value['ForumCreator'];
+            $titles = $value['ForumTitles'];
+            $topics = $value['ForumTopics'];
+            $dates = $value['ForumDates'];
+            $contents = $value['ForumContents'];
+            if (!in_array($ids, $uniqueItem)) {
+    ?>
+        <div class="posr pad-s-v pad-n-s w100p h40 flex fld border-1 bora-s z2">
+            <h2 class="bottomMg-s5 txt-b"><?php echo $titles;?></h2>
+            <div class="bottomMg-s10 w100p flex space-between">
+            <?php
+            $getUser = $connects->prepare("SELECT profileNames FROM profiles WHERE profileTags = ?");
+            $getUser->bind_param("s", $creators);
+            $getUser->execute();
+            $resultGetUser = $getUser->get_result();
+            if ($resultGetUser->num_rows == 1) {
+                $getname = $resultGetUser->fetch_assoc();
+            ?>
+                <p class="txt-s"><?php echo $getname['profileNames'];?></p>
+            <?php
+            };
+            ?>
+                <p class="txt-s"><?php echo $dates;?></p>
+            </div>
+            <p class="pad-m-v txt-s border-t"><?php echo $contents;?>
+            </p>
+            <a href="forum.php?ids=<?php echo $ids;?>" class="link-cover hover-white">.</a>
+        </div>
+    <?php
+            }; 
+        };
+    } else {
+    ?>
+        <p class="posr pad-s-v pad-n-s w100p h40 txtc z2">No forum found, got something wrong in there</p>
+    <?php
+    };
+    ?>
+    </div>
+<!-- Highlighted post -->
+    <div class="posr w30p maxw30 flex border-l gap10">
+    <?php
     if ($requestedItem === "empty") {
     ?>
     <?php
@@ -135,13 +198,24 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
                 $Hcontents = $value['ForumContents'];
                 if (!in_array($Hids, $uniqueItem)) {
         ?>
-        <div class="posr pad-s-v pad-n-s w100p h40 flex fld border-1 bora-s z2">
-            <h2 class="sideMg bottomMg-s10 w90p txt-b"><?php echo $Htitles;?></h2>
+        <div class="posr sideMg pad-s-v pad-n-s w95p maxh20 flex fld border-1 bora-s z2">
+            <h2 class="sideMg bottomMg-s10 w100p txtc txt-b"><?php echo $Htitles;?></h2>
             <div class="bottomMg-s5 w100p flex space-between">
-                <p class="txt-s"><?php echo $Hcreators;?></p>
+                <?php
+                $getUser = $connects->prepare("SELECT profileNames FROM profiles WHERE profileTags = ?");
+                $getUser->bind_param("s", $Hcreators);
+                $getUser->execute();
+                $resultGetUser = $getUser->get_result();
+                if ($resultGetUser->num_rows == 1) {
+                    $getname = $resultGetUser->fetch_assoc();
+                ?>
+                <p class="txt-s"><?php echo $getname['profileNames'];?></p>
+                <?php
+                };
+                ?>
                 <p class="txt-s"><?php echo $Hdates;?></p>
             </div>
-            <p class="forum-content"><?php echo $Hcontents;?></p>
+            <p class="pad-m-v minh10 maxh20 txt-s border-t"><?php echo $Hcontents;?></p>
             <a href="forum.php?ids=<?php echo $Hids;?>" class="link-cover hover-white">.</a>
         </div>
     <?php
@@ -151,67 +225,27 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
     ?>
     <?php
     };
-    if (isset($requestedItem) && isset($searchTrigger)) {
-    $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumTitles LIKE '%$requestedItem%' ORDER BY ForumDates DESC;");
-    $check_Forum->bind_param("s", $State);
-    } else {
-    $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumHighlight = 'NOs' ORDER BY ForumDates DESC;");
-    $check_Forum->bind_param("s", $State);
-    };
-    $check_Forum->execute();
-    $result_check_Forum = $check_Forum->get_result();
-    if ($result_check_Forum->num_rows > 0) {
-        $uniqueItem = [];
-        while ($value = $result_check_Forum->fetch_assoc()) {
-            $ids = $value['ForumIds'];
-            $creators = $value['ForumCreator'];
-            $titles = $value['ForumTitles'];
-            $topics = $value['ForumTopics'];
-            $dates = $value['ForumDates'];
-            $contents = $value['ForumContents'];
-            if (!in_array($ids, $uniqueItem)) {
-    ?>
-        <div class="posr pad-s-v pad-n-s w100p h40 flex fld border-1 bora-s z2">
-            <h2 class="txt-n"><?php echo $titles;?></h2>
-            <div class="bottomMg-s5 w100p flex space-between">
-                <p class="txt-s"><?php echo $creators;?></p>
-                <p class="txt-s"><?php echo $dates;?></p>
-            </div>
-            <p class="forum-content"><?php echo $contents;?>
-            </p>
-            <a href="forum.php?ids=<?php echo $ids;?>" class="link-cover hover-white">.</a>
-        </div>
-    <?php
-            };
-        };
-    } else {
-    ?>
-        <p class="posr pad-s-v pad-n-s w100p h40 txtc z2">No forum found, got something wrong in there</p>
-    <?php
-    };
     ?>
     </div>
-<!-- recommend post -->
-    <div class="w30p minh20 flex border-l"></div>
 </div>
 <!-- forum create dialog -->
-        <dialog id="add-dialog" class="posf lt0 wh100 flex fld acjc bg-white ovs-v z15">
+        <dialog id="add-dialog" class="posf c0 w88 h90 flex fld acjc bgc-semiwhite ovs-v z999">
             <div class="posa lt0 w100p flex"><h2 class="rightMg pad-s txt-b">Make New Forum</h2><p class="pad-s-v pad-n-s txt-b red-hover" onclick="SetDialog('add')">X</p></div>
-                <form class="w100p flex flex-r wrap" action="../component/post_out.php" method="post" enctype="multipart/form-data">
-                    <div class="posr r16-9 w50p flex fld acjc gap5">
+                <form class="pad-s w100p flex flex-r" action="../component/post_out.php" method="post" enctype="multipart/form-data">
+                    <div class="posr w50p r16-9 flex fld acjc gap5">
                         <img id="prevs" class="posr sideMg wh100p objfit">
-                        <input class="posa ins0 wh100p txtc" type="file" name="file" accept="image/*" onchange="loadFile(event)" required>
+                        <input class="posa c0 wh100p txtc" type="file" name="file" accept="image/*" onchange="loadFile(event)">
                     </div>
-                    <div class="form-input-container">
-                        <div class="form-input-row">
+                    <div class="vertiMg w50p flex fld gap5">
+                        <div class="sideMg w88p flex fld">
                             <label for="ForumTitles">Forum Titles</label>
                             <input type="text" name="ForumTitles" class="inptxt" placeholder="Make title for the forum" auto-complete="off" maxlength="255" required>
                         </div>
-                        <div class="form-input-row">
+                        <div class="sideMg w88p flex fld">
                             <label for="ForumDescription">Forum Description</label>
                             <input type="text" name="ForumDescription" class="inptxt" placeholder="The description for the why or what start this forum " auto-complete="off" maxlength="255" required>
                         </div>
-                        <div class="form-input-row">
+                        <div class="sideMg w88p flex fld">
                             <label for="ForumTopics">Topic</label>
                             <select name="ForumTopics" class="inpselect" required>
                                 <option value="" selected disabled>Select Topic</option>
@@ -234,8 +268,8 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
                                 ?>
                             </select>
                         </div>
-                        <div class="form-input-row">
-                            <input class="post-button" type="submit" name="submit" value="Post">
+                        <div class="sideMg w88p flex fld">
+                            <input class="pad-s txtc txt-s bg-gold c-black border-hover-white" type="submit" name="submit" value="Post">
                         </div>
                     </div>
                 </form>
