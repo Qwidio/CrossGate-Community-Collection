@@ -75,7 +75,20 @@
  This is a bit of a really late realization when going to ship the project, with no way of reporting at all the community has no way of of reporting "racist" user in the forums or "malicious" publisher that published collection with malware/virus. Even though this is not permanent, I'd implement the universal report tab to be placed on forums detail, user profile, groups profile and collection detail. Each of them are gonna be proccessed possibly between 1 to 5 days depending on the case and of course this is why I required a valid email in registration, when things like this happens there will be emails to the suspected user/groups for confirmation & solution.
 
 ## news flash, there's nothing such as free hosting
- I tried using infinityfree for hosting this website but now running into dead end problem where the proccessing file being blocked by them and no possible solution without buying premium, see demo in the link bottom below
+ I tried using infinityfree for hosting this website but now running into dead end problem where the proccessing file being blocked by them and no possible solution without buying premium, see proof link below
+<br>
+on local with the same code mind you
+
+![image](img/proof1.png)
+![image](img/proof2.png) 
+
+<br>
+on the hosting, still with the same code
+
+![image](img/proof3.png) 
+![image](img/proof4.png) 
+
+<br>
 
 ## things that will be added, removed, revamped
  Not all would be included because there's always a new things to add to my never ending feature wished to be implemented, but I'm not in good condition to do it now and this thing probably need proper hosting and a domain because that domain is not for this if you don't realized by it's name.
