@@ -14,7 +14,7 @@
 ## Documentation & Journals
   for documentation on how to use go to [website documentation](https://crossgates.porosive.com/documentation/docs.php)<br>
   I'd write journal note on all progression I made [here](https://raw.githubusercontent.com/Qwidio/CrossGate/refs/heads/main/journals.md) 
-
+  
 ## running on your own machine
   in your local machine it is recommended for you to have these in your enviroment:
   - PHP 8+ installed
