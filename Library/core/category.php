@@ -1,25 +1,63 @@
 <?php
 require_once '../../processes/database.php';
 $errors = array();
-session_start();
+$signed = false;
+$noCtg = false;
+if (isset($_GET['filter'])) {
+    $FilterReq = $_GET['filter']; 
+} else {
+    $FilterReq = "none";
+}
 $_SESSION['prev_loc'] = "Library/core/category.php";
 if (isset($_SESSION['profileTags'])) {
     $signed = true;
     $aidis = $_SESSION['profileTags'];
-} else {
-    $signed = false;
 }
-$SearchEnabled = "yes";
-$page = "category";
-$State = "publics";
-$requestedItem = "empty";
-if (isset($_GET['item']) && isset($_GET['onsearch'])) {
-    $searchTrigger = $_GET['onsearch'];
-    $requestedItem = $_GET['item'];
+if (isset($_GET['filter'])) {
+    $FilterReq = $_GET['filter']; 
 } else {
-    $requestedItem = "empty";
-};
-$requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
+    $FilterReq = "none";
+}
+if (isset($_GET['ids'])) {
+    $targetIds = $_GET['ids'];
+    if($targetIds != "") {
+        $targetIds = htmlspecialchars($targetIds, ENT_QUOTES, 'UTF-8');
+        $_SESSION['prev_loc'] = "Library/core/category.php?filter=" . $FilterReq . "&ids=" . $targetIds;
+    } else {
+        $FilterReq = "none";
+        $targetIds = null;
+    }
+}
+switch ($FilterReq) {
+    case 'none':
+            $check_category = $connects->prepare("SELECT categoryIds, categoryTitles FROM categorys WHERE categoryState = 'publics' ORDER BY categoryTitles ASC;");
+        break;
+    case 'search':
+        $check_category = $connects->prepare("SELECT categoryIds, categoryTitles FROM categorys WHERE categoryState = 'publics' AND categoryTitles LIKE '%$targetIds%' ORDER BY categoryTitles ASC;");
+        break;
+    default:
+        $_SESSION['corsmsg'] = "Unknown filter";
+        header ('location: ../../');
+        exit;
+        break;
+}
+$tempCtgArr = array();
+$check_category->execute();
+$result_check_category = $check_category->get_result();
+if ($result_check_category->num_rows > 0) {
+    while ($value = $result_check_category->fetch_assoc()) {
+        $ctgids = $value['categoryIds'];
+        $titles = $value['categoryTitles'];
+        if (!in_array($ctgids, $tempCtgArr)) {
+            $tempCtgArr[$ctgids] = [
+            "categoryIds"        => "$ctgids",
+            "categoryTitles"    => "$titles"
+            ];
+        }
+    }
+} else {
+    $noCtg = true;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,10 +70,13 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
     <link rel="stylesheet" href="../../styling/footer.css">
     <title>Category list</title>
 </head>
-<body class="bg-2">
+<body>
 <!-- the nav -->
     <div class="posr pad-n-s w100p minh10 flex gap-s bg-4 blurbg z4">
-        <a href="index.php" class="vertiMg pad-s txt-l semibold">CROSSGATE</a>
+        <div class="posr vertiMg leftMg-s10 rightMg-s10 h5 flex fld acjc">
+            <img src="../../img/cgcc_logos_widetmp.png" alt="" class="posr h100p containfit">
+            <a href="../../index.php" class="link-cover">.</a>
+        </div>
         <div class="posr w60p flex gap-s">
             <?php
             if (isset($aidis)) {
@@ -59,13 +100,18 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
                 <h2 class="txt-n txtc semibold">DOCS</h2>
                 <a href="../../documentation/docs.php" class="link-cover">.</a>
             </div>
+            <!-- search bar -->
+            <form id="SearchBar" class="posr vertiMg flex gap5 trs500ms bg-white border-1 bora-s" action="category.php">
+                <input type="text" name="ids" placeholder="<?php if(empty($targetIds)) {?>search category...<?php } else {echo $targetIds;};?>" id="searchbox" class="pad-s-s bg-transparent c-black border-none" tabindex="1">
+                <button type="submit" name="filter" value="search" class="posr vertiMg pad-s flex bg-transparent c-black border-none" tabindex="2"><img src="../../img/search.png" alt="" class="icon-rs h100p containfit points"></button>
+            </form>
         </div>
         <?php
         if (!isset($aidis)) {
         ?>
         <div class="leftMg flex acjc gap10">
             <p class="posr pad-n-s pad-s-v txtc txt-n bg-1 border-1 bora-s border-hover-white">LOGIN
-                <a href="../../forum-connect/connect_it.php?state=login" class="link-cover">.</a>
+                <a href="../../connect_it/connect_it.php?state=login" class="link-cover">.</a>
             </p>
         </div>
         <?php
@@ -76,40 +122,50 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         <h2 class="w100p txtc txt-30 bold">CATEGORY</h2>
         <p class="w100p txtc txt-s">Where everything must be categorized</p>
     </div>
-    <section class="topMg-5 bottomMg-10 w100p minh100 flex wrap acjc gap">
-        <?php
-        if (isset($requestedItem) && isset($searchTrigger)) {
-        $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryState = ? AND categoryTitles LIKE '%$requestedItem%' ORDER BY categoryTitles DESC;");
-        $stmt_check_category->bind_param("s", $State);
-        } else {
-        $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryState = ?;");
-        $stmt_check_category->bind_param("s", $State);
-        };
-        $stmt_check_category->execute();
-        $result_check_category = $stmt_check_category->get_result();
-        if ($result_check_category->num_rows > 0) {
-            $uniqueItem = [];
-            while ($value = $result_check_category->fetch_assoc()) {
-                $cgids = $value['categoryIds'];
-                $titles = $value['categoryTitles'];
-                if (!in_array($cgids, $uniqueItem)) {
-        ?>
-        <div class="posr w20p r16-9 flex acjc bg-1 border-1 bora-s">
-            <p class="txtc txt-n semibold"><?php echo $titles;?></p>
-            <a href="view.php?type=category&ids=<?php echo $cgids;?>" class="link-cover hover-white">.</a>
-        </div>
-        <?php
-                };
-            };
-        } else {
-        ?>
-            <h2 class="autoMg w100p txtc">nothing found on the category list</h2>
-        <?php
-        };
-        ?>
+<?php
+if ($noCtg == true) {
+?>
+    <section class="topMg-5 bottomMg-10 w100p flex">
+    <h2 class="sideMg pad-sb w100p txtc">No Category listed with name '<?php echo $targetIds;?>'</h2>
+<?php
+} else {
+?>
+    <section class="topMg-5 bottomMg-10 w100p flex wrap acjc gap">
+<?php
+}
+foreach ($tempCtgArr as $id => $data) {
+    $ctgid = $data['categoryIds'];
+    $ctgtitles = $data['categoryTitles'];
+    ?>
+    <div class="posr w20p r16-9 flex acjc bg-1 border-1 bora-s">
+        <p class="txtc txt-n semibold"><?php echo $ctgtitles;?></p>
+        <a href="view.php?type=category&ids=<?php echo $ctgid;?>" class="link-cover hover-white">.</a>
+    </div>
+    <?php
+};
+?>
     </section>
-    <?php include_once '../../extra/footer.php';?>
-    <script src="../../scriptstuff/script.js"></script>
-    <script src="../../scriptstuff/alert.js"></script>
+<!-- messages alerter --> 
+<div id="alertcard">
+    <p id="alertcontent"></p>
+    <div id="borderanimate"></div>
+</div>
+<?php include_once '../../extra/footer.php';?>
+<?php
+if (!empty($errors)) {
+    echo "<script> ";
+    echo "alerter('"; foreach ($errors as $error) {echo $error .";";} echo "')";
+    echo "</script>";
+};
+if (!empty($_SESSION['corsmsg'])) {
+    $corsmsg = $_SESSION['corsmsg'];
+    echo "<script> ";
+    echo "alerter('" . $corsmsg . "')";
+    echo "</script>";
+    $_SESSION['corsmsg'] = "";
+};
+?>
+<script src="../../scriptstuff/script.js"></script>
+<script src="../../scriptstuff/alert.js"></script>
 </body>
 </html>

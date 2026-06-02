@@ -1,87 +1,103 @@
 <?php
 require_once '../../processes/database.php';
-$errors = array();
-session_start();
+$root_route = "../../";
+require_once '../../secureSession.php';
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
-    header ('location: ../../index.php');
+    header ('location: ../index.php');
     exit;
-};
-$page = "markout";
-$State = "publics";
+}
+
+$noMkot = true;
 $requestedItem = "empty";
 if (isset($_GET['item'])) {
     $requestedItem = $_GET['item'];
 } else {
     $requestedItem = "empty";
 };
-$requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
-$sources = "../../drx/$aidis.json";
-$jsonData = file_get_contents($sources);
-$data = json_decode($jsonData, true);
-$profileTag = $data['profileTags'];
-$markedData = $data['marked'];
-$marked = [];
-foreach ($markedData as $markedIndex => $info) {
-    $marked[$markedIndex] = [
-        "libsIds"  => $info['libsIds'],
-        "Hours"    => (int)$info['Hours'],
-        "lastLog"  => $info['lastLog'],
+$check_profile = $connects->prepare("SELECT mkot FROM profiles WHERE profileTags = ? ;");
+$check_profile->bind_param("s", $aidis);
+$check_profile->execute();
+$result_check_profile = $check_profile->get_result();
+if ($result_check_profile->num_rows == 1) {
+    $value = $result_check_profile->fetch_assoc();
+    $mkot = $value['mkot'];
+    $data = json_decode($mkot, true);
+    $markedData = $data['marked'];
+};
+if (!empty($markedData) && $markedData != "empty") {
+    $tempLibsArr = array();
+    $marked = [];
+    foreach ($markedData as $markedIndex => $info) {
+        $marked[$markedIndex] = [
+            "libsIds"  => $info['libsIds'],
+            "Hours"    => (int)$info['Hours'],
+            "lastLog"  => $info['lastLog']
+        ];
+        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, libsForum FROM libslist WHERE libsIds = ? AND libsState = 'Publics' ;");
+        $check_software->bind_param("s", $info['libsIds']);
+        $check_software->execute();
+        $result_check_software = $check_software->get_result();
+        if ($result_check_software->num_rows > 0) {
+            while ($value = $result_check_software->fetch_assoc()) {
+                $ids = $value['libsIds'];
+                $libsPublisher = $value['libsPublisher'];
+                $attachs = $value['libsAttachs'];
+                $libsBanners = $value['libsBanners'];
+                $libsBanners = str_replace('"', "", $libsBanners);
+                $titles = $value['libsTitles'];
+                $Desc = $value['libsDesc'];
+                $libsForum = $value['libsForum'];
+                $check_forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = 'Publics' AND ForumTopics = ? ORDER BY ForumDates DESC LIMIT 1;");
+                $check_forum->bind_param("s", $libsForum);
+                $check_forum->execute();
+                $result_check_forum = $check_forum->get_result();
+                if ($result_check_forum->num_rows == 1) {
+                    $data = $result_check_forum->fetch_assoc();
+                    $ForumIds = $data['ForumIds'];
+                    $ForumCreator = $data['ForumCreator'];
+                    $ForumTitles = $data['ForumTitles'];
+                    $ForumTopics = $data['ForumTopics'];
+                    $ForumDates = $data['ForumDates'];
+                    $ForumContents = $data['ForumContents'];
+                    $ForumAttachment = $data['ForumAttachment'];
+                    $tempLibsArr[$ids] = [
+                    "libsIds"        => "$ids",
+                    "libsPublisher"  => "$libsPublisher",
+                    "libsAttachs"    => "$attachs",
+                    "libsBanners"    => "$libsBanners",
+                    "libsTitles"     => "$titles",
+                    "libsDesc"       => "$Desc",
+                    "libsForum"      => "$libsForum",
+                    "ForumIds"        => "$ForumIds",
+                    "ForumCreator"    => "$ForumCreator",
+                    "ForumTitles"     => "$ForumTitles",
+                    "ForumTopics"     => "$ForumTopics",
+                    "ForumDates"      => "$ForumDates",
+                    "ForumContents"   => "$ForumContents",
+                    "ForumAttachment" => "$ForumAttachment"
+                    ];
+                } else {
+                    $tempLibsArr[$ids] = [
+                    "libsIds"        => "$ids",
+                    "libsPublisher"  => "$libsPublisher",
+                    "libsAttachs"    => "$attachs",
+                    "libsBanners"    => "$libsBanners",
+                    "libsTitles"     => "$titles",
+                    "libsDesc"       => "$Desc",
+                    "libsForum"      => "$libsForum"
+                    ];
+                }
+                $noMkot = false;
+            };
+        };
+    }
+    $usrDatTemp[] = [
+        "marked"      => $marked
     ];
 }
-$usrDatTemp[] = [
-    "profileTags" => $profileTag,
-    "marked"      => $marked
-];
 
-$tempLibsArr = array();
-$check_software = $connects->prepare("SELECT libsIds, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, libsForum FROM libslist WHERE libsState = ? ;");
-$check_software->bind_param("s", $State);
-$check_software->execute();
-$result_check_software = $check_software->get_result();
-if ($result_check_software->num_rows > 0) {
-    while ($value = $result_check_software->fetch_assoc()) {
-        $ids = $value['libsIds'];
-        $attachs = $value['libsAttachs'];
-        $libsBanners = $value['libsBanners'];
-        $libsBanners = str_replace('"', "", $libsBanners);
-        $titles = $value['libsTitles'];
-        $Desc = $value['libsDesc'];
-        $libsForum = $value['libsForum'];
-        $check_forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumTopics = ? ORDER BY ForumDates DESC LIMIT 1;");
-        $check_forum->bind_param("ss", $State, $libsForum);
-        $check_forum->execute();
-        $result_check_forum = $check_forum->get_result();
-        if ($result_check_forum->num_rows == 1) {
-            $data = $result_check_forum->fetch_assoc();
-            $ForumIds = $data['ForumIds'];
-            $ForumCreator = $data['ForumCreator'];
-            $ForumTitles = $data['ForumTitles'];
-            $ForumTopics = $data['ForumTopics'];
-            $ForumDates = $data['ForumDates'];
-            $ForumContents = $data['ForumContents'];
-            $ForumAttachment = $data['ForumAttachment'];
-        }
-        if (!in_array($ids, $tempLibsArr)) {
-            $tempLibsArr[$ids] = [
-            "libsIds"        => "$ids",
-            "libsAttachs"    => "$attachs",
-            "libsBanners"    => "$libsBanners",
-            "libsTitles"     => "$titles",
-            "libsDesc"       => "$Desc",
-            "libsForum"      => "$libsForum",
-            "ForumIds"        => "$ForumIds",
-            "ForumCreator"    => "$ForumCreator",
-            "ForumTitles"     => "$ForumTitles",
-            "ForumTopics"     => "$ForumTopics",
-            "ForumDates"      => "$ForumDates",
-            "ForumContents"   => "$ForumContents",
-            "ForumAttachment" => "$ForumAttachment"
-            ];
-        };
-    };
-};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,10 +110,13 @@ if ($result_check_software->num_rows > 0) {
     <link rel="stylesheet" href="../../styling/footer.css">
     <title>MarkOut Software</title>
 </head>
-<body class="wh100p bg-2 flex fld">
+<body class="wh100p">
 <!-- the nav -->
     <div class="posr pad-n-s w100p minh10 flex gap-s bg-4 blurbg z4">
-        <a href="index.php" class="vertiMg pad-s txt-l semibold">CROSSGATE</a>
+        <div class="posr vertiMg leftMg-s10 rightMg-s10 h5 flex fld acjc">
+            <img src="../../img/cgcc_logos_widetmp.png" alt="" class="posr h100p containfit">
+            <a href="../../index.php" class="link-cover">.</a>
+        </div>
         <div class="posr w60p flex gap-s">
             <?php
             if (isset($aidis)) {
@@ -121,22 +140,36 @@ if ($result_check_software->num_rows > 0) {
                 <h2 class="txt-n txtc semibold">DOCS</h2>
                 <a href="../../documentation/docs.php" class="link-cover">.</a>
             </div>
+            <!-- search bar -->
+            <form id="SearchBar" class="posr vertiMg flex gap5 trs500ms bg-white border-1 bora-s" action="list.php">
+                <input type="text" name="ids" placeholder="search software..." id="searchbox" class="pad-s-s bg-transparent c-black border-none" tabindex="1">
+                <button type="submit" name="filter" value="search" class="posr vertiMg pad-s flex bg-transparent c-black border-none" tabindex="2"><img src="../../img/search.png" alt="" class="icon-rs h100p containfit points"></button>
+            </form>
         </div>
         <?php
         if (!isset($aidis)) {
         ?>
         <div class="leftMg flex acjc gap10">
             <p class="posr pad-n-s pad-s-v txtc txt-n bg-1 border-1 bora-s border-hover-white">LOGIN
-                <a href="../../forum-connect/connect_it.php?state=login" class="link-cover">.</a>
+                <a href="../../connect_it/connect_it.php?state=login" class="link-cover">.</a>
             </p>
         </div>
         <?php
         };
         ?>
     </div>
-    <section class="posa l0 t10 pad-s w20 minh100 flex fld gap-s bg-tricol z2">
-        <div class="pad-n-s pad-st w100p flex fld border-b">
-            <h2 class="pad-sb w100p txt-n">Titles</h2>
+<?php
+if ($noMkot == true) {
+?>
+    <section class="posr pad-s w100p h90 flex fld gap-s bg-thin-grad-white z2">
+        <a href="list.php" class="autoMg w100p txtc txt-l hover-text-blue">MarkedOut collection will show up here</a>
+    </section>
+<?php
+} else {
+?>
+    <section class="posa l0 t10 pad-s w20 minh100 flex fld gap-s bg-thin-grad-white z2">
+        <div class="pad-n-s pad-st w100p flex fld gap5">
+            <h2 class="pad-sb w100p txt-n semibold">MarkedOut</h2>
             <?php
             $tempCopy = $usrDatTemp[0]['marked'];
             uasort($tempCopy, function ($b, $a) {
@@ -147,11 +180,12 @@ if ($result_check_software->num_rows > 0) {
             foreach ($tempCopy as $id => $value) {
                 $LibIds = $value['libsIds'];
                 $hour = $value['Hours'];
+                $libsPublisher = $tempLibsArr[$LibIds]['libsPublisher'];
                 $titles = $tempLibsArr[$LibIds]['libsTitles'];
                 $attachs = $tempLibsArr[$LibIds]['libsAttachs'];
             ?>
-            <div class="posr pad-s-s pad-r pad-m-v w100p flex">
-                <img src="../libsimg/<?php echo $attachs;?>" alt="<?php echo $attachs;?>" class="vertiMg rightMg-s10 icon-rs objfit">
+            <div class="posr pad-m-v pad-s-s w100p flex gap5 bg-half-gray box-shad-black-1 border-purple hover-white">
+                <img src="../libsImg/<?php echo $libsPublisher . "/" . $attachs;?>" alt="<?php echo $titles;?>" class="vertiMg rightMg-s10 icon-rs containfit bg-half-white">
                 <h2 class="w100p txt-s"><?php echo $titles;?></h2>
                 <a href="view.php?type=clts&ids=<?php echo $LibIds;?>" class="link-cover hover-white">.</a>
             </div>
@@ -160,9 +194,9 @@ if ($result_check_software->num_rows > 0) {
             ?>
         </div>
     </section>
-    <section class="leftMg pad-n w79 flex fld">
-        <h2 class="leftMg bottomMg-s5 w100p">Launched recently</h2>
-        <div class="h100p flex gap-s ovs-s ovh-v">
+    <section class="posr leftMg pad-n w79 flex fld">
+        <h2 class="posr leftMg w100p">Launched recently</h2>
+        <div class="posr pad-s-v h100p flex gap10 ovh-v">
         <?php
         $tempCopy = $usrDatTemp[0]['marked'];
         uasort($tempCopy, function ($b, $a) {
@@ -173,14 +207,15 @@ if ($result_check_software->num_rows > 0) {
         foreach ($tempCopy as $id => $value) {
             $LibIds = $value['libsIds'];
             $hour = $value['Hours'];
+            $libsPublisher = $tempLibsArr[$LibIds]['libsPublisher'];
             $titles = $tempLibsArr[$LibIds]['libsTitles'];
             $attachs = $tempLibsArr[$LibIds]['libsAttachs'];
             $banners = $tempLibsArr[$LibIds]['libsBanners'];
         ?>
-            <div class="posr h30 r16-9 bg-1 flex fld border-1 z1">
-                <img src="../libsimg/<?php echo $banners;?>" alt="<?php echo $banners;?>" class="posa ins0 wh100p bg-3 z2">
+            <div class="posr h30 r16-9 bgc-purple flex fld border-1 z1">
+                <img src="../libsImg/<?php echo $libsPublisher . "/" . $banners;?>" alt="<?php echo $banners;?>" class="posa ins0 wh100p bg-3 coverfit z2">
                 <h2 class="topMg pad-s-s pad-m-v w100p txt-s bg-half-gray z3"><?php echo $titles;?></h2>
-                <p class="pad-s-s pad-sb w100p txt-s bg-half-gray z3">Total time: <?php echo $hour;?> hrs</p>
+                <p class="pad-s-s pad-sb w100p txt-s bg-half-gray z3">Recorded: <?php echo $hour;?> hrs</p>
                 <a href="view.php?type=clts&ids=<?php echo $LibIds;?>" class="link-cover hover-white">.</a>
             </div>
         <?php
@@ -188,22 +223,23 @@ if ($result_check_software->num_rows > 0) {
         ?>
     </section>
     <section class="leftMg pad-n w79 flex fld">
-        <h2 class="leftMg bottomMg-s5 w100p">Publisher Announcement</h2>
-        <div class="h100p flex gap-s ovs-s ovh-v">
+        <h2 class="leftMg bottomMg-s10 w100p">Publisher Announcement</h2>
+        <div class="h100p flex gap10 ovh-v">
         <?php
         foreach ($tempCopy as $id => $value) {
-            $LibIds = $value['libsIds'];
-            $ForumIds = $tempLibsArr[$LibIds]['ForumIds'];
-            $ForumAttachment = $tempLibsArr[$LibIds]['ForumAttachment'];
-            $ForumTopics = $tempLibsArr[$LibIds]['ForumTopics'];
-            $ForumTitles = $tempLibsArr[$LibIds]['ForumTitles'];
-            $ForumContents = $tempLibsArr[$LibIds]['ForumContents']; 
+            $cltsIds = $value['libsIds'];
+            if (isset($tempLibsArr[$cltsIds]['ForumIds'])) {
+                $ForumIds = $tempLibsArr[$cltsIds]['ForumIds'];
+                $ForumAttachment = $tempLibsArr[$cltsIds]['ForumAttachment'];
+                $ForumTopics = $tempLibsArr[$cltsIds]['ForumTopics'];
+                $ForumTitles = $tempLibsArr[$cltsIds]['ForumTitles'];
+                $ForumContents = $tempLibsArr[$cltsIds]['ForumContents'];
         ?>
             <div class="posr pad-s w30 r16-9 flex fld border-2 z1">
                 <?php
                 if ($ForumAttachment != "empty.png" && isset($ForumAttachment)) {
                 ?>
-                <img src="../../TS/ArchFiles/<?php echo $ForumAttachment;?>" alt="" class="posa ins0 r16-9 wh100p opacity5 z2">
+                <img src="../../TS/ArchFiles/<?php echo $ForumAttachment;?>" alt="" class="posa ins0 r16-9 wh100p coverfit opacity5 z2">
                 <?php
                 } else {
                 ?>
@@ -216,26 +252,24 @@ if ($result_check_software->num_rows > 0) {
                 <a href="../../TS/forum/forum.php?ids=<?php echo $ForumIds;?>" class="link-cover hover-white">.</a>
             </div>
         <?php
+            }
         };
         ?>
         </div>
     </section>
     <section class="leftMg pad-s w79 h20"></section>
-<!-- messages passer --> 
+<?php
+};
+?>
+<!-- messages alerter --> 
     <div id="alertcard">
         <p id="alertcontent"></p>
         <div id="borderanimate"></div>
     </div>
     <?php include_once '../../extra/footer.php';?>
     <script src="../../scriptstuff/script.js"></script>
-    <script src="../libsSys/IntakeSFT.js"></script>
     <script src="../../scriptstuff/alert.js"></script>
     <?php
-    if (!empty($errors)) {
-        echo "<script> ";
-        echo "alerter('"; foreach ($errors as $error) {echo $error .";";} echo "')";
-        echo "</script>";
-    };
     if (!empty($_SESSION['corsmsg'])) {
         $corsmsg = $_SESSION['corsmsg'];
         echo "<script> ";

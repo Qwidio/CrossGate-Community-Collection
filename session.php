@@ -1,39 +1,41 @@
 <?php
 require_once 'processes/database.php';
 $errors = array();
-session_start();
+require_once 'secureSession.php';
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
     header ('location: index.php');
     exit;
 };
+$sessionExist = false;
 $allowNewSession = true;
 $tempSessions = array();
 $check_session = $connects->prepare("SELECT sessiontokens, addrss, osids, expirationDate, lastlogs FROM sessionlogs WHERE profileTags = ?;");
 $check_session->bind_param("s", $aidis);
 $check_session->execute();
 $result_check_session = $check_session->get_result();
-if ($result_check_session->num_rows >= 2) {
+if ($result_check_session->num_rows >= 3) {
     $allowNewSession = false;
 }
 if ($result_check_session->num_rows > 0) {
     while ($value = $result_check_session->fetch_assoc()) {
-        $sessiontokens = $value['sessiontokens'];
+        $sessToken = $value['sessiontokens'];
         $addrss = $value['addrss'];
         $osids = $value['osids'];
         $expirationDate = $value['expirationDate'];
         $lastlogs = $value['lastlogs'];
-        if (!in_array($sessiontokens, $tempSessions)) {
-            $tempSessions[$sessiontokens] = [
-            "sessiontokens" => "$sessiontokens",
+        if (!in_array($sessToken, $tempSessions)) {
+            $tempSessions[$sessToken] = [
+            "sessiontokens" => "$sessToken",
             "addrss" => "$addrss",
             "osids" => "$osids",
             "expirationDate" => "$expirationDate",
-            "lastlogs" => "$lastlogs",
+            "lastlogs" => "$lastlogs"
             ];
         }
     }
+    $sessionExist = true;
 }
 ?>
 <!DOCTYPE html>
@@ -60,7 +62,10 @@ if ($result_check_session->num_rows > 0) {
 <body>
     <!-- nav -->
     <div class="posr pad-n-s w100p minh10 flex gap-s bg-4 blurbg z4">
-        <a href="index.php" class="vertiMg pad-s txt-l semibold">CROSSGATE</a>
+        <div class="posr vertiMg leftMg-s10 rightMg-s10 h5 flex fld acjc">
+            <img src="img/cgcc_logos_widetmp.png" alt="" class="posr h100p containfit">
+            <a href="index.php" class="link-cover">.</a>
+        </div>
         <div class="posr w60p flex gap-s">
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">MARKOUT</h2>
@@ -84,60 +89,73 @@ if ($result_check_session->num_rows > 0) {
             </div>
         </div>
     </div>
-    <div class="topMg-10 w88 flex">
+    <div class="topMg-5 bottomMg-s10 w88 flex">
+        <a href="profile.php?user=self" class="rightMg pad-s-v pad-n-s txt-n bg-half-gray c-white border-1 hover-white">< Back</a>
         <a href="processes/session_add.php" class="leftMg pad-s txt-n bg-half-gray c-white border-1 hover-white"><?php if ($allowNewSession == true) {echo "Add new session";} else { echo "Maximum session allowed";};?></a>
     </div>
-    <div class="posr topMg-s10 bottomMg-10 w88 flex fld border-1">
-        <div class="posr pad-n-s w100p flex border-1 gap10 z4">
-            <h2 class="pad-s-v w30p txt-n border-r ovh">session token</h2>
-            <p class="pad-s-v w20p txt-n border-r ovh">address</p>
-            <p class="pad-s-v w20p txt-n border-r ovh">device</p>
-            <p class="pad-s-v w20p txt-n border-r ovh">expiration</p>
-            <p class="pad-s-v w20p txt-n border-r ovh">last login</p>
+<?php
+if (isset($_COOKIE['sessionToken'])) {
+    $deviceToken = $_COOKIE['sessionToken'];
+} else {
+    $deviceToken = "none";
+}
+foreach ($tempSessions as $id => $value) {
+    $sessToken = $value['sessiontokens'];
+    $addrss = $value['addrss'];
+    $osids = $value['osids'];
+    $expirationDate = $value['expirationDate'];
+    $lastlogs = $value['lastlogs'];
+?>
+    <div class="posr bottomMg-s10 pad-s-v pad-n-s w88 flex fld bg-half-purple box-shad-white-1 border-purple bora-s gap5 z4">
+        <input type="text" class="pad-s-v w100p txt-n txtnowrap bg-transparent border-none ovh" id="<?php echo $sessToken;?>" value="ID: <?php echo $sessToken;?>" disabled>
+        <div class="posr w100p flex gap5">
+            <p class="posr pad-s-v w30p txt-s txtnowrap ovh">Address: <?php echo $addrss;?><span class="blur-censor">.</span></p>
+            <p class="pad-s-v w30p txt-s txtnowrap ovh">Device: <?php echo $osids;?></p>
+            <p class="pad-s-v w20p txt-s ovh">Expiry: <?php echo $expirationDate;?></p>
+            <p class="pad-s-v w20p txt-s ovh">Last login: <?php echo $lastlogs;?></p>
+<?php
+    if ($sessToken != $deviceToken) {
+?>
             <div class="posr pad-m-v pad-ml r1-1 flex">
-                <p class="posr wh100p objfit link-cover">.</p>
+                <img src="img/copy.svg" alt="" class="posr wh100p containfit points" onclick="copy('<?php echo $sessToken;?>');">
             </div>
             <div class="posr pad-m r1-1 flex">
-                <p class="posr wh100p objfit link-cover">.</p>
+                <img src="img/trash-outline.svg" alt="" class="posr wh100p containfit points" onclick="uniDisplaySwitch('deleteDialog'); loadSession(this);" data-token="<?php echo $sessToken;?>">
             </div>
+<?php
+    } else {
+?>
+            <p class="pad-s-v w20p txtr txt-s ovh">Currently Used</p>
+<?php
+    }
+?>
         </div>
-    <?php
-    foreach ($tempSessions as $id => $value) {
-        $sessiontokens = $value['sessiontokens'];
-        $addrss = $value['addrss'];
-        $osids = $value['osids'];
-        $expirationDate = $value['expirationDate'];
-        $lastlogs = $value['lastlogs'];
-    ?>
-        <div class="posr pad-n-s w100p flex border-1 gap10 z4">
-            <input type="text" class="pad-s-v w30p txt-n bg-transparent border-none border-r ovh" id="<?php echo $sessiontokens;?>" value="<?php echo $sessiontokens;?>" disabled>
-            <p class="posr pad-s-v w20p txt-n border-r ovh"><?php echo $addrss;?><span class="blur-censor">.</span></p>
-            <p class="pad-s-v w20p txt-n border-r ovh"><?php echo $osids;?></p>
-            <p class="pad-s-v w20p txt-n border-r ovh"><?php echo $expirationDate;?></p>
-            <p class="pad-s-v w20p txt-n border-r ovh"><?php echo $lastlogs;?></p>
-            <div class="posr pad-m-v pad-ml r1-1 flex">
-                <img src="img/copy.svg" alt="" class="posr wh100p objfit points" onclick="copy('<?php echo $sessiontokens;?>');">
-            </div>
-            <div class="posr pad-m r1-1 flex">
-                <img src="img/trash-outline.svg" alt="" class="posr wh100p objfit points" onclick="SetDialog('edit'); loadSession(this);" data-token="<?php echo $sessiontokens;?>">
-            </div>
-        </div>
-    <?php
-    };
-    ?>
     </div>
-    <dialog id="edit-dialog" class="posf pad-n c0 pad-b-v minw20 maxh50 dp-none fld bg-1 border-1 bora-s z999">
+<?php
+};
+if ($sessionExist == true) {
+?>
+    <div class="posr w100p minh50 flex acjc">
+        <p class="link-cover">.</p>
+    </div>
+<?php
+} else {
+?>
+    <div class="posr w100p minh60 flex">
+        <p class="posr pad-n w100p txtc txt-n">No Session found</p>
+    </div>
+<?php
+}
+?>
+    <dialog id="deleteDialog" class="posf pad-n c0 pad-b-v minw20 maxh50 dp-none fld bg-1 border-1 bora-s z999">
         <form class="wh100p flex fld" name="EDITSESSION" action="processes/session_out.php" method="post">
             <h2 class="w100p txt-b txtc">Confirm Delete This Session?</h2>
             <input class="hiddeninp" type="text" name="token" hidden>
             <input class="topMg-s10 pad-s-v w100p txt-n txtc bg-red border-1 border-hover-white" type="submit" name="submit" value="YES">
         </form>
-        <button class="topMg-s5 pad-s-v w100p txt-n txtc c-black border-1 border-hover-white" onclick="SetDialog('edit')">NO</button>
+        <button class="topMg-s5 pad-s-v w100p txt-n txtc c-black border-1 border-hover-white" onclick="uniDisplaySwitch('deleteDialog')">NO</button>
     </dialog>
-    <div class="posr minh40">
-        <p class="link-cover">.</p>
-    </div>
-    <!-- lil bit of messages passer -->
+    <!-- messages alerter -->
     <div id="alertcard">
         <p id="alertcontent"></p>
         <div id="borderanimate"></div>

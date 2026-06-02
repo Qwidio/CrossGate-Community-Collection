@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
         borderAnimate.style.animation = 'none'; // Removing animation
         void borderAnimate.offsetWidth; // Triggering reflow
         borderAnimate.style.animation = 'ReverseTimer'; // Adding back animation
-    }, 100);
+    }, 500);
 });
 function alerter(content) {
     const alertcard = document.getElementById('alertcard');

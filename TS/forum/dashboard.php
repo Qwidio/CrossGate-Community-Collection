@@ -1,25 +1,98 @@
 <?php
 require_once '../../processes/database.php';
-session_start();
+$_SESSION['prev_loc'] = "TS/forum/dashboard.php";
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
-    header ('location: ../../index.php');
-    exit;
-}
-$requestedItem = "empty";
-$page = "dashboard";
-$UploadEnabled = "yes";
-$State = "Publics";
-if (isset($_GET['item']) && isset($_GET['onsearch'])) {
-    $searchTrigger = $_GET['onsearch'];
-    $requestedItem = $_GET['item'];
-} else {
-    $requestedItem = "empty";
+    $root_route = "../../";
+    require_once '../../secureSession.php';
 };
-$requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
-?>
 
+$noForum = false;
+$noTopic = false;
+$forumArr = array();
+$HighlightforumArr = array();
+$topicArr = array();
+if (isset($_GET['filter'])) {
+    $FilterReq = $_GET['filter']; 
+} else {
+    $FilterReq = "none";
+}
+if (isset($_GET['ids'])) {
+    $targetIds = $_GET['ids'];
+    if($targetIds != "") {
+        $targetIds = htmlspecialchars($targetIds, ENT_QUOTES, 'UTF-8');
+        $_SESSION['prev_loc'] = "TS/forum/dashboard.php?filter=" . $FilterReq . "&ids=" . $targetIds;
+        $searchTarget = '%' . $targetIds . '%';
+    } else {
+        $FilterReq = "none";
+        $targetIds = null;
+    }
+}
+switch ($FilterReq) {
+    case 'none':
+    $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = 'Publics' ORDER BY ForumDates DESC;");
+        break;
+    case 'oldtonew':
+    $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = 'Publics' ORDER BY ForumDates ASC;");
+        break;
+    case 'search':
+        if($targetIds === "empty") {
+    $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = 'Publics' ORDER BY ForumDates DESC;");
+        } else {
+            $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = 'Publics' AND ForumTitles LIKE ? ORDER BY ForumDates DESC;");
+            $check_Forum->bind_param("s", $searchTarget);
+        }
+        break;
+    default:
+        $_SESSION['corsmsg'] = "Unknown filter";
+        header ('location: dashboard.php');
+        exit;
+        break;
+}
+$check_Forum->execute();
+$result_check_Forum = $check_Forum->get_result();
+if ($result_check_Forum->num_rows > 0) {
+    while ($value = $result_check_Forum->fetch_assoc()) {
+        if ($value['ForumHighlight'] === "FALSE") {
+            $forumArr[$value['ForumIds']] = [
+                "ForumIds"      => $value['ForumIds'],
+                "ForumCreator"  => $value['ForumCreator'],
+                "ForumTitles"   => $value['ForumTitles'],
+                "ForumTopics"   => $value['ForumTopics'],
+                "ForumDates"    => $value['ForumDates'],
+                "ForumContents" => $value['ForumContents']
+            ];
+        } else {
+            $HighlightforumArr[$value['ForumIds']] = [
+                "ForumIds"      => $value['ForumIds'],
+                "ForumCreator"  => $value['ForumCreator'],
+                "ForumTitles"   => $value['ForumTitles'],
+                "ForumTopics"   => $value['ForumTopics'],
+                "ForumDates"    => $value['ForumDates'],
+                "ForumContents" => $value['ForumContents']
+            ];
+        }
+    }
+} else {
+    $noForum = true;
+}
+$stmt_check_topic = $connects->prepare("SELECT * FROM topics WHERE topicState = 'Publics';");
+$stmt_check_topic->execute();
+$result_check_topic = $stmt_check_topic->get_result();
+if ($result_check_topic->num_rows > 0) {
+    while ($value = $result_check_topic->fetch_assoc()) {
+        if (!in_array($value['topicIds'], $topicArr)) {
+            $topicArr[$value['topicIds']] = [
+                "topicTitles" => $value['topicTitles'],
+                "topicType"   => $value['topicType']
+            ];
+        }
+    }
+} else {
+    $noTopic = true;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,14 +104,17 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
     <link rel="stylesheet" href="../../styling/footer.css">
     <title>Dashboard</title>
 </head>
-<body class="w100p minh100">
+<body>
 <!-- the nav -->
     <div class="posr pad-n-s w100p minh10 flex gap-s bg-4 blurbg z4">
-        <a href="index.php" class="vertiMg pad-s txt-l semibold">CROSSGATE</a>
+        <div class="posr vertiMg leftMg-s10 rightMg-s10 h5 flex fld acjc">
+            <img src="../../img/cgcc_logos_widetmp.png" alt="" class="posr h100p containfit">
+            <a href="../../index.php" class="link-cover">.</a>
+        </div>
         <div class="posr w60p flex gap-s">
             <?php
             if (isset($aidis)) {
-                ?>
+            ?>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">MARKOUT</h2>
                 <a href="../../Library/core/markout.php" class="link-cover">.</a>
@@ -51,20 +127,24 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
             }
             ?>
             <div class="posr pad-s flex fld acjc">
-                <h2 class="txt-n txtc semibold">CATEGORY</h2>
-                <a href="../../Library/core/category.php" class="link-cover">.</a>
+                <h2 class="txt-n txtc semibold">TOPIC</h2>
+                <a href="topic.php" class="link-cover">.</a>
             </div>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">DOCS</h2>
                 <a href="../../documentation/docs.php" class="link-cover">.</a>
             </div>
+            <form id="SearchBar" class="posr vertiMg flex gap5 trs500ms bg-white border-1 bora-s" action="dashboard.php">
+                <input type="text" name="ids" placeholder="search forum..." id="searchbox" class="pad-s-s bg-transparent c-black border-none" tabindex="1">
+                <button type="submit" name="filter" value="search" class="posr vertiMg pad-s flex bg-transparent c-black border-none" tabindex="2"><img src="../../img/search.png" alt="" class="icon-rs h100p containfit points"></button>
+            </form>
         </div>
         <?php
         if (!isset($aidis)) {
         ?>
         <div class="leftMg flex acjc gap10">
             <p class="posr pad-n-s pad-s-v txtc txt-n bg-1 border-1 bora-s border-hover-white">LOGIN
-                <a href="../../forum-connect/connect_it.php?state=login" class="link-cover">.</a>
+                <a href="../../connect_it/connect_it.php?state=login" class="link-cover">.</a>
             </p>
         </div>
         <?php
@@ -72,37 +152,26 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         ?>
     </div>
 <div class="posr bottomMg-s10 w100p flex">
-<!-- topic on right of the page -->
-    <div class="posr pad-s w20p flex fld gap-s border-r z2">
+<!-- right part of the page -->
+    <div class="posr pad-s w20p flex fld gap10 border-r z2">
         <?php
         if (isset($aidis)) {
         ?>
-        <div class="pad-n-s pad-s-v w100p flex fld border-b">
-            <button onclick="SetDialog('add');" class="pad-s w100p txtc txt-s bg-gold c-black">Post New Forum</button>
+        <div class="posr pad-n-s pad-s-v w100p flex fld border-b">
+            <button onclick="uniDisplaySwitch('postForumDialog');" class="posr pad-s w100p txtc txt-s bg-gold c-black border-1 border-hover-white hover-text-blue points">Post New Forum</button>
         </div>
         <?php
         };
         ?>
-        <div class="pad-n-s pad-st w100p flex fld border-b">
-            <h2 class="pad-sb w100p txt-n semibold">Highlight</h2>
-            <div class="posr pad-s-s pad-r pad-sb w100p flex fld">
-                <h2 class="w100p txt-s ovh">Hlighted</h2>
-                <a href="#" class="link-cover">.</a>
-            </div>
-        </div>
-        <div class="pad-n-s pad-st w100p maxh30 flex fld border-b ovs-v">
-            <a href="topic.php" class="pad-sb w100p txt-n semibold points">Topic</a>
+        <div class="posr pad-n-s pad-m-v w100p maxh40 flex fld border-b ovh-s">
+            <a href="topic.php" class="pad-sb w100p txt-n semibold points">Discussion Topic</a>
             <?php
-            $stmt_check_topic = $connects->prepare("SELECT * FROM topics WHERE topicState = ?;");
-            $stmt_check_topic->bind_param("s", $State);
-            $stmt_check_topic->execute();
-            $result_check_topic = $stmt_check_topic->get_result();
-            if ($result_check_topic->num_rows > 0) {
-                $uniqueItem = [];
-                while ($value = $result_check_topic->fetch_assoc()) {
-                    $ids = $value['topicIds'];
+            if ($noTopic == false) {
+                foreach ($topicArr as $topicIndex => $value) {
+                    $ids = $topicIndex;
                     $titles = $value['topicTitles'];
-                    if (!in_array($ids, $uniqueItem)) {
+                    $topicType = $value['topicType'];
+                    if ($topicType === "all") {
             ?>
             <div class="posr pad-s-s pad-r pad-sb w100p flex fld">
                 <h2 class="w100p txt-s ovh"><?php echo $titles;?></h2>
@@ -121,34 +190,87 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
             };
             ?>
         </div>
-        <div class="topMg minh10"></div>
+        <div class="pad-n-s pad-m-v w100p maxh40 flex fld border-b ovh-s">
+            <a href="topic.php" class="pad-sb w100p txt-n semibold points">Collection Topic</a>
+            <?php
+            if ($noTopic == false) {
+                foreach ($topicArr as $topicIndex => $value) {
+                    $ids = $topicIndex;
+                    $titles = $value['topicTitles'];
+                    $topicType = $value['topicType'];
+                    if ($topicType === "publisherOnly") {
+            ?>
+            <div class="posr pad-s-s pad-r pad-sb w100p flex fld">
+                <h2 class="w100p txt-s ovh"><?php echo $titles;?></h2>
+                <a href="viewtopic.php?topicIds=<?php echo $ids;?>" class="link-cover">.</a>
+            </div>
+            <?php
+                    };
+                };
+            } else {
+            ?>
+            <div class="posr pad-s-s pad-r pad-sb w100p flex fld">
+                <h2 class="w100p txt-s">Error retrieving</h2>
+                <a href="#" class="link-cover">.</a>
+            </div>
+            <?php
+            };
+            ?>
+        </div>
     </div>
-<!-- forum there -->
-    <div class="leftMg-s10 rightMg-s10 w50p minh50 flex wrap gap10 acjc z1">
+<!-- Highlighted post -->
+    <div class="posr pad-n-v w80p minh100 flex fld gap10 ovh-s">
     <?php
-    if (isset($requestedItem) && isset($searchTrigger)) {
-        $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumTitles LIKE '%$requestedItem%' ORDER BY ForumDates DESC;");
-        $check_Forum->bind_param("s", $State);
-    } else {
-        $check_Forum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumHighlight = 'NOs' ORDER BY ForumDates DESC;");
-        $check_Forum->bind_param("s", $State);
+    if ($noForum == false) {
+        foreach ($HighlightforumArr as $value) {
+            $Hids = $value['ForumIds'];
+            $Hcreators = $value['ForumCreator'];
+            $Htitles = $value['ForumTitles'];
+            $Htopics = $value['ForumTopics'];
+            $Hdates = $value['ForumDates'];
+            $Hcontents = $value['ForumContents'];
+        ?>
+        <div class="posr sideMg pad-s-v pad-n-s w95p flex fld bg-def-1 border-1 bora-s gap5 z2">
+            <h2 class="posr sideMg w100p txt-b"><?php echo $Htitles;?></h2>
+            <div class="posr w100p flex gap10">
+            <?php
+            $getUser = $connects->prepare("SELECT profileNames FROM profiles WHERE profileTags = ?");
+            $getUser->bind_param("s", $Hcreators);
+            $getUser->execute();
+            $resultGetUser = $getUser->get_result();
+            if ($resultGetUser->num_rows == 1) {
+                $getname = $resultGetUser->fetch_assoc();
+            ?>
+                <p class="txt-s"><?php echo $getname['profileNames'];?> |</p>
+            <?php
+            };
+            ?>
+                <p class="txt-s"><?php echo $Hdates;?></p>
+            </div>
+            <p class="pad-m-v maxh20 txt-s ovh"><?php echo $Hcontents;?></p>
+            <a href="forum.php?ids=<?php echo $Hids;?>" class="link-cover hover-white">.</a>
+        </div>
+    <?php
+        };
     };
-    $check_Forum->execute();
-    $result_check_Forum = $check_Forum->get_result();
-    if ($result_check_Forum->num_rows > 0) {
-        $uniqueItem = [];
-        while ($value = $result_check_Forum->fetch_assoc()) {
+    ?>
+    <!-- </div> -->
+<!-- forum there -->
+    <!-- <div class="leftMg-s10 rightMg-s10 w50p minh100 flex wrap gap10 z1"> -->
+    <?php
+    if ($noForum == false) {
+        foreach ($forumArr as $value) {
             $ids = $value['ForumIds'];
             $creators = $value['ForumCreator'];
             $titles = $value['ForumTitles'];
             $topics = $value['ForumTopics'];
             $dates = $value['ForumDates'];
             $contents = $value['ForumContents'];
-            if (!in_array($ids, $uniqueItem)) {
     ?>
-        <div class="posr pad-s-v pad-n-s w100p h40 flex fld border-1 bora-s z2">
-            <h2 class="bottomMg-s5 txt-b"><?php echo $titles;?></h2>
-            <div class="bottomMg-s10 w100p flex space-between">
+        <div class="posr sideMg pad-s-v pad-n-s w95p flex fld border-1 bora-s gap5 z2">
+        <!-- <div class="posr pad-s-v pad-n-s w100p h40 flex fld border-1 bora-s z2"> -->
+            <h2 class="posr txt-b"><?php echo $titles;?></h2>
+            <div class="posr w100p flex gap10">
             <?php
             $getUser = $connects->prepare("SELECT profileNames FROM profiles WHERE profileTags = ?");
             $getUser->bind_param("s", $creators);
@@ -157,125 +279,68 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
             if ($resultGetUser->num_rows == 1) {
                 $getname = $resultGetUser->fetch_assoc();
             ?>
-                <p class="txt-s"><?php echo $getname['profileNames'];?></p>
+                <p class="txt-s"><?php echo $getname['profileNames'];?> |</p>
             <?php
             };
             ?>
                 <p class="txt-s"><?php echo $dates;?></p>
             </div>
-            <p class="pad-m-v txt-s border-t"><?php echo $contents;?>
+            <p class="posr pad-m-v maxh20 txt-s ovh"><?php echo $contents;?>
             </p>
             <a href="forum.php?ids=<?php echo $ids;?>" class="link-cover hover-white">.</a>
         </div>
     <?php
-            }; 
         };
     } else {
     ?>
-        <p class="posr pad-s-v pad-n-s w100p h40 txtc z2">No forum found, got something wrong in there</p>
-    <?php
-    };
-    ?>
-    </div>
-<!-- Highlighted post -->
-    <div class="posr w30p maxw30 flex border-l gap10">
-    <?php
-    if ($requestedItem === "empty") {
-    ?>
-    <?php
-        $stmt_check_HForum = $connects->prepare("SELECT * FROM forums WHERE ForumState = ? AND ForumHighlight = 'YES' ORDER BY ForumDates ASC;");
-        $stmt_check_HForum->bind_param("s", $State);
-        $stmt_check_HForum->execute();
-        $result_check_HForum = $stmt_check_HForum->get_result();
-        if ($result_check_HForum->num_rows > 0) {
-            $uniqueItem = [];
-            while ($value = $result_check_HForum->fetch_assoc()) {
-                $Hids = $value['ForumIds'];
-                $Hcreators = $value['ForumCreator'];
-                $Htitles = $value['ForumTitles'];
-                $Htopics = $value['ForumTopics'];
-                $Hdates = $value['ForumDates'];
-                $Hcontents = $value['ForumContents'];
-                if (!in_array($Hids, $uniqueItem)) {
-        ?>
-        <div class="posr sideMg pad-s-v pad-n-s w95p maxh20 flex fld border-1 bora-s z2">
-            <h2 class="sideMg bottomMg-s10 w100p txtc txt-b"><?php echo $Htitles;?></h2>
-            <div class="bottomMg-s5 w100p flex space-between">
-                <?php
-                $getUser = $connects->prepare("SELECT profileNames FROM profiles WHERE profileTags = ?");
-                $getUser->bind_param("s", $Hcreators);
-                $getUser->execute();
-                $resultGetUser = $getUser->get_result();
-                if ($resultGetUser->num_rows == 1) {
-                    $getname = $resultGetUser->fetch_assoc();
-                ?>
-                <p class="txt-s"><?php echo $getname['profileNames'];?></p>
-                <?php
-                };
-                ?>
-                <p class="txt-s"><?php echo $Hdates;?></p>
-            </div>
-            <p class="pad-m-v minh10 maxh20 txt-s border-t"><?php echo $Hcontents;?></p>
-            <a href="forum.php?ids=<?php echo $Hids;?>" class="link-cover hover-white">.</a>
-        </div>
-    <?php
-                };
-            };
-        };
-    ?>
+        <p class="posr pad-s-v pad-n-s w100p h100p flex fld acjc z2">No forum found</p>
     <?php
     };
     ?>
     </div>
 </div>
 <!-- forum create dialog -->
-        <dialog id="add-dialog" class="posf c0 w88 h90 flex fld acjc bgc-semiwhite ovs-v z999">
-            <div class="posa lt0 w100p flex"><h2 class="rightMg pad-s txt-b">Make New Forum</h2><p class="pad-s-v pad-n-s txt-b red-hover" onclick="SetDialog('add')">X</p></div>
-                <form class="pad-s w100p flex flex-r" action="../component/post_out.php" method="post" enctype="multipart/form-data">
-                    <div class="posr w50p r16-9 flex fld acjc gap5">
-                        <img id="prevs" class="posr sideMg wh100p objfit">
-                        <input class="posa c0 wh100p txtc" type="file" name="file" accept="image/*" onchange="loadFile(event)">
-                    </div>
-                    <div class="vertiMg w50p flex fld gap5">
-                        <div class="sideMg w88p flex fld">
-                            <label for="ForumTitles">Forum Titles</label>
-                            <input type="text" name="ForumTitles" class="inptxt" placeholder="Make title for the forum" auto-complete="off" maxlength="255" required>
-                        </div>
-                        <div class="sideMg w88p flex fld">
-                            <label for="ForumDescription">Forum Description</label>
-                            <input type="text" name="ForumDescription" class="inptxt" placeholder="The description for the why or what start this forum " auto-complete="off" maxlength="255" required>
-                        </div>
-                        <div class="sideMg w88p flex fld">
-                            <label for="ForumTopics">Topic</label>
-                            <select name="ForumTopics" class="inpselect" required>
-                                <option value="" selected disabled>Select Topic</option>
-                                <?php
-                                $stmt_get_topics = $connects->prepare("SELECT * FROM topics WHERE topicState = ?;");
-                                $stmt_get_topics->bind_param("s", $State);
-                                $stmt_get_topics->execute();
-                                $result_get_topics = $stmt_get_topics->get_result();
-                                if ($result_get_topics->num_rows > 0) {
-                                    $uniqueT = [];
-                                    while ($values =  $result_get_topics->fetch_assoc()) {
-                                        $ForumTopics = $values['topicIds'];
-                                        $topicTitles = $values['topicTitles'];
-                                        if (!in_array($ForumTopics, $uniqueT)) {
-                                            echo "<option name='ForumTopics' value='$ForumTopics' required>$topicTitles</option>";
-                                            $uniqueT[] = $ForumTopics;
-                                        };
-                                    };
-                                };
-                                ?>
-                            </select>
-                        </div>
-                        <div class="sideMg w88p flex fld">
-                            <input class="pad-s txtc txt-s bg-gold c-black border-hover-white" type="submit" name="submit" value="Post">
-                        </div>
-                    </div>
-                </form>
+    <dialog id="postForumDialog" class="posf c0 wh100p dp-none fld acjc bg-half-gray ovh-s z999">
+        <div class="posr w100p flexblurbg flex"><h2 class="posr rightMg pad-s txt-b">Make New Forum</h2><p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('postForumDialog')">X</p></div>
+        <form class="posr wh100p flexblurbg flex" action="../component/post_out.php" method="post" enctype="multipart/form-data">
+            <div class="posr autoMg h50p r16-9 flex fld acjc gap5">
+                <img id="prevs" class="posr sideMg wh100p containfit bg-half-white">
+                <input class="posa c0 wh100p txtc c-black" type="file" name="file" accept="image/*" onchange="uniLoadFile(event, 'prevs')">
             </div>
+            <div class="vertiMg w50p flex fld gap5">
+                <div class="sideMg w88p flex fld">
+                    <label for="ForumTitles">Forum Titles</label>
+                    <input type="text" name="ForumTitles" class="inptxt" placeholder="Make title for the forum" auto-complete="off" maxlength="500" required>
+                </div>
+                <div class="sideMg w88p flex fld">
+                    <label for="ForumDescription">Forum Description</label>
+                <textarea class="inptxt h10 border-b ovh-s" type="text" id="ForumDescription" name="ForumDescription" placeholder="The description for the why or what start this forum " autocomplete="off" required></textarea>
+                </div>
+                <div class="sideMg w88p flex fld">
+                    <label for="ForumTopics">Topic</label>
+                    <select name="ForumTopics" class="inpselect" required>
+                        <option value="" selected disabled>Select Topic</option>
+                        <?php
+                        if ($noTopic == false) {
+                            foreach ($topicArr as $topicIndex => $value) {
+                                $ids = $topicIndex;
+                                $titles = $value['topicTitles'];
+                                $topicType = $value['topicType'];
+                                if ($topicType === "all") {
+                                    echo "<option name='ForumTopics' value='$ids' required>$titles</option>";
+                                };
+                            };
+                        };
+                        ?>
+                    </select>
+                </div>
+                <div class="sideMg w88p flex fld">
+                    <input class="pad-s txtc txt-s bg-gold c-black border-1 border-hover-white hover-text-blue points" type="submit" name="submit" value="Post">
+                </div>
+            </div>
+        </form>
     </dialog>
-<!-- lil bit of messages passer -->
+<!-- messages alerter -->
     <div id="alertcard">
         <p id="alertcontent"></p>
         <div id="borderanimate"></div>

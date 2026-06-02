@@ -6,8 +6,8 @@ fetch('slide.php')
         const slide = document.createElement('div');
         slide.className = 'posr autoMg wh100p flex acjc';
         slide.innerHTML = `
-        <img src="Library/libsImg/${banner.bannerRefImg}"  class="posr autoMg w100 h100p objfit" alt="">
-        <a href="Library/core/view.php?type=prms&ids=${banner.refLinks}" class="link-cover" target="_blank" rel="noopener noreferrer">.</a>
+        <img src="Library/libsImg/${banner.bannerRefImg}"  class="posr autoMg w100 h100p containfit" alt="">
+        <a href="Library/core/view.php?type=prms&ids=${banner.prmsIds}" class="link-cover" target="_blank" rel="noopener noreferrer">.</a>
         `;
         slidesContainer.appendChild(slide);
     });

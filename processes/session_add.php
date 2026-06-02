@@ -1,26 +1,18 @@
 <?php
 require_once '../processes/database.php';
 $errors = array();
-session_start();
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
     $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE profileTags = ?;");
     $check_session->bind_param("s", $aidis);
     $check_session->execute();
     $result_check_session = $check_session->get_result();
-    if ($result_check_session->num_rows > 1) {
+    if ($result_check_session->num_rows > 2) {
         $_SESSION['corsmsg'] = 'Your account exceeds the number of session allowed';
         header ('location: ../session.php');
         exit;
     };
-    function getRandomWord($len = 40) {
-        $word = array_merge(range('a', 'z'), range('A', 'Z'));
-        shuffle($word);
-        return substr(implode($word), 0, $len);
-    }
-    $rnum = random_int(101010, 979896);
-    $rword = getRandomWord();
-    $tokens = $rnum . $rword . $rnum;
+    $tokens = bin2hex(random_bytes(64/2));
     $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE sessiontokens = ?;");
     $check_session->bind_param("s", $tokens);
     $check_session->execute();
@@ -34,10 +26,7 @@ if (isset($_SESSION['profileTags'])) {
             $m = $m + 1;
             $d = 15;
         }
-        if ($m < 10) {
-            $m = "0" . $m;
-        }
-        $expdate = $y . "-" . $m . "-" . $d;
+        $expdate = $d . "/" . $m . "/" . $y;
         $insert_session = $connects->prepare("INSERT INTO sessionlogs(profileTags, sessiontokens, expirationDate) VALUES (?, ?, ?)");
         $insert_session->bind_param("sss", $aidis, $tokens, $expdate);
         if($insert_session->execute()){

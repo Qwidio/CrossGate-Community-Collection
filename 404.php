@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <title>404 Not Found</title>
 </head>
-<body class="minh100">
-    <h1 class="bottomMg w100p txtc txt-b">The page you open does not exist</h1>
+<body class="wh100p minh100 ovh">
+    <img src="img/contour3bw.png" alt="" class="posf ins0 wh100 coverfit filInvert opacity3 z1">
+    <a href="index.php" class="posr autoMg w100p h100 blurbg flex acjc txtc txt-b hover-text-orange z4">The page does not exist</a>
 </body>
 </html>

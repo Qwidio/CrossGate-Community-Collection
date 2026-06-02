@@ -1,4 +1,4 @@
 <?php
-header ('location: ../../index.php');
+header ('location: ../Groups/index.php');
 exit;
 ?>

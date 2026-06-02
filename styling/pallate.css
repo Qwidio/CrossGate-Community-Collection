@@ -1,7 +1,7 @@
 * {
     font-family: Consolas, 'Courier New', monospace;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
     margin: 0;
     padding: 0;
@@ -13,8 +13,10 @@
 
 :root {
     --text: white;
-    --background: linear-gradient(to bottom, rgb(100, 115, 126),  rgb(46, 45, 49));
-    --purplegray: rgb(119, 109, 143);
+    --background: linear-gradient(to bottom, rgb(23, 25, 26), rgb(44, 42, 51));
+    --purplegray: rgb(65, 59, 78);
+    --lightpurples: rgb(182, 153, 250);
+    --purples: rgb(111, 82, 177);
     --primary: rgb(39, 178, 243);
     --secondary:rgb(3, 98, 161);
     --highlight: rgb(146, 221, 255);
@@ -25,17 +27,14 @@
     --accent: rgb(236, 178, 4);
     --subtletext : rgb(235, 235, 235);
     --monochrome1: rgb(121, 128, 133);
-    --monochrome2: rgb(173, 173, 173);
-    --gradibg: linear-gradient(to bottom, var(--monochrome2), var(--monochrome1));
     --footbg: rgb(22, 25, 30);
     --alttext: rgb(0, 0, 0);
     --graditext: linear-gradient(to right, rgb(48, 204, 0), rgb(224, 228, 27), gold);
-    --LibsBG1 : rgb(11, 140, 226);
+    --LibsBG1 : rgb(133, 100, 209);
     --LibsBG2 : rgb(28, 51, 112);
     --LibsBG3: #818181;
     --LibsBG4: rgb(133, 129, 121);
     --libsBG5: rgb(219, 212, 198);
-    --libsBG6: rgb(4, 125, 182);
     --LibsGrad1: linear-gradient(to right bottom, var(--LibsBG1), var(--LibsBG2));
     --LibsGrad2: linear-gradient(to bottom, var(--LibsBG1), var(--libsBG6));
 }

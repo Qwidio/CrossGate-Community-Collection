@@ -9,7 +9,6 @@ footer {
     flex-direction: column;
     align-items: center;
     background: var(--footbg);
-    color: var(--text);
     z-index: 100;
 }
 .footer-group {
@@ -19,19 +18,13 @@ footer {
     display: flex;
     justify-content: center;
     border-top: 1px solid rgb(95, 95, 95);
-    color: gray;
 }
 .footer-group:nth-child(2) {
     align-items: end;
 }
-.menu_button,
-.extra, .extra p, .extra h2, .legal {
-    color: inherit;
-}
 
 .menu_button {
     margin: 0 auto;
-    color: var(--text);
 }
 .footer_logo {
     margin: 0 20px 0 10px;
@@ -44,5 +37,4 @@ footer {
     margin: auto;
     height: 100%;
     text-align: center;
-    color: rgb(191, 201, 208);
 }

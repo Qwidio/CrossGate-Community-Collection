@@ -1,11 +1,13 @@
 <?php
 require_once '../../processes/database.php';
 $errors = array();
-session_start();
+$_SESSION['prev_loc'] = "TS/forum/topic.php";
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
-}
-$page = 'topic';
+} else {
+    $root_route = "../../";
+    require_once '../../secureSession.php';
+};
 if (isset($_GET['item']) && isset($_GET['onsearch'])) {
     $searchTrigger = $_GET['onsearch'];
     $requestedItem = $_GET['item'];
@@ -29,14 +31,17 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
 <body>
 <!-- the nav -->
     <div class="posr pad-n-s w100p minh10 flex gap-s bg-4 blurbg z4">
-        <a href="index.php" class="vertiMg pad-s txt-l semibold">CROSSGATE</a>
+        <div class="posr vertiMg leftMg-s10 rightMg-s10 h5 flex fld acjc">
+            <img src="../../img/cgcc_logos_widetmp.png" alt="" class="posr h100p containfit">
+            <a href="../../index.php" class="link-cover">.</a>
+        </div>
         <div class="posr w60p flex gap-s">
             <?php
             if (isset($aidis)) {
                 ?>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">MARKOUT</h2>
-                <a href="markout.php" class="link-cover">.</a>
+                <a href="../../Library/coremarkout.php" class="link-cover">.</a>
             </div>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">PROFILE</h2>
@@ -45,10 +50,6 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
             <?php
             }
             ?>
-            <div class="posr pad-s flex fld acjc">
-                <h2 class="txt-n txtc semibold">CATEGORY</h2>
-                <a href="category.php" class="link-cover">.</a>
-            </div>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">FORUM</h2>
                 <a href="../../TS/forum/dashboard.php" class="link-cover">.</a>
@@ -63,7 +64,7 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         ?>
         <div class="leftMg flex acjc gap10">
             <p class="posr pad-n-s pad-s-v txtc txt-n bg-1 border-1 bora-s border-hover-white">LOGIN
-                <a href="../../forum-connect/connect_it.php?state=login" class="link-cover">.</a>
+                <a href="../../connect_it/connect_it.php?state=login" class="link-cover">.</a>
             </p>
         </div>
         <?php
@@ -73,17 +74,14 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
     <!-- the list goes on -->
     <div class="posr w100p r4-1 flex fld acjc bg-3 border-1">
         <h2 class="w100p txtc txt-30 bold">TOPIC</h2>
-        <p class="w100p txtc txt-s">When I have nothing to talk about</p>
+        <p class="w100p txtc txt-s">When there's nothing to talk about</p>
     </div>
     <section class="topMg-5 bottomMg-5 w100p flex wrap acjc gap">
         <?php
-        $topicState = "Publics";
         if (isset($requestedItem) && isset($searchTrigger)) {
-        $stmt_check_topic = $connects->prepare("SELECT * FROM topics WHERE topicState = ? AND topicTitles LIKE '%$requestedItem%' ORDER BY topicDates DESC;");
-        $stmt_check_topic->bind_param("s", $topicState);
+        $stmt_check_topic = $connects->prepare("SELECT topicIds, topicTitles, topicDates, topicContents, topicAttachs FROM topics WHERE topicState = 'Publics' AND topicTitles LIKE '%$requestedItem%' ORDER BY topicDates DESC;");
         } else {
-        $stmt_check_topic = $connects->prepare("SELECT * FROM topics WHERE topicState = ?;");
-        $stmt_check_topic->bind_param("s", $topicState);
+        $stmt_check_topic = $connects->prepare("SELECT topicIds, topicTitles, topicDates, topicContents, topicAttachs FROM topics WHERE topicState = 'Publics' ;");
         };
         $stmt_check_topic->execute();
         $result_check_topic = $stmt_check_topic->get_result();
@@ -101,14 +99,14 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         <?php
                     if ($attachs != "empty.png" && isset($attachs)) {
         ?>
-            <img src="../libsImg/<?php echo $attachs;?>" alt="<?php echo $attachs;?>" class="topic-banner">
+            <img src="ArchFiles/<?php echo $attachs;?>" alt="" class="posa c0 coverfit">
         <?php
                     };
         ?>
             <h2 class="w100p txt-n"><?php echo $titles;?></h2>
             <p class="w100p txt-s"><?php echo $dates;?></p>
             <p class="w100p txt-s"><?php echo $contents;?></p>
-            <a href="viewtopic.php?topicIds=<?php echo $ids;?>" class="link-cover">.</a>
+            <a href="viewtopic.php?topicIds=<?php echo $ids;?>" class="link-cover hover-white">.</a>
         </div>
         <?php
                 };
@@ -120,7 +118,7 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         };
         ?>
     </section>
-<!-- another messages passer --> 
+<!-- messages alerter --> 
     <div id="alertcard">
         <p id="alertcontent"></p>
         <div id="borderanimate"></div>
