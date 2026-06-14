@@ -167,7 +167,7 @@ $encodedLibsArr = json_encode($tempLibsArr, JSON_UNESCAPED_SLASHES);
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <link rel="stylesheet" href="../styling/footer.css">
-    <title>Management Dashboard</title>
+    <title>Publishing Management</title>
 </head>
 <body class="minh100 gap10">
     <img src="../img/contour3bw.png" alt="" class="posf ins0 wh100 coverfit filInvert opacity05 z1">
@@ -177,10 +177,14 @@ $encodedLibsArr = json_encode($tempLibsArr, JSON_UNESCAPED_SLASHES);
                 <h2 class="txt-n txtc semibold">DASHBOARD</h2>
                 <a href="../Groups/manage.php" class="link-cover hover-white">.</a>
             </div>
+            <div class="posr pad-n flex fld acjc bg-half-white">
+                <h2 class="txt-n txtc semibold">PUBLISHES</h2>
+                <a href="#" class="link-cover hover-white">.</a>
+            </div>
             <?php
             if ($publishing == true) {
             ?>
-            <div class="posr pad-n flex fld acjc bg-half-white">
+            <div class="posr pad-n flex fld acjc bg-half-gray">
                 <h2 class="txt-n txtc semibold">FILE MANAGER</h2>
                 <a onclick="uniDisplaySwitch('filemanager');" class="link-cover hover-white">.</a>
             </div>
@@ -215,52 +219,50 @@ if (isset($_GET['view']) || isset($FilterReq) && isset($targetIds)) {
             <input type="text" name="ids" placeholder="<?php if(empty($targetIds)) {?>search collection...<?php } else {echo $targetIds;};?>" id="searchbox" class="pad-s w100p txt-s txtnowrap bg-white c-black border-1 bora-s z4" tabindex="1">
             <button type="submit" name="filter" value="search" class="posr vertiMg pad-s flex bg-white c-black border-1 bora-s" tabindex="2"><img src="../img/search.png" alt="" class="icon-rs h100p bg-white containfit points"></button>
         </form>
-        <?php
-        if ($publishing == true) {
-        ?>
+<?php
+    if ($publishing == true) {
+?>
         <div class="posr pad-n w100p maxh30 flex fld gap5 ovh-s">
             <p class="w100p txt-n semibold points">Published Collection</p>
-            <?php
-                foreach ($tempLibsArr as $id => $value) {
-                    $BannersFirst = $value['libsBannersFirst'];
-                    $ids              = $value['libsIds'];
-                    $titles           = $value['libsTitles'];
-            ?>
+<?php
+        foreach ($tempLibsArr as $id => $value) {
+            $BannersFirst = $value['libsBannersFirst'];
+            $ids              = $value['libsIds'];
+            $titles           = $value['libsTitles'];
+?>
             <a class="posr leftMg-s10 rightMg-s10 pad-m-v pad-s-s w95p txt-s txtnowrap bg-half-gray box-shad-black-1 border-purple hover-white ovh" href="../Library/core/view.php?type=clts&ids=<?php echo $ids;?>"><?php echo $titles;?></a>
-            <?php
-                };
-            ?>
+<?php
+    };
+?>
         </div>
-        <?php
-        }
-        ?>
+<?php
+}
+?>
     </div>
     <section class="posr leftMg pad-s-v w79p minh70 flex wrap gap-s z2">
-    <?php
-        ?>
-    <?php
-    // the published software
-    if (!empty($tempLibsArr) && $publishing == true) {
-        foreach ($tempLibsArr as $id => $value) {
-            $libsIds        = $value['libsIds'];
-            $titles         = $value['libsTitles'];
-            $libsPublisher  = $value['libsPublisher'];
-            $libsVT         = $value['libsVT'];
-            $attachs        = $value['libsAttachs'];
-            $BannersFirst   = $value['libsBannersFirst'];
-            $desc           = $value['libsDesc'];
-            $repolink       = $value['repolink'];
-            $libsMD         = $value['libsMD'];
-            $extlink        = $value['extlink'];
-            $ctype          = $value['libsType'];
-            $category       = $value['libsCategorys'];
-            $addedDates     = $value['addedDates'];
-            $cltNumbs       = $value['cltNumbs'];
-            $libsForum      = $value['libsForum'];
-            $fdrLibs        = $value['fdrLibs'];
-            $recspecs       = $value['recspecs'];
-            $devstats       = $value['devstats'];
-    ?>
+<?php
+// the published software
+if (!empty($tempLibsArr) && $publishing == true) {
+    foreach ($tempLibsArr as $id => $value) {
+        $libsIds        = $value['libsIds'];
+        $titles         = $value['libsTitles'];
+        $libsPublisher  = $value['libsPublisher'];
+        $libsVT         = $value['libsVT'];
+        $attachs        = $value['libsAttachs'];
+        $BannersFirst   = $value['libsBannersFirst'];
+        $desc           = $value['libsDesc'];
+        $repolink       = $value['repolink'];
+        $libsMD         = $value['libsMD'];
+        $extlink        = $value['extlink'];
+        $ctype          = $value['libsType'];
+        $category       = $value['libsCategorys'];
+        $addedDates     = $value['addedDates'];
+        $cltNumbs       = $value['cltNumbs'];
+        $libsForum      = $value['libsForum'];
+        $fdrLibs        = $value['fdrLibs'];
+        $recspecs       = $value['recspecs'];
+        $devstats       = $value['devstats'];
+?>
         <div class="posr bottomMg w30p r16-9 flex fld bgc-black bora-s ovh z2">
             <img src="../Library/libsImg/<?php echo $libsPublisher . "/" . $BannersFirst;?>" alt="" class="posa wh100p coverfit opacity5 z1">
             <div class="posr topMg pad-s flex fld bg-half-gray gap5 z3">
@@ -268,7 +270,6 @@ if (isset($_GET['view']) || isset($FilterReq) && isset($targetIds)) {
                 <p class="posr txt-s txtnowrap ovh z4">Marked: <?php echo $cltNumbs . " | Created on " . $addedDates;?></p>
             </div>
             <div class="sideMg w100p flex z3">
-                <!-- <a onclick="uniDisplaySwitch('info'); uniLoad(this, 'stats');" class="pad-s w40p txt-s txtc bgc-purple points hover-text-black z4" data-titles="<?php echo $titles;?>" data-cltnumbs="<?php echo $cltNumbs;?>" data-status="<?php echo $viewState;?>" data-desc="<?php echo $desc;?>" data-md="<?php echo $libsMD;?>" data-devstats="<?php echo $devstats;?>" data-forum="<?php echo $libsForum;?>">Detail</a> -->
                 <a href="file_manager.php?libsids=<?php echo $libsIds;?>" class="pad-s w40p txt-s txtc bgc-purple points hover-text-black z4">File Manager</a>
                 <button onclick="uniDisplaySwitch('cltEdit'); uniLoad(this, 'editForm'); uniReloadFile('<?php echo '../Library/libsImg/' . $libsPublisher . '/' . $attachs;?>', 'editAttachPrev'); createLinkElem(libsArr.<?php echo $libsIds;?>.extlink, 'extlinkContainer'); createBannerElem(libsArr.<?php echo $libsIds;?>.libsBanners, '<?php echo $libsPublisher;?>', 'bannerContainer2')" class="pad-s w40p txt-s txtc bg-red border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-libsvt="<?php echo $libsVT;?>" data-newtitle="<?php echo $titles;?>" data-desc="<?php echo $desc;?>" data-ctype="<?php echo $ctype;?>" data-categoryIds="<?php echo $category;?>" data-repolink="<?php echo $repolink;?>" data-md="<?php echo $libsMD;?>">Edit</button>
                 <button onclick="uniDisplaySwitch('changeState'); uniLoad(this, 'predata');" class="pad-s w40p txt-s txtc txtnowrap bg-green border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-titles="<?php echo $titles;?>" data-cltnumbs="<?php echo $cltNumbs;?>" data-devstats="<?php echo $devstats;?>" data-status="<?php echo $viewState;?>">Change State</button>

@@ -1,6 +1,8 @@
 <?php
 require_once '../processes/database.php';
 $errors = array();
+$root_route = "../";
+require_once '../secureSession.php';
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
     $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE profileTags = ?;");
@@ -18,15 +20,7 @@ if (isset($_SESSION['profileTags'])) {
     $check_session->execute();
     $result_check_session = $check_session->get_result();
     if ($result_check_session->num_rows == 0) {
-        $y = date("Y");
-        $m = date("m");
-        $d = date("d");
-        $d = $d + 15;
-        if ($d > 27) {
-            $m = $m + 1;
-            $d = 15;
-        }
-        $expdate = $d . "/" . $m . "/" . $y;
+        $expdate = date('Y/m/d', strtotime('+15 days'));
         $insert_session = $connects->prepare("INSERT INTO sessionlogs(profileTags, sessiontokens, expirationDate) VALUES (?, ?, ?)");
         $insert_session->bind_param("sss", $aidis, $tokens, $expdate);
         if($insert_session->execute()){

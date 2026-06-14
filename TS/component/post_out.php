@@ -22,7 +22,7 @@ if (isset($_POST['submit'])) {
     }
     $initReq = $_POST['submit'];
     $initReq = htmlspecialchars($initReq, ENT_QUOTES, 'UTF-8');
-    $dates = date('m/d/Y');
+    $dates = date('Y/m/d');
     if ($initReq === "comment") {
         $cmids = str_replace("/", "", $dates) . bin2hex(random_bytes(12));
         $fids = $_POST['fids'];

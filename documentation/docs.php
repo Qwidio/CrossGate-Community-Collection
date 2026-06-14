@@ -1,3 +1,5 @@
+<!-- shameful, I tried to use AI to help me making better docs but it just spit out garbage nonsense that makes me do twice the amount of work -->
+
 <?php
 require_once '../processes/database.php';
 $errors = array();
@@ -20,19 +22,53 @@ if (isset($_SESSION['GroupsToken'])) {
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <link rel="stylesheet" href="../styling/footer.css">
-    <title>Documentation</title>
+    <title>CGCC Documentation</title>
+    
+    <style>
+        /* Positioning & Layout */
+        .top-95px { top: 95px; }
+        .flex-1 { flex: 1; }
+        
+        /* Sizing */
+        .w280px { width: 280px; }
+        .h70px { height: 70px; }
+        .maxw-1400px { max-width: 1400px; }
+        .minh-100vh { min-height: 100vh; }
+        .maxh-80vh { max-height: calc(100vh - 120px); }
+        .maxh-400px { max-height: 400px; }
+
+        /* Spacing & Margins */
+        .margin-auto { margin: 0 auto; }
+        .gap-5 { gap: 5px; }
+        .gap-40 { gap: 40px; }
+        .gap-35 { gap: 35px; }
+        .pad-top-75px { padding-top: 75px; }
+        .pad-l-l { padding: 30px; }
+        .botMg-s60 { margin-bottom: 60px; }
+        .botMg-s35 { margin-bottom: 35px; }
+        .botMg-s20 { margin-bottom: 20px; }
+        .botMg-s15 { margin-bottom: 15px; }
+        .botMg-s10 { margin-bottom: 10px; }
+        .botMg-s5 { margin-bottom: 5px; }
+        .botMg-s2 { margin-bottom: 2px; }
+        .topMg-s25 { margin-top: 25px; }
+
+        /* Responsive Wrappers */
+        @media (max-width: 900px) {
+            .sm-verti { flex-direction: column !important; }
+            .sm-w100p { width: 100% !important; max-width: 100% !important; }
+            .sm-posr { position: relative !important; top: 0 !important; height: auto !important; }
+        }
+    </style>
 </head>
-<body class="gap10 ovh-s z1" id="intro">
-    <div class="posr pad-n-s w100p minh10 flex gap-s bg-4 z4">
+
+<body class="pad-bt minh-100vh bg-0" id="intro">
+    <div class="posf lt0 pad-n-s w100p minh10 flex gap-s bg-4 z4">
         <div class="posr vertiMg leftMg-s10 rightMg-s10 h5 flex fld acjc">
             <img src="../img/cgcc_logos_widetmp.png" alt="" class="posr h100p containfit">
             <a href="../index.php" class="link-cover">.</a>
         </div>
         <div class="posr w60p flex gap-s">
-            <div class="posr pad-s flex fld acjc">   
-                <h2 class="txt-n txtc semibold">BROWSE</h2>
-                <a href="../Library/core/list.php" class="link-cover">.</a>
-            </div>
 <?php
 if (isset($aidis)) {
 ?>
@@ -60,11 +96,22 @@ if (isset($aidis)) {
             </div>
 <?php
     }
+} else {
+?>
+            <div class="posr pad-s flex fld acjc">   
+                <h2 class="txt-n txtc semibold">BROWSE</h2>
+                <a href="../Library/core/list.php" class="link-cover">.</a>
+            </div>
+<?php
 }
 ?>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">FORUM</h2>
                 <a href="../TS/forum/dashboard.php" class="link-cover">.</a>
+            </div>
+            <div class="posr pad-s flex fld acjc">
+                <h2 class="txt-n txtc semibold">CHANGELOG</h2>
+                <a href="changelog.php" class="link-cover">.</a>
             </div>
         </div>
 <?php
@@ -79,7 +126,7 @@ if (isset($aidis)) {
 ?>
             <div class="leftMg flex acjc gap10">
                 <p class="posr pad-n-s pad-s-v txtc txt-n bg-3 border-1 bora-s">Open Dashboard
-                    <a href="../Groups/manage.php" class="link-cover">.</a>
+                    <a href="../Groups/manage.php" class="link-cover hover-white">.</a>
                 </p>
             </div>
 <?php
@@ -89,121 +136,235 @@ if (isset($aidis)) {
 }
 ?>
     </div>
-    <section class="posr sideMg w100vh minw50 maxw100 flex border-1 ovh-s z4">
-        <div class="posr w30p minh100 flex fld border-r gap10 ovh-s">
-            <a href="#intro" class="pad-n txt-n border-b bold hover-text-orange">Introduction</a>
-            <div class="pad-n-s w100p flex fld border-b">
-                <a class="pad-sb w100p txt-n bold hover-text-orange" href="#account">Account</a>
-                <a href="#accountPrtg" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Profile Tags</a>
-                <a href="#settInv" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Settings & Invite</a>
-                <a href="#accountSession" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Session</a>
-                <a href="#issuesnsln" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Issues and possible solution</a>
-            </div>
-            <div class="pad-n-s w100p flex fld border-b">
-                <a class="pad-sb w100p txt-n bold hover-text-orange" href="#LibForum">Library & Forum</a>
-                <a href="#markout" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">MarkOut</a>
-                <a href="#forumposting" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Forum posting</a>
-            </div>
-            <div class="pad-n-s w100p flex fld border-b">
-                <a class="pad-sb w100p txt-n bold hover-text-orange" href="#groups">Groups</a>
-                <a href="#registrat" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Registration</a>
-                <a href="#accessath" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Access authority</a>
-                <!-- <a href="#groupmanage" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Management</a> -->
-                <a href="#publishing" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Publishing</a>
-                <a href="#uploadingfile" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Uploading File</a>
-                <a href="#community" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Community</a>
-            </div>
-            <div class="pad-n-s w100p flex fld">
-                <a class="pad-sb w100p txt-n bold hover-text-orange" href="#api">API & Client</a>
-                <a href="#cstate" class="pad-s-s pad-r pad-sb txt-s hover-text-orange">Current situation</a>
-            </div>
-        </div>
-        <div class="posr w80p minh100 flex fld gap10 ovh-s">
-            <div class="posr w100p flex fld gap5">
-                <p class="posr pad-n-v pad-s-s txt-l border-b">CrossGate Documentation</p>
-                <h2 class="posr topMg-s5 pad-s-s txt-b">Introduction</h2>
-                <p class="posr pad-n-s txt-n">CrossGate is an Software & Game distribution platform with community forum open for everyone. This documentation create to asnwer some of the question and "howto" related to the project</p>
-            </div>
-            <div class="posr pad-n-v w100p flex fld border-b gap5" id="account">
-                <h2 class="posr pad-s-s pad-sb txt-l border-b">Account</h2>
-                <h2 class="posr topMg-s5 pad-s-s txt-b" id="accountPrtg">Profile Tags</h2>
-                <p class="posr pad-n-s txt-n">"What is this for?": Your account unique identifier used for everything in this website, from forum post to MarkOut collection</p>
-                <h2 class="posr topMg-s5 pad-s-s txt-b" id="settInv">Settings & Invites</h2>
-                <p class="posr pad-n-s txt-n">Opening settings panel:  make sure you already logged in, go to profile page by clicking "profile" button from the top bar and the page should look like this</p>
-                <img src="profile.png" class="posr pad-n-s w100p r16-9 containfit" alt="">
-                <img src="profilesettingbutton.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr topMg-s5 pad-n-s txt-n">Click on settings button and it will show settings panel like below,</p>
-                <img src="profilesetting.png" class="posr pad-n-s w100p r16-9 containfit" alt="">
-                <p class="posr pad-n-s txt-n">The top panel is the settings option, click on "Update Settings" to save settings selection. Bottom panel are invitation from Groups, "message" button allow you to see messages sent by the inviter and Accept or Dismiss the Invites with the "Join" and "Dismiss" button.<br>Notes: It's recommended to only join one Groups at a time as it's never been properly tested to support multiple groups of one user.</p>
-                <h2 class="posr topMg-s5 pad-s-s txt-b" id="accountSession">Session</h2>
-                <p class="posr pad-n-s txt-n">Session are a persistent login token saved on local data for an extended time period, this ensure that user stayed logged to the website without needing to relogin after closing the browser</p>
-                <h2 class="posr topMg-s5 pad-s-s txt-b" id="issuesnsln">Issues and possible solution</h2>
-                <img src="kmsi.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">"Your account exceeds the number of session allowed": Tick off the "keep me signed in" checkbox before hitting the "login" button</p>
-                <p class="posr topMg-s5 pad-n-s txt-n">"How to add new session?": on your profile page click on "the session manager" button,</p>
-                <img src="profilefs.png" class="posr pad-n-s w100p r16-9 containfit" alt="">
-                <p class="posr pad-n-s txt-n">click "add new session" button like shown below, if instead it writes "Maximum session allowed" that means you must at least delete one of the existing session before adding new one</p>
-                <img src="sessionpg.png" class="posr bottomMg-s10 pad-n-s w100p containfit" alt="">
 
-                <h2 class="posr topMg-s10 pad-s-s pad-sb txt-l border-b">Collection & Forum</h2>
-                <h2 class="posr topMg-s5 pad-s-s txt-b" id="markout">MarkOut Collection</h2>
-                <img src="markingout.png" class="posr pad-n-s w100p r16-9 containfit" alt="">
-                <p class="posr pad-n-s txt-n">"How to add collection to my MarkOut page?": open view page of the said collection, if it shows like this then you can see the "MarkOut" button there. Click it and you'll be directed to MarkOut page after the collection get added</p>
-                <p class="posr topMg-s5 pad-n-s txt-n">"What is it used for?": simply put that if you want to download a software/games listed on here, then it must first get added to MarkOut before it will showing up on download manager</p>
-                <h2 class="posr topMg-s10 pad-s-s txt-b" id="forumposting">Forum Posting</h2>
-                <img src="postnewforum.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">Go to forum dashboard and click "post new forum" button</p>
-                <img src="forumdashboard.png" class="posr pad-n-s w100p r16-9 containfit" alt="">
-                <p class="posr pad-n-s txt-n">Fill in the title and description, images are optional and aren't needed for posting new forum</p>
-
-                <h2 class="posr topMg-s10 pad-s-s pad-sb txt-l border-b" id="groups">Groups</h2>
-                <h2 class="posr topMg-s5 pad-s-s txt-b" id="registrat">Registration</h2>
-                <img src="groupsfooter.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">Go to bottom this website footer and click on "Groups" link, click on "Create new Groups" below the "Sign In" button and the page will open the registration form</p>
-                <img src="createnewgrouplink.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">Fill all input, name of the groups, description of the groups, the passkeys and the confirm input below it are for your account access so make sure to not forget it.</p>
-                <img src="registerform.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr topMg-s5 pad-n-s txt-n">After the registration are complete you'll be directed back to the Login Form, your username are also your new groups account username.</p>
-                <h2 class="posr topMg-s10 pad-s-s txt-b" id="accessath">Access authority</h2>
-                <img src="dashboard.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr topMg-s5 pad-n-s txt-n">There currently Three[3] access authority applied to the Groups-Flow, Founder, Administrator and Developer with each of the last two get separated access on some page</p>
-                <p class="posr pad-n-s txt-n">Founder, Administrator and Developer all can access dashboard but only the Founder given the authority to change groups profile detail, invite new members, revoke access, edit members passkeys and remove members while the rest can see the list and detail but not editing other that their own passkeys.</p>
-                <p class="posr pad-n-s txt-n">Administrator and Developer have their unique access to some of the groups changing feature.<br>
-                    Administrator access allowed to make announcement post and moderating announcement topic.<br>
-                    Developer granted access to nearly all publishing features, from creating new collection, editing detail to file management.</p>
-                <h2 class="posr topMg-s10 pad-s-s txt-b" id="publishing">Publishing</h2>
-                <p class="posr pad-n-s txt-n">From the groups dashboard click on "publishing" button from the top bar and the page will be redirected to the publishing menu</p>
-                <img src="publishing.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">"New collection" does exactly what it says and will open the collection creation panel, the required input in this form are logo, banners, title, short description, repository link(for default readme linking), type, category, and status.</p>
-                <img src="publishingcreate.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">Trailer link are for displaying your collection video demo/trailer on the view pages, be aware that currently it's only tested with link for Youtube video embedding format.</p>
-                <p class="posr pad-n-s txt-n">Filled out external link "name" and "link" will be displayed your collection view page, up to ten link can exist in one collection.</p>
-                <p class="posr pad-n-s txt-n">After successfully created the new collection is saved and visible as "draft" collection, to publish or archive the collection click "change state" button and the two option will be visible. Note that collection software file must uploaded before changing the state to "Publics"</p>
-                <h2 class="posr topMg-s10 pad-s-s txt-b" id="uploadingfile">Uploading & managing file</h2>
-                <img src="filemanagerbtn.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">Open file manager for the collection that the software wanted to be uploaded, click on "upload" button on the top right and it will shows upload form like below</p>
-                <img src="filemanagerupload.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">After uploading the files will automaticatlly set as active to the collection, the current files used by the collection will be marked by a green border.</p>
-                <img src="filemanageractive.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">setting another existing file to be the "active" collection file can be done via selecting the file and click on "set active" button. the same goes for removing another file with the note that file must not be currently used by any of your collection</p>
-                <p class="posr pad-n-s txt-n">Publishing collection with "Archived" state will require you to draft it first before it can be published</p>
-                <h2 class="posr topMg-s10 pad-s-s txt-b" id="community">Community</h2>
-                <p class="posr pad-n-s txt-n">Each collection given it's own topic dedicated to the groups members, below top bar are the option to post new annoucement along with changing title and description of the topic</p>
-                <img src="communitymanage.png" class="posr pad-n-s w100p containfit" alt="">
-                <p class="posr pad-n-s txt-n">If a Collections state set to "Archived" or "Drafted" the community topics binded to the collection will no longer visible on the topic list but still accessible via link</p>
-                <h2 class="posr topMg-s10 pad-s-s pad-sb txt-l border-b" id="api">Api & Client</h2>
-                <h2 class="posr topMg-s10 pad-s-s txt-b" id="cstate">Current situation</h2>
-                <p class="posr pad-n-s txt-n">At the time of writing API and Client were not ready for use until later in the coming month</p>
+    <main class="autoMg topMg-10 w95p maxw-1400px botMg-s60 flex gap-40 sm-verti">
+        
+        <aside class="w280px pos-s top-95px maxh-80vh custom-scrollbar sm-w100p sm-posr pad-s-s ovh-s">
+            
+            <div class="botMg-s20 pad-bot-s15 flex fld gap5 border-bot-1-subtle-dark">
+                <a href="#intro" class="block pad-s bora-s txt-s bold c-highlight trs200ms hover-bg-subtle botMg-s2 hover-pl-16">Introduction</a>
             </div>
-            <div class="posr pad-n-v pad-s-s w100p flex fld gap5">
-                <h2 class="w100p txt-b">Reference link</h2>
-                <div class="w100p flex wrap gap10">
-                    <a href="https://github.com/MarketingPipeline/Markdown-Tag" class="txt-s txt-hlb">Markdown Tag</a>      
-                    <a href="https://github.com/cure53/DOMPurify" class="txt-s txt-hlb">DOMPurify</a>
+            
+            <div class="botMg-s20 pad-bot-s15 flex fld border-bot-1-subtle-dark">
+                <p class="txt-b uppercase letter-sp-1 c-lightpurp botMg-s10 leftMg-s10">Account Guide</p>
+                <a href="#accountPrtg" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Profile Tags</a>
+                <a href="#settInv" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Settings & Invites</a>
+                <a href="#accountSession" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Sessions</a>
+                <a href="#issuesnsln" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Troubleshooting</a>
+            </div>
+            
+            <div class="botMg-s20 pad-bot-s15 flex fld border-bot-1-subtle-dark">
+                <p class="txt-b uppercase letter-sp-1 c-lightpurp botMg-s10 leftMg-s10">Library & Forum</p>
+                <a href="#markout" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">MarkOut</a>
+                <a href="#forumposting" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Forum Posting</a>
+            </div>
+            
+            <div class="botMg-s20 pad-bot-s15 flex fld border-bot-1-subtle-dark">
+                <p class="txt-b uppercase letter-sp-1 c-lightpurp botMg-s10 leftMg-s10">Groups Management</p>
+                <a href="#registrat" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Registration</a>
+                <a href="#accessath" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Access Authority</a>
+                <a href="#publishing" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Publishing</a>
+                <a href="#uploadingfile" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">File Management</a>
+                <a href="#community" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Community Hub</a>
+            </div>
+            
+            <div class="botMg-s20 pad-bot-s15 flex fld border-bot-1-subtle-dark">
+                <p class="txt-b uppercase letter-sp-1 c-lightpurp botMg-s10 leftMg-s10">API & Client</p>
+                <a href="#cstate" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Current Limitations</a>
+                <a href="#obtainapi" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Obtaining API keys</a>
+                <a href="#userestric" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Usage & restriction</a>
+            </div>
+        </aside>
+
+        <section class="flex-1 flex fld verti gap-35 sm-w100p">
+            
+            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m">
+                <h2 class="c-lightpurp txt-l border-bot-1-subtle pad-bot-s10 botMg-s20">CrossGate Documentation</h2>
+                <p class="c-subtle line-h-1-6 txt-n botMg-s15">CrossGate is an open-source software and game distribution ecosystem featuring an open community forum platform. This documentation serves to solve common issues and question while also providing information about website development workflows & configuration.</p>
+            </div>
+
+            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m" id="account">
+                <h2 class="c-lightpurp txt-l border-bot-1-subtle pad-bot-s10 botMg-s20">Account</h2>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="accountPrtg">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Profile Tags</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15"><span class="bg-primary-10 c-white pad-s-s bora-s bold">What is this for?</span> Your Profile Tag acts as your unique identity token utilized for relational connections across website and it's services, from forum posting to MarkOut collection</p>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="settInv">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Settings & Invites</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Before opening panel make sure that you've already logged in, go to profile page by clicking "profile" button from the navigation bar and the page display like this</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="profile.png" class="w100p maxh50 containfit bora-s" alt="Profile Preview"></div>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="profilesettingbutton.png" class="w100p maxh50 containfit bora-s" alt="Settings Toggle"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Clicking the system control reveals the extended parameter panels shown below:</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="profilesetting.png" class="w100p maxh50 containfit bora-s" alt="Settings Form"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">The upper module manages your settings preferences. Save changes directly by triggering the <strong>"Update Settings"</strong> buttons. The lower terminal display list of group invitation with actions button to accept or decline the invites.</p>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15"><strong class="c-accent">Important note:</strong> It is highly advised to avoid joining another groups if you already in one since groups checks are currently only expect one groups per users.</p>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="accountSession">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Sessions</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">If "keep me signed in" checkbox ticked on logins, auth instances will leverage persistent local storage to save session for skipping repetitive authentication upon browser restarts.</p>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="issuesnsln">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Troubleshooting</h3>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="kmsi.png" class="w100p maxh50 containfit bora-s" alt="Session Interface"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15"><span class="bg-primary-10 c-white pad-s-s bora-s bold">Error: Exceeded Sessions</span> Uncheck the "Keep me signed in" checkbox before clicking login button.</p>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15"><span class="bg-primary-10 c-white pad-s-s bora-s bold">creating new session instance?</span> Navigate inside your account dashboard and go to session manager page via clicking the session manager button.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="profilefs.png" class="w100p maxh50 containfit bora-s" alt="Instance Router"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Click on "add new session" button to create new session instances. If the message renders "Maximum session allowed", existing session must be removed before new instance can be created.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="sessionpg.png" class="w100p maxh50 containfit bora-s" alt="Logs Management"></div>
                 </div>
             </div>
-        </div>
-    </section>
+
+            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m" id="LibForum">
+                <h2 class="c-lightpurp txt-l border-bot-1-subtle pad-bot-s10 botMg-s20">Collection Management & Forums</h2>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="markout">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">MarkOut</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15"><span class="bg-primary-10 c-white pad-s-s bora-s bold">Use Case Context</span> any software/games listed that wanted to get downloaded must first get added to user MarkedOut library before it will showing up on the client installer.</p>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15"><span class="bg-primary-10 c-white pad-s-s bora-s bold">How to add a collection into my MarkOut?</span> open view page of the said collection and it will show view page like this, Click the "MarkOut" button and you'll be directed to MarkOut page after the collection get added</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="markingout.png" class="w100p maxh50 containfit bora-s" alt="Markout Action"></div>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="forumposting">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Forum Posting</h3>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="postnewforum.png" class="w100p maxh50 containfit bora-s" alt="New Content Block"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Access forum hub dashboard and click on "Post New Forum" button.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="forumdashboard.png" class="w100p maxh50 containfit bora-s" alt="Feed View"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Fill in the title, description, and bind to the desired topics. Images are optional and aren't needed for posting new forum</p>
+                </div>
+            </div>
+
+            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m" id="groups">
+                <h2 class="c-lightpurp txt-l border-bot-1-subtle pad-bot-s10 botMg-s20">Groups Management</h2>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="registrat">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Groups Registration</h3>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="groupsfooter.png" class="w100p maxh50 containfit bora-s" alt="Navigation Access"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Scroll to the page footer and execute the Groups anchor link click on "Groups" link, click on "Create new Groups" below the "Sign In" button and the page will open the registration form</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="createnewgrouplink.png" class="w100p maxh50 containfit bora-s" alt="Context Link"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Populate necessary registration details fields including name of the groups, description of the groups, and the passkeys are for your account access so make sure to not forget it.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="registerform.png" class="w100p maxh50 containfit bora-s" alt="Setup Form"></div>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="accessath">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Access Authority</h3>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="dashboard.png" class="w100p maxh50 containfit bora-s" alt="Workspace View"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">
+                    Administrator and Developer have their unique access to some of the groups changing feature.<br>
+                    Administrator access allowed to make announcement post and moderating announcement topic.<br>
+                    Developer granted access to nearly all publishing features, from creating new collection, editing detail to file management
+                    .</p>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="publishing">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Publishing</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Access the Publishing hub via the navigation bar on Groups dashboard.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="publishing.png" class="w100p maxh50 containfit bora-s" alt="Publishing Pipeline"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">The "New Collection" button opens a creation dialog. Required inputs include logo, banners, title, description, developement status, repository with separate links for mapping readmes manually, and external links.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="publishingcreate.png" class="w100p maxh50 containfit bora-s" alt="Creation Input"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Trailer link are for displaying your collection video demo/trailer on the view pages, be aware that currently it's only tested with link for Youtube video embedding format.</p>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Filled out external link "name" and "link" will be displayed your collection view page, up to ten link can exist in one collection.</p>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">After successfully created the new collection is saved and visible as "draft" collection, to publish or archive the collection click "change state" button and the two option will be visible. Note that collection software file must uploaded before changing the state to "Publics".</p>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Publishing collection with "Archived" state will require you to draft it first before it can be published.</p>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="uploadingfile">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">File Management</h3>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="filemanagerbtn.png" class="w100p maxh50 containfit bora-s" alt="Storage Command"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Open file manager for the collection that the software wanted to be uploaded, click on "upload" button on the top right and it will shows upload form like below.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="filemanagerupload.png" class="w100p maxh50 containfit bora-s" alt="Upload Panel"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">After uploading the files will automaticatlly set as active to the collection, the current files used by the collection will be marked by a green border.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="filemanageractive.png" class="w100p maxh50 containfit bora-s" alt="Active Binary Node"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">setting another existing file to be the "active" collection file can be done via selecting the file and click on "set active" button. the same goes for removing another file with the note that file must not be currently used by any of your collection.</p>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="community">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Community Management</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Each collection given dedicated topics accessible to the groups administrator/founder, below nav bar are the option to post new annoucement, changing title and description of the topic.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="communitymanage.png" class="w100p maxh50 containfit bora-s" alt="community"></div>
+                </div>
+            </div>
+
+            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m" id="api">
+                <h2 class="c-lightpurp txt-l border-bot-1-subtle pad-bot-s10 botMg-s20">API Gateways & Client</h2>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="cstate">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Current Limitation</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">
+                        Due to security limitation set by currently used hosting infrastructure, production API gateway will stay disabled until the next hosting migration. Interfacing with API's can still be achieved but requires to host your own CGCC web server.
+                        <br>
+                        This is also the reason for why CGCC Launcher client is not currently available for the time being aside the development issues being addressed.
+                    </p>
+                </div>
+                
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark" id="obtainapi">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Obtaining API keys</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Obtaining API auth keys can be done by opening API panel from Options tab inside the Groups dashboard interface.</p>
+                    <div class="bg-1 border-1-subtle bora-s pad-s-s vertiMg-s15 flex acjc"><img src="apipanel.png" class="w100p maxh50 containfit bora-s"></div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Two version of the API keys are provided each for it's own use, requesting new keys achieved via clicking the reset buttons placed beside the copy button</p>
+                </div>
+
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark flex fld" id="userestric">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Usage and restriction</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Below are the table listing every needed input and output/debug variable</p>
+                    <div class="posr botMg-s15 w100p flex fld border-t border-l border-r">
+                        <div class="posr w100p flex border-b">
+                            <p class="posr pad-s w50p txt-n">Input</p>
+                            <p class="posr pad-s w50p txt-n border-l">Explanation</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">headers: X-Api-Key</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">required to access API service, obtainable via groups management dashboard</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">username</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">required account username credential</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">password</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">depending on the scope either the main account password for the production client or groups access password for the development client</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">os</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">required to provide the information about current operating system used by the user</p>
+                        </div>
+                    </div>
+                    <div class="posr bottomMg-s10 w100p flex fld border-t border-l border-r">
+                        <div class="posr w100p flex border-b">
+                            <p class="posr pad-s w50p txt-n">Variable</p>
+                            <p class="posr pad-s w50p txt-n border-l">Explanation</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">useScope: Development</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">Development API keys provide full debug information within the returned output and require you groups access passkeys instead of you main account password, with a catch that downloading is forbidden using this API</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">useScope: Production</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">Production/public API will use individual public account credential to verify, send back user data and only process status related messages</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">message</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">Output variable logging the result/problem from the api processes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m">
+                <h2 class="c-lightpurp txt-l border-bot-1-subtle pad-bot-s10 botMg-s20">References</h2>
+                <div class="posr flex gap10">
+                    <a href="../Groups/index.php" target="_blank" class="posr pad-m bg-half-gray c-blue bold bora-s hover-text-white">Groups</a>      
+                    <a href="https://github.com/MarketingPipeline/Markdown-Tag" target="_blank" class="posr pad-m bg-half-gray c-blue bold bora-s hover-text-white">Markdown-Tag</a>      
+                    <a href="https://github.com/cure53/DOMPurify" target="_blank" class="posr pad-m bg-half-gray c-blue bold bora-s hover-text-white">DOMPurify</a>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
     <?php include_once '../extra/footers.php';?>
 </body>
 </html>

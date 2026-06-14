@@ -14,7 +14,7 @@ if (isset($_SESSION['GroupsToken'])) {
         $gids = $data['og_identification'];
         $saveddevc = $data['osids'];
         $exps = $data['expirationDate'];
-        $curdt = date('m/d/Y');
+        $curdt = date('Y/m/d');
         if ($exps < $curdt) {
             unset($_SESSION['GroupsToken']);
             unset($_SESSION["gids"]);

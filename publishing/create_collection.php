@@ -38,7 +38,7 @@ $libsTopics = $sanitized . '_topic_' . bin2hex(random_bytes(8 / 2));
 if (isset($_POST['custIds'])) {
     $libsIds = $_POST['custIds'];
 } else {
-    $libsIds = $sanitized  . bin2hex(random_bytes(8 / 2)) . date('d') . date('m') . date('Y');
+    $libsIds = $sanitized  . bin2hex(random_bytes(8 / 2)) . date('Y/m/d');
 }
 if (isset($_POST['libsVT'])) {
     $libsVT = $_POST['libsVT'];

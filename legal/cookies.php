@@ -80,7 +80,7 @@ if (isset($aidis)) {
 ?>
             <div class="leftMg flex acjc gap10">
                 <p class="posr pad-n-s pad-s-v txtc txt-n bg-3 border-1 bora-s">Open Dashboard
-                    <a href="../Groups/manage.php" class="link-cover">.</a>
+                    <a href="../Groups/manage.php" class="link-cover hover-white">.</a>
                 </p>
             </div>
 <?php

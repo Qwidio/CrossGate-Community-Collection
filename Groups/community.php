@@ -178,10 +178,10 @@ if ($result_check_Forum->num_rows > 0) {
         <p class="posr pad-n txt-b hover-red" onclick="linker('index.php')">X</p>
     </div>
     <div class="posr pad-m-v pad-s-s w100p flex gap10 blurbg bg-half-gray border-purple-b z4">
-        <a onclick="uniDisplaySwitch('postDialog');" class="pad-s-v pad-nl pad-sr txt-s bg-gold c-black hover-text-blue">Post New Annoucement</a>
-        <a onclick="uniDisplaySwitch('editDialog');" class="pad-s-v pad-nl pad-sr txt-s bg-gold c-black hover-text-blue">Edit Detail</a>
+        <a onclick="uniDisplaySwitch('postDialog');" class="pad-s-v pad-nl pad-sr txt-s bg-gold c-black border-purple bora-s box-shad-black-1 hover-text-blue">Post New Announcement</a>
+        <a onclick="uniDisplaySwitch('editDialog');" class="pad-s-v pad-nl pad-sr txt-s bg-gold c-black border-purple bora-s box-shad-black-1 hover-text-blue">Edit Detail</a>
     </div>
-<!-- posted annoucement container -->
+<!-- posted announcement container -->
     <div class="posr w100p r4-1 flex fld acjc bg-3 border-1">
         <h2 class="w100p txtc txt-30 bold"><?php echo $topicTitles;?></h2>
         <p class="w100p txtc txt-s"><?php echo $topicDescs;?></p>
@@ -224,7 +224,7 @@ if ($result_check_Forum->num_rows > 0) {
         };
     } else {
     ?>
-            <h2 class="posr vertiMg w100p txtc txt-n z4">no annoucement for this topic yet</h2>
+            <h2 class="posr vertiMg w100p txtc txt-n z4">no announcement for this topic yet</h2>
     <?php
     };
     ?>
@@ -232,8 +232,8 @@ if ($result_check_Forum->num_rows > 0) {
     <?php include_once '../extra/footers.php';?>
 <!-- post dialog -->
     <dialog id="postDialog" class="posf c0 w88 h90 dp-none fld acjc bg-half-white ovh-s z999">
-        <div class="posr w100p bg-half-gray blurbg flex"><h2 class="posr rightMg pad-s txt-b">post new annoucement</h2><p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('postDialog')">X</p></div>
-        <form class="posr wh100p bg-half-gray blurbg flex" action="announce.php" method="post" enctype="multipart/form-data">
+        <div class="posr w100p bg-half-gray blurbg flex"><h2 class="posr rightMg pad-s txt-b">post new announcement</h2><p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('postDialog')">X</p></div>
+        <form class="posr wh100p bg-half-gray blurbg flex" name="ANNOUNCE" action="proceed_community.php" method="post" enctype="multipart/form-data">
             <input type="text" class="hiddeninp" name="lIds" value="<?php echo $libsIds;?>"hidden>
             <input type="text" class="hiddeninp" name="lc" value="<?php echo $communityIds;?>"hidden>    
             <div class="posr autoMg h50p maxh50 r16-9 flex fld acjc gap5">
@@ -242,11 +242,11 @@ if ($result_check_Forum->num_rows > 0) {
             </div>
             <div class="vertiMg w50p flex fld gap5">
                 <div class="sideMg w88p flex fld">
-                    <label for="ForumTitles">Annoucement Titles</label>
+                    <label for="ForumTitles">Announcement Titles</label>
                     <input type="text" name="ForumTitles" class="inptxt" placeholder="Make title for the forum" auto-complete="off" maxlength="255" required>
                 </div>
                 <div class="sideMg w88p flex fld">
-                    <label for="ForumDescription">Annoucement Description</label>
+                    <label for="ForumDescription">Announcement Description</label>
                     <input type="text" name="ForumDescription" class="inptxt" placeholder="The full description" auto-complete="off" required>
                 </div>
                 <select name="ForumTopics" class="hiddeninp" hidden>
@@ -275,7 +275,7 @@ if ($result_check_Forum->num_rows > 0) {
     </dialog>
     <!-- Remove Post -->
     <dialog id="deleteDialog" class="posf pad-n c0 pad-b-v minw20 maxh50 dp-none fld bg-2 border-1 bora-s z999">
-        <form class="wh100p flex fld" name="REMOVE" action="announce.php" method="post">
+        <form class="wh100p flex fld" name="REMOVE" action="proceed_community.php" method="post">
             <h2 class="w100p txt-n txtc">Confirm to Remove this Post?</h2>
             <input type="text" class="hiddeninp" name="lIds" value="<?php echo $libsIds;?>"hidden>
             <input type="text" class="hiddeninp" name="lc" value="<?php echo $communityIds;?>"hidden>

@@ -9,11 +9,6 @@
  <br><br>
  This entries started since April/30th but I only write down what I'd still remember<br>every week redesign almost happened and day by day I feel like this project will never ends, this project already took hundreds of hours before May/1st
 
-## for the reviewer/journal reader
- I logged the hours of the time it took for me to making logo, banner art for the websites, research on how to properly make website and RTFM the entire php docs.
- Because out of all things. I avoid using AI as much as I can from my project, in the early development I tried it but everytime it just makes the problem worse and makes me feel dumber each time prompting(I'm not gonna pay premium just to get better hallucinated answer). All reference logged on the [references.md](https://raw.githubusercontent.com/Qwidio/CrossGate/refs/heads/main/references.md) in [this project repository](https://github.com/Qwidio/CrossGate-Web-Utility)
-
-
 ## settings & consent
  It's related to privated profile info and allow groups invites. The first one was planned to added way back in Dec/2025 but forgoten until now, If it's get ticked then achivement and badge will not be shown to publics but post and currently joined groups will still be visible.<br>
  user can give consent about allowing groups sending invites and turned on by default until they joined a groups after which they must turned it on again if they wanted an invitation again.<br>
@@ -46,11 +41,11 @@
 
 ## groups-flow access system
  always take a deep breath when i make something and then realizing the security missing something and this is one of them, were do I even begin..
-  - Invite system, now comes with nerfed and limited version of [notification](#notification). of course this begin when I've got revelation that if I didn't do this, Individual can get added easily by Groups forcibly without consent.
+  - Invite system, now comes with nerfed and limited version of [notification](#invitation-notification). of course this begin when I've got revelation that if I didn't do this, Individual can get added easily by Groups forcibly without consent.
   - access login & auth, basically a more paranoid login system on steroid and auth system were making sure that every groups pages can only be accessed by identified and approved account by the groups founder.
   - access system can only be created either for the founder account when a new groups created and when an invited user accepted to join the groups that invited them.
 
-## notification 
+## invitation notification 
  While it is look like a notification, doesn't mean this one is a real notification system. It's function are only for notified a Groups invitation to user and nothing else, for now I'd not have plan to expand the functionality.
 
 ## collection publishing
@@ -75,20 +70,33 @@
  This is a bit of a really late realization when going to ship the project, with no way of reporting at all the community has no way of of reporting "racist" user in the forums or "malicious" publisher that published collection with malware/virus. Even though this is not permanent, I'd implement the universal report tab to be placed on forums detail, user profile, groups profile and collection detail. Each of them are gonna be proccessed possibly between 1 to 5 days depending on the case and of course this is why I required a valid email in registration, when things like this happens there will be emails to the suspected user/groups for confirmation & solution.
 
 ## news flash, there's nothing such as free hosting
- I tried using infinityfree for hosting this website but now running into dead end problem where the proccessing file being blocked by them and no possible solution without buying premium, see proof link below
+ I tried using infinityfree for hosting this website but now running into dead end problem where the proccessing file being "403 forbidden" by them and no possible solution without buying premium, see proof link below
 <br>
-on local with the same code mind you
+ on local with the same code mind you
 
 ![image](img/proof1.png)
 ![image](img/proof2.png) 
 
 <br>
-on the hosting, still with the same code
+ on the hosting, still with the same code
 
 ![image](img/proof3.png) 
 ![image](img/proof4.png) 
 
 <br>
+ Update: the word "announce" were specifically being blocked to be used as directive and after changing the file names the site works again, really got me thinking the code were broken internally.
+
+## june 12th, api auth and access
+ I've finished the API's for anyone that wanted to test the project locally or developing their own client downloader, noted that the hosting infrastruct currently used for the website doesn't support API's/non-browser processing so this functionallity aren't available on the demo site.
+ <br>
+ The api using X-Api-Keys because the plain token won't do to secure it(I'm sure this ain't enough, at the end of it nothing is secure).
+ <br>
+ Api token can be obtained from the groups api panel page, for reasons I'm already forget because I coded while being heavily sleeply but can't sleep.
+ <br>
+ and yeah, download api does kinda work but it really not the secure way I believed. well I have no pen tester(no, I won't trust AI for that)
+ 
+## June 13th changelog 
+ there's a changelog page made specifically because I don't wanna explain what changes made in what time every time people asked(I'm really the forgetful ones)
 
 ## things that will be added, removed, revamped
  Not all would be included because there's always a new things to add to my never ending feature wished to be implemented, but I'm not in good condition to do it now and this thing probably need proper hosting and a domain because that domain is not for this if you don't realized by it's name.
@@ -96,11 +104,9 @@ on the hosting, still with the same code
   I have read a few forum(some included in references) on what and how to implement for securing website registration, but not yet ready to do so till the next month
  2. Achievement revamp
   Being honest I don't know what even i'm planning with the achievement, it's fairly a thing that looks simple but a nightmare to implement both backend and frontend. As far as i know the real thing are implemented via sdk and api which i'm sure not gonna be easy, not on the achievement itself but the verification and securing communication between the game/software and the CGCC api's. Only future me will tell how hard or easy it really is.
- 3. API's overhaul
-  for some client launcher and plugin
- 4. Form multi image support
+ 3. Form multi image support
   I'll do it when this get proper hosting
- 5. non-groups made topic
+ 4. non-groups made topic
   currently only groups/publisher that can create and post on their collection announcement topic
- 6. better documentation
-  Sorry to all user that have to follow my half baked instruction, I really hope someone can help me with these kind of thing.
+ 5. figuring out better date formating
+  I'm still not using correct data type to store date and too lazy to do it

@@ -1,15 +1,19 @@
 <?php
 require_once '../processes/database.php';
 if (isset($_POST['submit'])) {
-    function getIpAddr() {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
+    function getIpAddr(): string {
+        if (
+            isset($_SERVER['HTTP_X_FORWARDED_FOR']) &&
+            filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP)
+        ) {
+            $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $ip = trim($ips[0]);
+
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                return $ip;
+            }
         }
-        return $ip;
+        return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
     }
     // check before check
     $root_route = "../";
@@ -91,16 +95,8 @@ if (isset($_POST['submit'])) {
             if ($addMember->affected_rows > 0) {
                 $tokens = $aidis . bin2hex(random_bytes(32));
                 $addrss = getIpAddr();
-                $y = date("Y");
-                $m = date("m");
-                $d = date("d");
-                $d = $d + 1;
-                if ($d > 28) {
-                    $m = $m + 1;
-                    $d = 1;
-                }
-                $expdate = $d . "/" . $m . "/" . $y;
-                $convertedexpdate = DateTime::createFromFormat('d/m/Y', $expdate);
+                $expdate = date('Y/m/d', strtotime('+1 days'));
+                $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
                 $unixexpdate = $convertedexpdate->getTimestamp();
                 $insert_session = $connects->prepare("INSERT INTO groupsession(token, profileTags, og_identification, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $insert_session->bind_param("sssssss", $tokens, $aidis, $gids, $addrss, $osids, $expdate, date('d/m/Y h:i'));

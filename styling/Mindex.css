@@ -130,9 +130,7 @@ a {
 }
 span {
     font-size: inherit;
-    background: var(--lightpurples);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--lightpurples);
 }
 
 /* bg */
@@ -275,6 +273,9 @@ span {
 }
 
 /* uni param */
+.pos-s {
+    position: sticky;
+}
 .posf {
     position: fixed;
 }
@@ -1070,6 +1071,9 @@ span {
 .bora-n {
     border-radius: 12px;
 }
+.bora-m {
+    border-radius: 12px; 
+}
 
 /* decors */
 .semibold {
@@ -1354,3 +1358,35 @@ span {
     }
 }
 
+/* lets say these are just bandaids */
+/* Typography & Colors */
+.txt-l { font-size: 24px; }
+.txt-m-l { font-size: 18px; }
+.line-h-1-6 { line-height: 1.6; }
+.uppercase { text-transform: uppercase; }
+.letter-sp-1 { letter-spacing: 1px; }
+
+.c-highlight { color: var(--highlight); }
+.c-subtle { color: var(--subtletext); }
+.c-lightpurp { color: var(--lightpurples); }
+.c-accent { color: var(--accent); }
+.c-primary { color: var(--primary); }
+
+/* Visuals: Backgrounds, Borders, Shadows */
+.bg-card-subtle { background: rgba(65, 59, 78, 0.15); }
+.bg-primary-10 { background: rgba(39, 178, 243, 0.1); }
+.border-1-subtle { border: 1px solid var(--purplegray); }
+.border-bot-1-subtle { border-bottom: 1px solid var(--purplegray); }
+.border-bot-1-subtle-dark { border-bottom: 1px solid rgba(65, 59, 78, 0.4); }
+.border-top-1-subtle-dark { border-top: 1px solid rgba(65, 59, 78, 0.3); }
+.shadow-m { box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+/* Overflows & Scrolling */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--purplegray); border-radius: 4px; }
+
+/* States & Interactions */
+.trs200ms { transition: all 0.2s ease; }
+.hover-bg-subtle:hover { background: rgba(182, 153, 250, 0.08); }
+.hover-c-highlight:hover { color: var(--highlight); }
+.hover-pl-16:hover { padding-left: 16px; }

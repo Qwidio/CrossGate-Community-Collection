@@ -90,13 +90,17 @@ if (!file_exists($targetdir)) {
                 <h2 class="txt-n txtc semibold">DASHBOARD</h2>
                 <a href="../Groups/manage.php" class="link-cover hover-white">.</a>
             </div>
-            <div class="posr pad-n flex fld acjc bg-half-white">
+            <div class="posr pad-n flex fld acjc bg-half-gray">
                 <h2 class="txt-n txtc semibold">PUBLISHES</h2>
                 <a href="../publishing/manage.php" class="link-cover hover-white">.</a>
             </div>
+            <div class="posr pad-n flex fld acjc bg-half-white">
+                <h2 class="txt-n txtc semibold">FILE MANAGER</h2>
+                <a href="#" class="link-cover hover-white">.</a>
+            </div>
             <div class="posr pad-n flex fld acjc bg-half-gray">
                 <h2 class="txt-n txtc semibold">PROFILE</h2>
-                <a href="../Groups/profile.php" class="link-cover hover-white">.</a>
+                <a href="../Groups/profile.php?gids=<?php echo $gids;?>" class="link-cover hover-white">.</a>
             </div>
             <div class="posr pad-n flex fld acjc bg-half-gray">
                 <h2 class="txt-n txtc semibold">DOCS</h2>

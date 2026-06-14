@@ -107,7 +107,7 @@ foreach ($tempLibsArr as $datas) {
     $check_topic->execute();
     $result_check_topic = $check_topic->get_result();
     if ($result_check_topic->num_rows > 0) {
-        $check_forumcount = $connects->prepare("SELECT COUNT(ForumIds) FROM forums WHERE ForumTopics = ?");
+        $check_forumcount = $connects->prepare("SELECT COUNT(ForumIds) FROM forums WHERE ForumTopics = ? AND ForumState = 'Publics'");
         $check_forumcount->bind_param("s", $libsForum);
         $check_forumcount->execute();
         $result_check_forumcount = $check_forumcount->get_result();
@@ -135,6 +135,28 @@ foreach ($tempLibsArr as $datas) {
     } else {
         $publishing = false;
     };
+}
+
+$NDAPI = "Click on reset button to obtain";
+$NPAPI = "Click on reset button to obtain";
+$check_api = $connects->prepare("SELECT * FROM api_keys WHERE og_identification = ? ;");
+$check_api->bind_param("s", $gids);
+$check_api->execute();
+$result_check_api = $check_api->get_result();
+if ($result_check_api->num_rows > 0) {
+    while ($rca_val = $result_check_api->fetch_assoc()) {
+        $tempApiToken = $rca_val['apiId'];
+        $scope = $rca_val['useScope'];
+        $hashedKeys = $rca_val['hashedKeys'];
+        $apiState = $rca_val['active'];
+        $addedDate = $rca_val['addedDate'];
+        if($scope === "Development"){
+            $NDAPI = $tempApiToken . "." . $hashedKeys;
+        }
+        if($scope === "Production"){
+            $NPAPI = $tempApiToken . "." . $hashedKeys;
+        };
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -171,13 +193,13 @@ foreach ($tempLibsArr as $datas) {
 if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
 ?>
     <dialog id="firstChangePass" class="posf c0 wh100 flex fld acjc bg-def-1 border-none z999">
-        <form class="posr autoMg pad-n w40p flex fld border-purple" action="passkeys.php" method="post">
-            <input class="hiddeninp" type="text" name="profileTags" value="<?php echo $aidis;?>" hidden>
+        <form class="posr autoMg pad-n w40p flex fld" action="passkeys.php" method="post">
+            <input class="hiddeninp" type="text" name="profiletags" value="<?php echo $aidis;?>" hidden>
             <h2 class="pad-ns pad-sb w100p txt-b txtc">PASSKEY CHANGE REQUIRED</h2>
             <h2 class="pad-nb w100p txt-n txtc">please change your account password or it will get locked out</h2>
-            <input type="text" name="newpasskeys" class="inptxt" placeholder="Input the your new passkeys" auto-complete="off" maxlength="1000" required>
+            <input type="text" name="newpasskeys" class="inptxt" placeholder="Input the your new passkeys" auto-complete="off" tabindex="1" maxlength="1000" required>
             <input class="inptxt" type="text" id="confirm" name="confirm" placeholder="Confirm PassKeys" autocomplete="off" tabindex="2" required>
-            <input class="topMg-s10 pad-s-v w100p txt-n txtc bg-green border-1 border-hover-white bora-s" type="submit" name="submit" value="Reset">
+            <input class="topMg-s10 pad-s-v w100p txt-n txtc bg-green border-1 border-hover-white bora-s" type="submit" name="submit" value="Reset" tabindex="3">
         </form>
     </dialog>
 <?php
@@ -206,51 +228,77 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                 <h2 class="txt-n txtc semibold">DOCS</h2>
                 <a href="../documentation/docs.php" class="link-cover hover-white">.</a>
             </div>
+            <div class="posr pad-n flex fld acjc bg-half-gray">
+                <h2 class="txt-n txtc semibold">OPTIONS</h2>
+                <a class="link-cover hover-white" onclick="uniDisplaySwitch('options');">.</a>
+            </div>
         </div>
     </div>
-    <div class="posr w100p minh100 flex blurbg z4">
-        <div class="posr pad-s w20p flex fld bg-half-gray border-r z2">
-            <div class="posr pad-n-s pad-s-v w100p flex fld border-b gap5">
-                <button onclick="uniDisplaySwitch('addMemberDialog');" class="pad-s w100p txtc txt-s bg-gold c-black hover-text-blue">Add Members</button>
-                <button onclick="uniDisplaySwitch('editPasskeys')" class="pad-s w100p txtc txt-s bg-gold c-black hover-text-blue">Change Passkeys</button>
-            </div>
-            <?php
-            if ($publishing == true) {
-            ?>
-            <div class="posr pad-n w100p maxh30 flex fld border-b gap5 ovh-s">
-                <p class="posr bottomMg-s5 w100p txt-n semibold points">Collection Community</p>
-                <?php
-                    foreach ($tempTopicArr as $id => $value) {
-                        $libsIds = $value['libsIds'];
-                        $ids = $value['topicIds'];
-                        $titles = $value['topicTitles'];
-                ?>
-                <a href="community.php?lIds=<?php echo $libsIds;?>&lc=<?php echo $ids;?>" class="posr leftMg-s10 rightMg-s10 pad-m-v pad-s-s w95p txt-s txtnowrap bg-half-gray box-shad-black-1 border-purple hover-white ovh"><?php echo $titles;?></a>
-                <?php
-                    };
-                ?>
-            </div>
-            <?php
-            }
-            ?>
+    <!-- settings/option -->
+    <dialog id="options" class="posr pad-n-s pad-s-v w100p maxh40 dp-none fld bg-half-gray blurbg border-none border-b z15">
+        <div class="posr pad-s-s flex gap5">
+            <button onclick="uniDisplaySwitch('addMemberDialog');" class="pad-s txtc txt-s c-white bgc-orange border-purple bora-s box-shad-black-1 hover-text-black">Add Members</button>
+            <button onclick="uniDisplaySwitch('editPasskeys')" class="pad-s txtc txt-s c-white bgc-orange border-purple bora-s box-shad-black-1 hover-text-black">Change Account Passkeys</button>
+            <button onclick="uniDisplaySwitch('apipanel'); uniLoad(this, 'apiForm');" data-apidevtoken="<?php echo $NDAPI;?>" data-apiprodtoken="<?php echo $NPAPI;?>" class="pad-s txtc txt-s c-white bgc-orange border-purple bora-s box-shad-black-1 hover-text-black">API Panel</button>
         </div>
-        <div class="posr bottomMg-10 sideMg w75p flex fld">
+    </dialog>
+    <!-- api -->
+    <dialog id="apipanel" class="posf c0 w100vh minw40 maxw100 maxh100 dp-none fld bg-half-orange blurbg border-1 bora-s ovh-s z999">
+        <div class="posr wh100p flex"><h2 class="rightMg pad-s txt-b">API's</h2><p class="pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('apipanel');">X</p></div>
+        <form id="apiForm" class="posr pad-s-v topMg-s10 w100p flex fld gap5" name="settingForm" action="api_request.php" method="post">
+            <div class="posr topMg-s10 sideMg pad-n-s w95p flex">
+                <label for="apidevtoken">Development Token</label>
+            </div>
+            <div class="posr sideMg pad-n-s w95p flex space-between gap10">
+                <div class="posr w95p flex">
+                    <input type="text" class="posr pad-s w100p c-white bg-half-gray border-1" name="apidevtoken" id="apidevtoken" readonly>
+                    <span class="blur-censor">.</span>
+                </div>
+                <div class="posr pad-m r1-1 flex bg-half-white border-purple box-shad-black-1 bora-s ovh">
+                    <img src="../img/copy.svg" alt="" class="posr wh100p containfit points" onclick="copy('apidevtoken');">
+                </div>
+                <button class="posr pad-m r1-1 flex bg-half-white border-purple box-shad-black-1 bora-s ovh" type="submit" name="request" value="NDT">
+                    <img src="../img/reload-circle.svg" alt="" class="posr wh100p containfit points">
+                </button>
+            </div>
+            <div class="posr topMg-s10 sideMg pad-n-s w95p flex">
+                <label for="apiprodtoken">Production Token</label>
+            </div>
+            <div class="posr sideMg pad-n-s w95p flex space-between gap10">
+                <div class="posr w95p flex">
+                    <input type="text" class="posr pad-s w100p c-white bg-half-gray border-1" name="apiprodtoken" id="apiprodtoken" readonly>
+                    <span class="blur-censor">.</span>
+                </div>
+                <div class="posr pad-m r1-1 flex bg-half-white border-purple box-shad-black-1 bora-s ovh">
+                    <img src="../img/copy.svg" alt="" class="posr wh100p containfit points" onclick="copy('apiprodtoken');">
+                </div>
+                <button class="posr pad-m r1-1 flex bg-half-white border-purple box-shad-black-1 bora-s ovh" type="submit" name="request" value="NPT">
+                    <img src="../img/reload-circle.svg" alt="" class="posr wh100p containfit points">
+                </button>
+            </div>
+            <div class="posr topMg-s10 sideMg pad-n-s w95p flex flex-r gap10">
+            </div>
+        </form>
+    </dialog>
+    <!-- the groups data -->
+    <div class="posr w100p minh100 flex blurbg z4">
+        <div class="posr bottomMg-10 sideMg w100vh minw50 maxw100 flex fld ovh-s">
         <!-- Groups profile display -->
-            <div class="posr topMg-5 pad-s-v pad-n-s flex bg-half-gray box-shad-black-1 border-purple bora-s z4">
+            <div class="posr topMg-5 pad-s-v pad-n-s flex bg-half-gray box-shad-black-1 border-purple bora-s">
                 <div class="posr vertiMg r1-1 w20p flex z3">
                     <?php
                     if (empty($logo) || $logo === "empty") {
                         ?>
-                    <img src="../img/business-outline.svg" class="autoMg r1-1 h80p flex acjc blurbg containfit bg-half-white border-1 bora-s z4">
+                    <img src="../img/business-outline.svg" class="autoMg r1-1 h80p flex acjc blurbg containfit bg-half-white border-1 bora-s">
                     <?php
                     } else {
                         ?>
-                    <img src="img/<?php echo $gids . "/" . $logo;?>" alt="<?php echo $Ognames;?>" class="autoMg r1-1 h80p flex acjc blurbg containfit border-1 bora-s z4">
+                    <img src="img/<?php echo $gids . "/" . $logo;?>" alt="<?php echo $Ognames;?>" class="autoMg r1-1 h80p flex acjc blurbg containfit border-1 bora-s">
                     <?php
                     };
                     ?>
                 </div>
-                <div class="posr pad-n-v pad-sr w50p max50p h100p flex fld z4">
+                <div class="posr pad-n-v pad-sr w50p max50p h100p flex fld">
                     <h2 class="topMg w100p txt-l"><?php echo $Ognames;?></h2>
                     <div class="rightMg txt-s ovh-s"><?php echo $founded;?></div>
                     <div class="topMg-s5 w100p minh10 txt-s wrap ovh"><?php echo $about;?></div>
@@ -306,16 +354,16 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                     $roles = $value['roles'];
                     if ($Tags != $aidis) {
                         ?>
-            <div class="posr topMg-s10 pad-s-v pad-n-s flex fld bg-half-gray box-shad-black-1 border-purple bora-s gap5 z4">
+            <div class="posr topMg-s10 pad-s-v pad-n-s flex fld bg-half-gray box-shad-black-1 border-purple bora-s gap5">
                 <div class="flex gap5">
             <?php
                         if ($ChangerRoles === "founder") {
             ?>
                     <a href="../profile.php?user=<?php echo $Tags;?>" class="posr rightMg txt-n hover-text-orange"><?php echo $Names;?></a>
                     <span>|</span>
-                    <p class="vertiMg c-orange hover-text-white points" onclick="uniDisplaySwitch('editMemberAccess');  uniLoad(this, 'editMemberAccessForm');" data-profiletags="<?php echo $Tags;?>" data-profname="<?php echo $Names;?>">Revoke Access</p>
+                    <p class="vertiMg c-orange hover-text-white points" onclick="uniDisplaySwitch('editMemberAccess'); uniLoad(this, 'editMemberAccessForm');" data-profiletags="<?php echo $Tags;?>" data-profname="<?php echo $Names;?>">Revoke Access</p>
                     <span>|</span>
-                    <p class="vertiMg c-orange hover-text-white points" onclick="uniDisplaySwitch('editMemberPasskeys');  uniLoad(this, 'editMemberForm');" data-profiletags="<?php echo $Tags;?>" data-profname="<?php echo $Names;?>">Edit Passkeys</p>
+                    <p class="vertiMg c-orange hover-text-white points" onclick="uniDisplaySwitch('editMemberPasskeys'); uniLoad(this, 'editMemberForm');" data-profiletags="<?php echo $Tags;?>" data-profname="<?php echo $Names;?>">Edit Passkeys</p>
                     <span>|</span>
                     <p class="vertiMg c-orange hover-text-red points" onclick="uniDisplaySwitch('editMemberDialog'); setMember(this);" data-profstags="<?php echo $Tags;?>" data-pname="<?php echo $Names;?>">Remove</p>
             <?php
@@ -398,7 +446,7 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
     </dialog>
     <!-- update passkeys -->
     <dialog id="editPasskeys" class="posf pad-b-s pad-bb c0 minw100px w20 maxh50 dp-none fld bg-half-purple blurbg border-1 bora-s z999">
-        <form class="wh100p flex fld" name="UPDATEMEMBER" action="passkeys.php" method="post">
+        <form class="wh100p flex fld" action="passkeys.php" method="post">
             <h2 class="pad-nt pad-sb w100p txt-b txtc border-b">Change your Passkeys</h2>
             <input class="hiddeninp" type="text" name="profiletags" value="<?php echo $aidis;?>" hidden required>
             <input class="inptxt border-b ovh-s" type="text" id="newpasskeys" name="newpasskeys" autocomplete="off" placeholder="Input new passkeys" required>

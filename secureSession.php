@@ -13,7 +13,7 @@ if (isset($_COOKIE['sessionToken'])) {
         $Tags = $data['profileTags'];
         $saveddevc = $data['osids'];
         $exps = $data['expirationDate'];
-        $curdt = date('m/d/Y');
+        $curdt = date('Y/m/d');
         if ($exps < $curdt) {
             unset($_COOKIE['sessionToken']);
             setcookie('sessionToken', '', 1, "/",);

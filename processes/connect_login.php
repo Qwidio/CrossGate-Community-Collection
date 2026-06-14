@@ -6,15 +6,20 @@ if (isset($_SESSION['prev_loc'])) {
 } else {
     $prev_loc = "index.php";
 };
-function getIpAddr() {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } else {
-        $ip = $_SERVER['REMOTE_ADDR'];
+function getIpAddr(): string {
+    if (
+        isset($_SERVER['HTTP_X_FORWARDED_FOR']) &&
+        filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP)
+    ) {
+        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $ip = trim($ips[0]);
+
+        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+            return $ip;
+        }
     }
-    return $ip;
+
+    return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
 
 if (isset($_POST['Login'])) {
@@ -67,17 +72,9 @@ if (isset($_POST['Login'])) {
                 $result_check_session = $check_session->get_result();
                 if ($result_check_session->num_rows == 0) {
                     $addrss = getIpAddr();
-                    $osids = $_POST['os'];
-                    $y = date("Y");
-                    $m = date("m");
-                    $d = date("d");
-                    $d = $d + 15;
-                    if ($d > 27) {
-                        $m = $m + 1;
-                        $d = 15;
-                    }
-                    $expdate = $m . "/" . $d . "/" . $y;
-                    $convertedexpdate = DateTime::createFromFormat('d/m/Y', $expdate);
+                    $osids = $_POST['os'] ?? 'Unknown';
+                    $expdate = date('Y/m/d', strtotime('+15 days'));
+                    $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
                     $unixexpdate = $convertedexpdate->getTimestamp();
                     $insert_session = $connects->prepare("INSERT INTO sessionlogs(profileTags, sessiontokens, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?)");
                     $insert_session->bind_param("ssssss", $aidis, $tokens, $addrss, $osids, $expdate, date('d/m/Y h:i'));
