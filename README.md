@@ -10,8 +10,6 @@
 
 ## About this project?
   Software & Game distribution platform with community forum to share interaction and feedback, the main component of the CrossGate desktop app API & utility
-  <br>
-  Alright the website library collection are functioning like the repository for the project of the people
 
 ## Documentation & Journals
   for documentation on how to use, please refer to [website documentation](https://porosive.com/documentation/docs.php)<br>
