@@ -137,6 +137,7 @@ foreach ($tempLibsArr as $datas) {
     };
 }
 
+$apiData = [];
 $NDAPI = "Click on reset button to obtain";
 $NPAPI = "Click on reset button to obtain";
 $check_api = $connects->prepare("SELECT * FROM api_keys WHERE og_identification = ? ;");
@@ -152,9 +153,19 @@ if ($result_check_api->num_rows > 0) {
         $addedDate = $rca_val['addedDate'];
         if($scope === "Development"){
             $NDAPI = $tempApiToken . "." . $hashedKeys;
+            $apiData[$NDAPI] = [
+            "scope"       => "$scope",
+            "apiState"    => "$apiState",
+            "addedDate"   => "$addedDate"
+            ];
         }
         if($scope === "Production"){
             $NPAPI = $tempApiToken . "." . $hashedKeys;
+            $apiData[$NPAPI] = [
+            "scope"       => "$scope",
+            "apiState"    => "$apiState",
+            "addedDate"   => "$addedDate"
+            ];
         };
     }
 }
@@ -261,6 +272,13 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                     <img src="../img/reload-circle.svg" alt="" class="posr wh100p containfit points">
                 </button>
             </div>
+            <div class="posr sideMg pad-n-s w95p flex">
+                <div class="posr w95p flex gap10">
+                    <p type="text" class="posr pad-s c-white bg-half-gray border-1" name="apidevtoken" id="apidevtoken" readonly><?php echo $apiData[$NDAPI]["scope"];?></p>
+                    <p type="text" class="posr pad-s c-white bg-half-gray border-1" name="apidevtoken" id="apidevtoken" readonly>State: <?php echo $apiData[$NDAPI]["apiState"];?></p>
+                    <p type="text" class="posr pad-s c-white bg-half-gray border-1" name="apidevtoken" id="apidevtoken" readonly>Created: <?php echo $apiData[$NDAPI]["addedDate"];?></p>
+                </div>
+            </div>
             <div class="posr topMg-s10 sideMg pad-n-s w95p flex">
                 <label for="apiprodtoken">Production Token</label>
             </div>
@@ -276,7 +294,12 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                     <img src="../img/reload-circle.svg" alt="" class="posr wh100p containfit points">
                 </button>
             </div>
-            <div class="posr topMg-s10 sideMg pad-n-s w95p flex flex-r gap10">
+            <div class="posr bottomMg-s10 sideMg pad-n-s w95p flex">
+                <div class="posr w95p flex gap10">
+                    <p type="text" class="posr pad-s c-white bg-half-gray border-1" name="apidevtoken" id="apidevtoken" readonly><?php echo $apiData[$NPAPI]["scope"];?></p>
+                    <p type="text" class="posr pad-s c-white bg-half-gray border-1" name="apidevtoken" id="apidevtoken" readonly>State: <?php echo $apiData[$NPAPI]["apiState"];?></p>
+                    <p type="text" class="posr pad-s c-white bg-half-gray border-1" name="apidevtoken" id="apidevtoken" readonly>Created: <?php echo $apiData[$NPAPI]["addedDate"];?></p>
+                </div>
             </div>
         </form>
     </dialog>

@@ -5,6 +5,11 @@
 - most of the solution searched and found there
 `https://www.php.net/manual/en/`
 
+- api stuff
+`https://stackoverflow.com/questions/9802788/call-a-rest-api-in-php`
+`https://stackoverflow.com/questions/8163604/api-implementation`
+`https://www.php.net/manual/en/features.http-auth.php`
+
 - datetime and the related extensions
 `https://www.php.net/manual/en/ref.datetime.php`
 `https://www.php.net/manual/en/refs.calendar.php`

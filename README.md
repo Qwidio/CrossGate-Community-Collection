@@ -16,7 +16,10 @@
   changelog and in progress improvement cam be seen on [this page](https://porosive.com/documentation/changelog.php)
   I'd write some journal note on all progression I remember [here](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/journals.md)<br>
   
-## running on your own machine
+## Installing the client
+
+
+## Running webserver locally
   in your local machine it is recommended for you to have these in your enviroment:
   - PHP 8+ installed
   - compatible MySQL instalation
@@ -29,6 +32,7 @@
   Import the `cgcc.sql` from this repository to your database and make sure the database name are the same in your database config file on `processes/database.php`.
   <br>
   to check if the site are working open up this link `localhost/thePathNameYouExtractThisProjectOn/index.php` on your browser
+
 ## Credits
   [MarketingPipeline](https://github.com/MarketingPipeline), [MarkDown Tag](https://github.com/MarketingPipeline/Markdown-Tag) for MarkDown Renderer
 
