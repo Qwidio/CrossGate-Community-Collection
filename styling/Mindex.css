@@ -152,8 +152,17 @@ span {
 .bg-5 {
     background: linear-gradient(to right, black, rgb(53, 49, 63));
 }
+.bg-6 {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--purplegray));
+}
+.bg-7 {
+    background: linear-gradient(to bottom, rgba(217, 177, 255, 0.027), rgba(181, 125, 255, 0.096));
+}
 .bg-prf-default {
     background: rgba(49, 0, 128, 0.198);
+}
+.bg-thin-gray {
+    background: rgba(105, 105, 105, 0.1);
 }
 .bg-fifth-gray {
     background: rgba(105, 105, 105, 0.2);
@@ -275,6 +284,7 @@ span {
 /* uni param */
 .pos-s {
     position: sticky;
+    position: -webkit-sticky;
 }
 .posf {
     position: fixed;
@@ -321,7 +331,9 @@ span {
 .t65 {
     top: 65vh;
 }
-
+.l21 {
+    left: 21vw;
+}
 
 .pad-1 {
     padding: 1px;
@@ -614,6 +626,9 @@ span {
     width: 100vh;
 }
 
+.wminc {
+    width: auto;
+}
 .wmaxc {
     width: max-content;
 }
@@ -845,6 +860,9 @@ span {
 .r4-1 {
     aspect-ratio: 4/1;
 }
+.r96-31 {
+    aspect-ratio: 96/31;
+}
 
 /* uni flex */
 .dp-none {
@@ -931,22 +949,22 @@ span {
     text-align: right;
 }
 .txt-ms {
-    font-size: 10px;
+    font-size: 11px;
 }
 .txt-s {
-    font-size: 12px;
+    font-size: 13px;
 }
 .txt-n {
-    font-size: 16px;
+    font-size: 15px;
 }
 .txt-b {
-    font-size: 18px;
+    font-size: 20px;
 }
 .txt-l {
-    font-size: 23px;
+    font-size: 24px;
 }
 .txt-30 {
-    font-size: 28px;
+    font-size: 29px;
 }
 .txt-maintext {
     font-size: calc(35px + 0.5vw + 0.5vh);
@@ -966,14 +984,19 @@ span {
     height: 20px;
     aspect-ratio: 1/1;
 }
+.icon-t {
+    width: calc(12px + 0.5vw + 0.5vh);
+    height: calc(12px + 0.5vw + 0.5vh);
+    aspect-ratio: 1/1;
+}
 .icon-s {
     width: 10vh;
     height: 10vh;
     aspect-ratio: 1/1;
 }
 .icon-n {
-    width: calc(12px + 0.5vw + 0.5vh);
-    height: calc(12px + 0.5vw + 0.5vh);
+    width: calc(10px + 10vw + 10vh);
+    height: calc(10px + 10vw + 10vh);
     aspect-ratio: 1/1;
 }
 .icon-b {
@@ -1203,6 +1226,12 @@ span {
 .z15 {
     z-index: 15;
 }
+.z900 {
+    z-index: 900;
+}
+.z950 {
+    z-index: 950;
+}
 .z999 {
     z-index: 999;
 }
@@ -1271,6 +1300,17 @@ span {
     bottom: 0;
     background: transparent;
     backdrop-filter: blur(20px);
+    z-index: -1;
+}
+.blurbg-40::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    backdrop-filter: blur(40px);
     z-index: -1;
 }
 

@@ -52,7 +52,7 @@ if ($active == 0) {
         'message' => 'API key is inactive'
     ]));
 }
-if (!password_verify($secret, $hashedKeys)) {
+if (!hash_equals($hashedKeys, $secret)) {
     http_response_code(403);
     die(json_encode([
         'message' => 'Invalid API key'

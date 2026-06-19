@@ -95,8 +95,16 @@
  <br>
  and yeah, download api does kinda work but it really not the secure way I believed. well I have no pen tester(no, I won't trust AI for that)
  
-## June 13th changelog 
+## June 13th, changelog 
  there's a changelog page made specifically because I don't wanna explain what changes made in what time every time people asked(I'm really the forgetful ones)
+
+## june 18th, working on markout removal feature
+ today when playing with the UI and looking at the progress made for the last months I do realize that the user cannot removed the markedout collection from the library, it must be assumed that the user would not need to removed any of the collection they markedout in the first placed but I realized if a lot of the marked collection were discontinued/defunct then this would become a bit of a problem.
+
+## 19th, MarkOut UI Overhaul and working on desktop client
+ Really having a hard time so the overhaul took longer to finish, the UI have an inspiration from somewhere and now I think the right time to took care on some database clearup and restructuring(again). while not much have gotten changed from a glance and almost none in the backend, but this UI changes will set up the stage for more feature planned to get added soon.<br>
+I started developing the client for the website and it's place on the `/barenative/` folder, the folder name has nothing to do with the project and I'm using python with pyQt for ease up working with UI. The only reason for it because from my research that using the Python with PyQt does make the app multiplatform and I do test the code on linux but not really into the build version and not with any of the API's installed, so the 'bare' in the 'barenative' as in 'bare minimum'.
+
 
 ## things that will be added, removed, revamped
  Not all would be included because there's always a new things to add to my never ending feature wished to be implemented, but I'm not in good condition to do it now and this thing probably need proper hosting and a domain because that domain is not for this if you don't realized by it's name.
@@ -109,4 +117,4 @@
  4. non-groups made topic
   currently only groups/publisher that can create and post on their collection announcement topic
  5. figuring out better date formating
-  I'm still not using correct data type to store date and too lazy to do it
+  I'm still not using correct data type to store date and too lazy to refactor everything

@@ -5,12 +5,12 @@ require_once '../secureSession.php';
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
-    header ('location: ../Library/core/markout.php');
+    header ('location: ../index.php');
     exit;
 };
-if (isset($_POST['libsIds']) && isset($_POST['MarkOut'])) {
+if (isset($_POST['libsids']) && isset($_POST['MarkOut'])) {
     $check_Libs = $connects->prepare("SELECT libsIds FROM libslist WHERE libsIds = ? AND libsState = 'publics';");
-    $check_Libs->bind_param("s", $_POST['libsIds']);
+    $check_Libs->bind_param("s", $_POST['libsids']);
     $check_Libs->execute();
     $result_check_Libs = $check_Libs->get_result();
     if ($result_check_Libs->num_rows == 1) {
@@ -25,41 +25,61 @@ if (isset($_POST['libsIds']) && isset($_POST['MarkOut'])) {
         header ('location: ../Library/core/markout.php');
         exit;
     };
+    $check_profile = $connects->prepare("SELECT mkot FROM profiles WHERE profileTags = ? ;");
+    $check_profile->bind_param("s", $aidis);
+    $check_profile->execute();
+    $result_check_profile = $check_profile->get_result();
+    if ($result_check_profile->num_rows == 1) {
+        $value = $result_check_profile->fetch_assoc();
+        $mkot = $value['mkot'];
+        $data = json_decode($mkot, true);
+        $ltlnData = $data['lastLogin'];
+        $markedData = $data['marked'];
+        $private = $data['private'];
+    } else {
+        $_SESSION['corsmsg'] = "Error user missing defaults credentials";
+        header ('location: ../index.php');
+        exit;
+    };
+    $initReq = $_POST['MarkOut'];
+    if ($initReq === "MarkOut") {
+        $marked = [];
+        if (!empty($markedData) && $markedData != "empty") {
+            foreach ($markedData as $markedIndex => $info) {
+                $marked[$markedIndex] = [
+                    "libsIds"  => $info['libsIds'],
+                    "Hours"    => (int)$info['Hours'],
+                    "lastLog"  => $info['lastLog'],
+                ];
+            }
+        }
+        foreach ($new_marked as $new_mark) {
+            if (!in_array($new_mark['libsIds'], $marked)) {
+                $marked[$new_mark['libsIds']] = [
+                    "libsIds"  => $new_mark['libsIds'],
+                    "Hours"    => (int)$new_mark['Hours'],
+                    "lastLog"  => $new_mark['lastLog'],
+                ];
+            }
+        }
+    } else if ($initReq === "Remove") {
+        $marked = [];
+        if (!empty($markedData) && $markedData != "empty") {
+            foreach ($markedData as $markedIndex => $info) {
+                if ($markedIndex != $_POST['libsids']) {
+                    $marked[$markedIndex] = [
+                        "libsIds"  => $info['libsIds'],
+                        "Hours"    => (int)$info['Hours'],
+                        "lastLog"  => $info['lastLog'],
+                    ];
+                }
+            }
+        }
+    }
 } else {
     $_SESSION['corsmsg'] = "Request denied";
     header ('location: ../Library/core/markout.php');
     exit;
-}
-$check_profile = $connects->prepare("SELECT mkot FROM profiles WHERE profileTags = ? ;");
-$check_profile->bind_param("s", $aidis);
-$check_profile->execute();
-$result_check_profile = $check_profile->get_result();
-if ($result_check_profile->num_rows == 1) {
-    $value = $result_check_profile->fetch_assoc();
-    $mkot = $value['mkot'];
-    $data = json_decode($mkot, true);
-    $ltlnData = $data['lastLogin'];
-    $markedData = $data['marked'];
-    $private = $data['private'];
-};
-$marked = [];
-if (!empty($markedData) && $markedData != "empty") {
-    foreach ($markedData as $markedIndex => $info) {
-        $marked[$markedIndex] = [
-            "libsIds"  => $info['libsIds'],
-            "Hours"    => (int)$info['Hours'],
-            "lastLog"  => $info['lastLog'],
-        ];
-    }
-}
-foreach ($new_marked as $new_mark) {
-    if (!in_array($new_mark['libsIds'], $marked)) {
-        $marked[$new_mark['libsIds']] = [
-            "libsIds"  => $new_mark['libsIds'],
-            "Hours"    => (int)$new_mark['Hours'],
-            "lastLog"  => $new_mark['lastLog'],
-        ];
-    }
 }
 $usrDatTemp = [
     "lastLogin" => $ltlnData,
@@ -71,7 +91,11 @@ $update_mkot = $connects->prepare("UPDATE profiles SET mkot = ? WHERE profileTag
 $update_mkot->bind_param("ss", $usrDatTemp, $aidis);
 $update_mkot->execute();
 if ($update_mkot->affected_rows > 0) {
-    $_SESSION['corsmsg'] = "MarkedOut!";
+    if ($initReq === "MarkOut") {
+        $_SESSION['corsmsg'] = "MarkedOut!";
+    } else if ($initReq === "Remove") {
+        $_SESSION['corsmsg'] = "Removed From MarkOut.";
+    }
     header ('location: ../Library/core/markout.php');
     exit;
 } else {

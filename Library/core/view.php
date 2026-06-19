@@ -305,7 +305,7 @@ switch ($Reqtype) {
 if ($signed == true) {
 ?>
     <div class="posf pad-n b0 r0 flex z999">
-        <img src="../../img/warning.svg" alt="" class="posr icon-n containfit bg-half-white opacity3 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="collections" data-ids="<?php echo $libsIds;?>">
+        <img src="../../img/warning.svg" alt="" class="posr icon-t containfit bg-half-white opacity3 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="collections" data-ids="<?php echo $libsIds;?>">
     </div>
 <?php
 }
@@ -348,7 +348,7 @@ if ($signed == true) {
                         if (!in_array($targetIds, $indexes)) {
                 ?>
                 <form class="topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
-                    <input class="hiddeninp" type="text" name="libsIds" value="<?php echo $targetIds?>" hidden>
+                    <input class="hiddeninp" type="text" name="libsids" value="<?php echo $targetIds?>" hidden>
                     <input class="pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s border-hover-white" type="submit" name="MarkOut" value="MarkOut">
                 </form>
                 <?php
@@ -360,7 +360,7 @@ if ($signed == true) {
                     } else {
                 ?>
                 <form class="topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
-                    <input class="hiddeninp" type="text" name="libsIds" value="<?php echo $targetIds?>" hidden>
+                    <input class="hiddeninp" type="text" name="libsids" value="<?php echo $targetIds?>" hidden>
                     <input class="pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s border-hover-white" type="submit" name="MarkOut" value="MarkOut">
                 </form>
                 <?php

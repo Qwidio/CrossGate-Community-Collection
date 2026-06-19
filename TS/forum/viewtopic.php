@@ -104,7 +104,7 @@ if ($result_check_Topic->num_rows == 1) {
             <h2 class="w100p txtc txt-30 bold"><?php echo $Ttitles;?></h2>
             <p class="w100p txtc txt-s"><?php echo $descs;?></p>
         </div>
-        <div class="sideMg bottomMg w95p minh50 flex wrap gap-s acjc z1">
+        <div class="sideMg bottomMg w95p minh50 flex wrap gap-s acjc z4">
         <?php
         if (isset($requestedItem) && isset($searchTrigger)) {
         $stmt_check_forumtopics = $connects->prepare("SELECT * FROM forums WHERE ForumTopics = ? AND ForumState = 'Publics' AND ForumTitles LIKE '%$requestedItem%' ORDER BY ForumDates DESC;");

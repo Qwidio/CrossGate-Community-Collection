@@ -145,6 +145,7 @@ if (isset($aidis)) {
 
             <div class="bottomMg-s10 pad-bot-s15 flex fld border-bot-1-subtle-dark">
                 <p class="pad-m-v txt-b uppercase letter-sp-1 c-lightpurp leftMg-s10">June</p>
+                <a href="#26j18t19" class="block pad-n-s pad-m-v bora-s txt-n c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">18th - 19th</a>
                 <a href="#26j12t13" class="block pad-n-s pad-m-v bora-s txt-n c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">12th - 13th</a>
                 <a href="#26j1t4" class="block pad-n-s pad-m-v bora-s txt-n c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">1st - 4th</a>
             </div>
@@ -162,10 +163,20 @@ if (isset($aidis)) {
                 <p class="c-subtle line-h-1-6 txt-n botMg-s15">Specifically made to address my forgetfulness by a bit, basically a more organized version of the journals. Note: the date written for update before June/2026 are estimated date +1 to 10 days</p>
             </div>
 
-            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m" id="26j12t13">
+            <div class="bg-card-subtle border-1-subtle bora-m pad-l-l shadow-m">
                 <h2 class="bottomMg-s10 pad-s-v c-lightpurp txt-l border-bot-1-subtle">June / 2026</h2>
                 
+                <div class="topMg-s10 pad-s-v flex fld gap10" id="26j18t19">
+                    <h3 class="topMg-s10 pad-sb txt-m-l c-highlight">19th, MarkOut Overhaul</h3>
+                    <p class="c-subtle line-h-1-6 txt-n">Reworked MarkOut UI, New detail page for MarkedOut Collection, and Ability to removed a collection from the MarkedOut</p>
+                    <p class="c-subtle line-h-1-6 txt-n">Updated styling class & Fixed download API auth check</p>
+                </div>
                 <div class="topMg-s10 pad-s-v flex fld gap10">
+                    <h3 class="topMg-s10 pad-sb txt-m-l c-highlight">18th, Adding API detail</h3>
+                    <p class="c-subtle line-h-1-6 txt-n">API panel now include extra detail about the API in Groups management dashboard</p>
+                </div>
+                
+                <div class="topMg-s10 pad-s-v flex fld gap10" id="26j12t13">
                     <h3 class="topMg-s10 pad-sb txt-m-l c-highlight">13th, changelog created</h3>
                     <p class="c-subtle line-h-1-6 txt-n">The reason? look at this page introduction, no currently it isn't dynamically retrieved from the database but this haven't get finalized yet.</p>
                 </div>

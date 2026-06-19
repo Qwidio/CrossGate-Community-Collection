@@ -268,7 +268,7 @@ if ($result_check_topic->num_rows > 0) {
     if (isset($aidis) && $ForumHighlight === "FALSE") {
     ?>
     <div class="posf pad-n b0 r0 flex z999">
-        <img src="../../img/warning.svg" alt="" class="posr icon-n containfit bg-half-white opacity3 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="forums" data-ids="<?php echo $fids;?>">
+        <img src="../../img/warning.svg" alt="" class="posr icon-t containfit bg-half-white opacity3 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="forums" data-ids="<?php echo $fids;?>">
     </div>
     <?php
     }

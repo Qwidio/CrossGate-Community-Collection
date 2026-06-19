@@ -269,7 +269,7 @@ if ($result_check_invite->num_rows > 0) {
     if ($allowEdits == false) {
     ?>
     <div class="posf pad-n r1-1 b0 r0 flex z999">
-        <img src="img/warning.svg" alt="" class="posr icon-n containfit bg-half-white opacity3 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="user" data-ids="<?php echo $uDs;?>">
+        <img src="img/warning.svg" alt="" class="posr icon-t containfit bg-half-white opacity3 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="user" data-ids="<?php echo $uDs;?>">
     </div>
     <?php
     }

@@ -1,6 +1,9 @@
 function linker(reqstate) {
     window.location.replace(reqstate);
 };
+function decodeHtml(str) {
+  return new DOMParser().parseFromString(str, "text/html").documentElement.textContent;
+}
 
 let bannerIndex;
 function createBannerElem(libsBanners, gids, containerId) {
@@ -71,6 +74,45 @@ function createBannerElem(libsBanners, gids, containerId) {
         container.appendChild(p);
     }
 }
+
+function createMarkOut(inputArr, gids, containerId) {
+    const container = document.getElementById(containerId);
+    Object.entries(inputArr).forEach(([key, libs]) => {
+        const div = document.createElement("div");
+        div.className = "posr h30 r16-9 bgc-purple flex fld border-1 z1";
+        const img = document.createElement("img");
+        img.className = "posa ins0 wh100p bg-3 coverfit z2";
+        img.src = `../libsImg/${gids}/${libs.libsBanners}`;
+        const titles = document.createElement("h2");
+        titles.className = "topMg pad-s-s pad-m-v w100p txt-s bg-half-gray z3";
+        titles.innerHTML = libs.libsTitles;
+        const hours = document.createElement("p");
+        hours.className = "pad-s-s pad-sb w100p txt-s bg-half-gray z3";
+        hours.innerHTML = "Recorded: " + libs.Hours + " hrs";
+        const alink = document.createElement("a");
+        alink.className = "link-cover hover-white";
+        alink.setAttribute("data-libsids", libs.libsIds);
+        // alink.setAttribute("data-title", libs.libsTitles);
+        alink.setAttribute("data-desc", decodeHtml(libs.libsDesc));
+        alink.setAttribute("data-hour", libs.Hours + " hours");
+        alink.setAttribute("data-lastlog", libs.lastLog);
+        alink.onclick = function(event) {
+            uniDisplaySwitch('cltPanel');
+            uniDisplaySwitch('cltLibrary');
+            uniDisplaySwitch('homeBtn');
+            uniLoad(this, 'cltDetail');
+            uniLoad(this, 'cltDetail');
+            uniReloadFile(`../libsImg/${gids}/${libs.libsBanners}`, 'bgbanner');
+            uniReloadFile(`../libsImg/${gids}/${libs.libsAttachs}`, 'attach');
+        };
+        div.appendChild(img);
+        div.appendChild(titles);
+        div.appendChild(hours);
+        div.appendChild(alink);
+        container.appendChild(div);
+    });
+}
+
 let linkIndex;
 function createLinkElem(extlink, containerId) {
     linkIndex = 0;
