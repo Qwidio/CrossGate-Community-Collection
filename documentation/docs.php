@@ -172,7 +172,7 @@ if (isset($aidis)) {
                 <p class="txt-b uppercase letter-sp-1 c-lightpurp botMg-s10 leftMg-s10">API & Client</p>
                 <a href="#cstate" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Current Limitations</a>
                 <a href="#obtainapi" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Obtaining API keys</a>
-                <a href="#userestric" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Usage & restriction</a>
+                <a href="#rfo" class="block pad-s bora-s txt-s c-subtle trs200ms hover-bg-subtle hover-c-highlight botMg-s2 hover-pl-16">Required format & ouput</a>
             </div>
         </aside>
 
@@ -307,17 +307,32 @@ if (isset($aidis)) {
                     <p class="c-subtle line-h-1-6 txt-n botMg-s15">Two version of the API keys are provided each for it's own use, requesting new keys achieved via clicking the reset buttons placed beside the copy button</p>
                 </div>
 
-                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark flex fld" id="userestric">
-                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Usage and restriction</h3>
-                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Below are the table listing every needed input and output/debug variable</p>
+                <div class="topMg-s25 pad-top-s20 border-top-1-subtle-dark flex fld" id="rfo">
+                    <h3 class="txt-m-l c-highlight botMg-s10 flex gap-10">Required input format and ouput</h3>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Below are the table listing input required for authenticating with the API</p>
                     <div class="posr botMg-s15 w100p flex fld border-t border-l border-r">
                         <div class="posr w100p flex border-b">
                             <p class="posr pad-s w50p txt-n">Input</p>
-                            <p class="posr pad-s w50p txt-n border-l">Explanation</p>
+                            <p class="posr pad-s w50p txt-n border-l">Description</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">url: "[this_domain_name]/api/auth.php" </span></p>
+                            <p class="posr pad-s w50p txt-n border-l">replace [this_domain_name] with the target host service you want to use(CGCC or your own)</p>
                         </div>
                         <div class="posr w100p flex border-b">
                             <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">headers: X-Api-Key</span></p>
                             <p class="posr pad-s w50p txt-n border-l">required to access API service, obtainable via groups management dashboard</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">Content-Type: application/json</span></p>
+                            <p class="posr pad-s w50p flex fld txt-n border-l">the request input format, for example:<br>
+                                <span class="pad-s-s w100p bg-primary-10 txt-n c-white bold bora-s">
+                                    {<br>
+                                        "username": "user",<br>
+                                        "password": "password",<br>
+                                    }
+                                </span>    
+                            </p>
                         </div>
                         <div class="posr w100p flex border-b">
                             <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">username</span></p>
@@ -332,22 +347,79 @@ if (isset($aidis)) {
                             <p class="posr pad-s w50p txt-n border-l">required to provide the information about current operating system used by the user</p>
                         </div>
                     </div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Below are the table listing debug output from authentication</p>
                     <div class="posr bottomMg-s10 w100p flex fld border-t border-l border-r">
                         <div class="posr w100p flex border-b">
-                            <p class="posr pad-s w50p txt-n">Variable</p>
-                            <p class="posr pad-s w50p txt-n border-l">Explanation</p>
+                            <p class="posr pad-s w50p txt-n">output var/flags</p>
+                            <p class="posr pad-s w50p txt-n border-l">Description</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">message</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">Result messages from the ongoing processes</p>
                         </div>
                         <div class="posr w100p flex border-b">
                             <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">useScope: Development</span></p>
-                            <p class="posr pad-s w50p txt-n border-l">Development API keys provide full debug information within the returned output and require you groups access passkeys instead of you main account password, with a catch that downloading is forbidden using this API</p>
+                            <p class="posr pad-s w50p txt-n border-l">Development API keys provide full debug information within the returned output and require you groups access passkeys instead of you main account password. Downloading collection file is disabled using this API</p>
                         </div>
                         <div class="posr w100p flex border-b">
                             <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">useScope: Production</span></p>
                             <p class="posr pad-s w50p txt-n border-l">Production/public API will use individual public account credential to verify, send back user data and only process status related messages</p>
                         </div>
+                    </div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Below are the table listing input required for re-authenticates user to the API</p>
+                    <div class="posr botMg-s15 w100p flex fld border-t border-l border-r">
+                        <div class="posr w100p flex border-b">
+                            <p class="posr pad-s w50p txt-n">Input</p>
+                            <p class="posr pad-s w50p txt-n border-l">Description</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">url: "[this_domain_name]/api/reauth.php" </span></p>
+                            <p class="posr pad-s w50p txt-n border-l">replace [this_domain_name] with the target host service you want to use(CGCC or your own)</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">headers: X-Api-Key</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">required to access API service, obtainable via groups management dashboard</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">Content-Type: application/json</span></p>
+                            <p class="posr pad-s w50p flex fld txt-n border-l">the request input format, for example:<br>
+                                <span class="pad-s-s w100p bg-primary-10 txt-n c-white bold bora-s">
+                                    {<br>
+                                        "token": "tokens123",<br>
+                                    }
+                                </span>    
+                            </p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">username</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">required account username credential</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">password</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">depending on the scope either the main account password for the production client or groups access password for the development client</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">os</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">required to provide the information about current operating system used by the user</p>
+                        </div>
+                    </div>
+                    <p class="c-subtle line-h-1-6 txt-n botMg-s15">Below are the table listing debug output from authentication</p>
+                    <div class="posr bottomMg-s10 w100p flex fld border-t border-l border-r">
+                        <div class="posr w100p flex border-b">
+                            <p class="posr pad-s w50p txt-n">output var/flags</p>
+                            <p class="posr pad-s w50p txt-n border-l">Description</p>
+                        </div>
                         <div class="posr w100p flex border-b">
                             <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">message</span></p>
-                            <p class="posr pad-s w50p txt-n border-l">Output variable logging the result/problem from the api processes</p>
+                            <p class="posr pad-s w50p txt-n border-l">Result messages from the ongoing processes</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">useScope: Development</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">Development API keys provide full debug information within the returned output and require you groups access passkeys instead of you main account password. Downloading collection file is disabled using this API</p>
+                        </div>
+                        <div class="posr w100p flex border-b">
+                            <p class="posr vertiMg pad-s w50p"><span class="pad-s-s bg-primary-10 txt-n c-white bold bora-s">useScope: Production</span></p>
+                            <p class="posr pad-s w50p txt-n border-l">Production/public API will use individual public account credential to verify, send back user data and only process status related messages</p>
                         </div>
                     </div>
                 </div>
