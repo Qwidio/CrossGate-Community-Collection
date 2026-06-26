@@ -70,7 +70,9 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
     if(in_array($fileType, $allowTypes)) {
         $randKey = bin2hex(random_bytes(4));
         $clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $tempZip);
-        $tempZip = time() . '_' . $libsIds . '_' . $randKey . '_' . $clean_name;
+        $createfromformat = DateTime::createFromFormat('Y/m/d', date('Y/m/d'));
+        $unixdate = $createfromformat->getTimestamp();
+        $tempZip = $unixdate . '_' . $libsIds . '_' . $randKey . '_' . $clean_name;
         $tempPath = $_FILES["zipfile"]["tmp_name"];
         $targetPath = $targetdir . $tempZip;
         if(move_uploaded_file($tempPath, $targetPath)) {

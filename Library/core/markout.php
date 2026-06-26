@@ -283,7 +283,7 @@ if ($noMkot == true) {
                     <?php
                     if ($ForumAttachment != "empty.png" && isset($ForumAttachment)) {
                     ?>
-                    <img src="../../TS/ArchFiles/<?php echo $ForumAttachment;?>" alt="" class="posa ins0 r16-9 wh100p coverfit opacity5 z2">
+                    <img src="../../TS/img/<?php echo $ForumIds . '/' . $ForumAttachment;?>" alt="" class="posa ins0 r16-9 wh100p coverfit opacity5 z2">
                     <?php
                     } else {
                     ?>

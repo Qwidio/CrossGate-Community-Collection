@@ -201,7 +201,7 @@ if ($result_check_Forum->num_rows > 0) {
     <?php
                 if ($attachs != "empty.png" && isset($attachs)) {
     ?>
-            <img src="../TS/ArchFiles/<?php echo $attachs;?>" alt="" class="posa c0 w100p r16-9 coverfit opacity3 z2">
+            <img src="../TS/img/<?php echo $ids . '/' . $attachs;?>" alt="" class="posa c0 w100p r16-9 coverfit opacity3 z2">
     <?php
                 };
     ?>

@@ -69,6 +69,8 @@ if ($result_check_software->num_rows > 0) {
     header ('location: manage.php');
     exit;
 }
+$createfromformat = DateTime::createFromFormat('Y/m/d', date('Y/m/d'));
+$unixdate = $createfromformat->getTimestamp();
 if ($initReq === "Update") {
     $errors = [];
     if (isset($_POST['libsvt']) && $_POST['libsvt'] != $libsVT) {
@@ -120,7 +122,7 @@ if ($initReq === "Update") {
             if(in_array($fileType, $allowTypes)) {
                 $randKey = bin2hex(random_bytes(8));
                 $attach_clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $tempAttach);
-                $tempAttach = $libsIds . '_' . time() . '_' . $randKey . '_' . $attach_clean_name;
+                $tempAttach = $libsIds . '_' . $unixdate . '_' . $randKey . '_' . $attach_clean_name;
                 $tempAttPath = $_FILES["newattach"]["tmp_name"];
                 $targetAttPath = $targetdir . $tempAttach;
                 if(move_uploaded_file($tempAttPath, $targetAttPath)) {
@@ -175,7 +177,7 @@ if ($initReq === "Update") {
                 if(in_array($fileType, $allowTypes)) {
                     $randKey = bin2hex(random_bytes(8));
                     $clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $tempBanners);
-                    $tempBanners = $countlimit . "_" . time() . '_' . $randKey . '_' . $clean_name;
+                    $tempBanners = $countlimit . "_" . $unixdate . '_' . $randKey . '_' . $clean_name;
                     $tempPath = $_FILES[$BannerIteration]["tmp_name"];
                     $targetPath = $targetdir . $tempBanners;
                     if(move_uploaded_file($tempPath, $targetPath)) {

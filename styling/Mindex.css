@@ -989,6 +989,11 @@ span {
     height: calc(12px + 0.5vw + 0.5vh);
     aspect-ratio: 1/1;
 }
+.icon-ts {
+    width: calc(20px + 0.5vw + 0.5vh);
+    height: calc(20px + 0.5vw + 0.5vh);
+    aspect-ratio: 1/1;
+}
 .icon-s {
     width: 10vh;
     height: 10vh;

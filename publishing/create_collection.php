@@ -29,6 +29,8 @@ if (isset($_SESSION['profileTags']) && isset($_SESSION['GroupsToken'])) {
     exit;
 }
 
+$createfromformat = DateTime::createFromFormat('Y/m/d', date('Y/m/d'));
+$unixdate = $createfromformat->getTimestamp();
 $libsTitles = $_POST['title'];
 $libsTitles = htmlspecialchars($libsTitles, ENT_QUOTES, 'UTF-8');
 $sanitized = str_replace('%', 'prcn', $libsTitles);
@@ -38,7 +40,7 @@ $libsTopics = $sanitized . '_topic_' . bin2hex(random_bytes(8 / 2));
 if (isset($_POST['custIds'])) {
     $libsIds = $_POST['custIds'];
 } else {
-    $libsIds = $sanitized  . bin2hex(random_bytes(8 / 2)) . date('Y/m/d');
+    $libsIds = $sanitized  . bin2hex(random_bytes(8 / 2)) . $unixdate;
 }
 if (isset($_POST['libsVT'])) {
     $libsVT = $_POST['libsVT'];
@@ -61,7 +63,7 @@ if (isset($_FILES['attach']["name"]) && $_FILES['attach']["name"][0] != "") {
         if(in_array($fileType, $allowTypes)) {
             $randKey = bin2hex(random_bytes(8));
             $attach_clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $tempAttach);
-            $tempAttach = $sanitized . '_' . time() . '_' . $randKey . '_' . $attach_clean_name;
+            $tempAttach = $sanitized . '_' . $unixdate . '_' . $randKey . '_' . $attach_clean_name;
             $tempAttPath = $_FILES['attach']["tmp_name"];
             $targetAttPath = $targetdir . $tempAttach;
             if(move_uploaded_file($tempAttPath, $targetAttPath)) {
@@ -155,7 +157,7 @@ while ($countlimit < 10 && $stopCount == false) {
             if(in_array($fileType, $allowTypes)) {
                 $randKey = bin2hex(random_bytes(8));
                 $clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $tempBanners);
-                $tempBanners = $sanitized . '_' . $countlimit . "_" . time() . '_' . $randKey . '_' . $clean_name;
+                $tempBanners = $sanitized . '_' . $countlimit . "_" . $unixdate . '_' . $randKey . '_' . $clean_name;
                 $tempPath = $_FILES[$BannerIteration]["tmp_name"];
                 $targetPath = $targetdir . $tempBanners;
                 if(move_uploaded_file($tempPath, $targetPath)) {

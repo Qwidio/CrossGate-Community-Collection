@@ -111,15 +111,15 @@ foreach ($tempSessions as $id => $value) {
         <div class="posr w100p flex gap5">
             <p class="posr pad-s-v w30p txt-s txtnowrap ovh">Address: <?php echo $addrss;?><span class="blur-censor">.</span></p>
             <p class="pad-s-v w30p txt-s txtnowrap ovh">Device: <?php echo $osids;?></p>
-            <p class="pad-s-v w20p txt-s ovh">Expiry: <?php echo $expirationDate;?></p>
-            <p class="pad-s-v w20p txt-s ovh">Last login: <?php echo $lastlogs;?></p>
+            <p class="pad-s-v w20p txt-s txtnowrap ovh">Expiry: <?php echo $expirationDate;?></p>
+            <p class="pad-s-v w20p txt-s txtnowrap ovh">Last login: <?php echo $lastlogs;?></p>
 <?php
     if ($sessToken != $deviceToken) {
 ?>
-            <div class="posr pad-m-v pad-ml r1-1 flex">
+            <div class="posr pad-m-v pad-ml icon-ts flex">
                 <img src="img/copy.svg" alt="" class="posr wh100p containfit points" onclick="copy('<?php echo $sessToken;?>');">
             </div>
-            <div class="posr pad-m r1-1 flex">
+            <div class="posr pad-m icon-ts flex">
                 <img src="img/trash-outline.svg" alt="" class="posr wh100p containfit points" onclick="uniDisplaySwitch('deleteDialog'); loadSession(this);" data-token="<?php echo $sessToken;?>">
             </div>
 <?php

@@ -118,7 +118,7 @@ if ($result_check_Topic->num_rows == 1) {
         if ($result_check_forumtopics->num_rows > 0) {
             $uniqueItem = [];
             while ($value = $result_check_forumtopics->fetch_assoc()) {
-                $ids= $value['ForumIds'];
+                $ids = $value['ForumIds'];
                 $creators = $value['ForumCreator'];
                 $titles = $value['ForumTitles'];
                 $topics = $value['ForumTopics'];
@@ -131,7 +131,7 @@ if ($result_check_Topic->num_rows == 1) {
         <?php
                     if ($attachs != "empty.png" && isset($attachs)) {
         ?>
-            <img src="ArchFiles/<?php echo $attachs;?>" alt="" class="posa c0 coverfit">
+            <img src="img/<?php echo $ids . '/' . $attachs;?>" alt="" class="posa c0 coverfit">
         <?php
                     };
         ?>

@@ -35,7 +35,9 @@ if (isset($_POST['submit'])) {
             if(in_array($fileType, $allowTypes)) {
                 $random = bin2hex(random_bytes(8));
                 $clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $rsc);
-                $rsc = $aidis . '_' . date('d/m/Y') . '_' . $random . '_' . $clean_name;
+                $createfromformat = DateTime::createFromFormat('Y/m/d', date('Y/m/d'));
+                $unixdate = $createfromformat->getTimestamp();
+                $rsc = $aidis . '_' . $unixdate . '_' . $random . '_' . $clean_name;
                 $tempPath = $_FILES["file"]["tmp_name"];
                 $targetPath = $targetdir . $rsc;
                 if(move_uploaded_file($tempPath, $targetPath)) {

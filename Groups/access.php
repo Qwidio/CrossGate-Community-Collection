@@ -115,8 +115,8 @@ if (isset($_POST['submit'])) {
                     exit;
                 };
             } else {
-                $stmt_reupdate_access = $connects->prepare("UPDATE groupaccess SET profileTags = ?, accountState = 'disabled' WHERE profileTags = ? and og_identification = ? ;");
-                $stmt_reupdate_access->bind_param("sss", $aidis.date('d/m/Y'), $aidis, $gids);
+                $stmt_reupdate_access = $connects->prepare("UPDATE groupaccess SET accountState = 'invited' WHERE profileTags = ? and og_identification = ? ;");
+                $stmt_reupdate_access->bind_param("ss", $aidis, $gids);
                 $stmt_reupdate_access->execute();
                 if ($result_update_access->affected_rows > 0) {
                     $_SESSION['corsmsg'] = "Failed to add you as new member. " . $addMember->error;

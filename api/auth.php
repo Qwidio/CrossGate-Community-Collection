@@ -20,9 +20,11 @@ function getIpAddr(): string {
     }
     return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
+$requestAddress = getIpAddr();
 function generateApiKey($length) {
     return bin2hex(random_bytes($length / 2));
 }
+$debugMode = false;
 require_once "../processes/database.php";
 [$keyId, $secret] = explode('.', $providedKey, 2);
 $stmt_check_apis = $connects->prepare("SELECT useScope, og_identification, hashedKeys, addedDate, active FROM api_keys WHERE apiId = ?");
@@ -38,11 +40,20 @@ if (!$rca_val) {
 }
 $og_identification = $rca_val['og_identification'];
 $scope = $rca_val['useScope'];
+if ($scope === "Development") {
+    $debugMode = true;
+}
 $hashedKeys = $rca_val['hashedKeys'];
 $apiState = $rca_val['active'];
+if ($apiState == 0) {
+    http_response_code(403);
+    die(json_encode([
+        'message' => 'API key is inactive'
+    ]));
+}
 $addedDate = $rca_val['addedDate'];
 if (!hash_equals($hashedKeys, $secret)) {
-    http_response_code(403);
+    http_response_code(401);
     die(json_encode([
         'message' => 'Invalid API key'
     ]));
@@ -80,7 +91,7 @@ if (!hash_equals($hashedKeys, $secret)) {
                 if ($result_check_password->num_rows == 1) {
                     $value = $result_check_password->fetch_assoc();
                     $aidis = $value['profileTags'];
-                    if (isset($input['sessionless'])) {
+                    if (!isset($input['sessionless']) || $input['sessionless'] == false) {
                         $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE profileTags = ?;");
                         $check_session->bind_param("s", $aidis);
                         $check_session->execute();
@@ -95,7 +106,7 @@ if (!hash_equals($hashedKeys, $secret)) {
                         $check_session->execute();
                         $result_check_session = $check_session->get_result();
                         if ($result_check_session->num_rows == 0) {
-                            $addrss = getIpAddr();
+                            $addrss = $input['address'] ?? 'Unknown';
                             $osids = $input['os'] ?? 'Unknown';
                             $expdate = date('Y/m/d', strtotime('+15 days'));
                             $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
@@ -111,20 +122,26 @@ if (!hash_equals($hashedKeys, $secret)) {
                                 $result_check_profile = $check_profile->get_result();
                                 $value = $result_check_profile->fetch_assoc();
                                 if ($value) {
-                                    die(json_encode([
-                                        "message" => "Login Successful",
-                                        "clientDev" => $og_identification,
-                                        "sessionToken" => $tokens,
-                                        "unixexpdate" => $unixexpdate,
-                                        "profileTags" => $aidis,
-                                        "profileAttachs"=> $value['profileAttachs'],
-                                        "profileNames"  => $value['profileNames'],
-                                        "profileBios"   => $value['profileBios'],
-                                        "profileJDates" => $value['profileJDates'],
-                                        "Badge"         => $value['Badge'],
-                                        "mkot"          => $value['mkot'],
-                                        "oState"        => $value['oState']
-                                    ], JSON_UNESCAPED_SLASHES));
+                                    $returnData = [
+                                            "message" => "Login Successful",
+                                            "sessionToken"  => $tokens,
+                                            "unixexpdate"   => $unixexpdate,
+                                            "profileTags"   => $aidis,
+                                            "profileAttachs"=> $value['profileAttachs'],
+                                            "profileNames"  => $value['profileNames'],
+                                            "profileBios"   => $value['profileBios'],
+                                            "profileJDates" => $value['profileJDates'],
+                                            "profileBadge"  => $value['Badge'],
+                                            "profileMarkOut"=> $value['mkot'],
+                                            "activityState" => $value['oState']
+                                    ];
+                                    if ($debugMode == true) {
+                                        $returnData = array_merge($returnData, [
+                                            "clientDev"     => $og_identification,
+                                            "useScope"      => $scope,
+                                        ]);
+                                    }
+                                    die(json_encode($returnData, JSON_UNESCAPED_SLASHES));
                                 }
                             }else{
                                 http_response_code(401);
@@ -136,24 +153,40 @@ if (!hash_equals($hashedKeys, $secret)) {
                         }
                         $check_session->close();
                     } else {
-                        http_response_code(200);
                         $check_profile = $connects->prepare("SELECT * FROM profiles WHERE profileTags = ? ;");
                         $check_profile->bind_param("s", $aidis);
                         $check_profile->execute();
                         $result_check_profile = $check_profile->get_result();
                         $value = $result_check_profile->fetch_assoc();
                         if ($value) {
-                            die(json_encode([
-                                "message" => "Login Successful",
-                                "profileTags" => $aidis,
-                                "profileAttachs"=> $value['profileAttachs'],
-                                "profileNames"  => $value['profileNames'],
-                                "profileBios"   => $value['profileBios'],
-                                "profileJDates" => $value['profileJDates'],
-                                "Badge"         => $value['Badge'],
-                                "mkot"          => $value['mkot'],
-                                "oState"        => $value['oState']
-                            ], JSON_UNESCAPED_SLASHES));
+                            http_response_code(200);
+                            if ($debugMode == true) {
+                                die(json_encode([
+                                    "message" => "Login Successful",
+                                    "clientDev"     => $og_identification,
+                                    "useScope"      => $scope,
+                                    "profileTags"   => $aidis,
+                                    "profileAttachs"=> $value['profileAttachs'],
+                                    "profileNames"  => $value['profileNames'],
+                                    "profileBios"   => $value['profileBios'],
+                                    "profileJDates" => $value['profileJDates'],
+                                    "profileBadge"  => $value['Badge'],
+                                    "profileMarkOut"=> $value['mkot'],
+                                    "activityState" => $value['oState']
+                                ], JSON_UNESCAPED_SLASHES));
+                            } else {
+                                die(json_encode([
+                                    "message" => "Login Successful",
+                                    "profileTags"   => $aidis,
+                                    "profileAttachs"=> $value['profileAttachs'],
+                                    "profileNames"  => $value['profileNames'],
+                                    "profileBios"   => $value['profileBios'],
+                                    "profileJDates" => $value['profileJDates'],
+                                    "profileBadge"  => $value['Badge'],
+                                    "profileMarkOut"=> $value['mkot'],
+                                    "activityState" => $value['oState']
+                                ], JSON_UNESCAPED_SLASHES));
+                            }
                         }
                     }
                 } else {
@@ -170,68 +203,6 @@ if (!hash_equals($hashedKeys, $secret)) {
                 ]));
             }
             $stmt_check_username->close();
-            break;
-        case 'PUT':
-            $sessiontokens = $input['tokens'];
-            $addrss = getIpAddr();
-            $osids = $input['os'] ?? 'Unknown';
-            if (!isset($sessiontokens) || !isset($addrss) || !isset($osids)) {
-                die(json_encode(["message" => "Missing Required data"]));
-            }
-            $session_check = $connects->prepare("SELECT profileTags, osids, addrss, expirationDate FROM sessionlogs WHERE sessiontokens = ?;");
-            $session_check->bind_param("s", $sessiontokens);
-            $session_check->execute();
-            $result_session_check = $session_check->get_result();
-            $data = $result_session_check->fetch_assoc();
-            if (isset($data)) {
-                $Tags = $data['profileTags'];
-                $savedOS = $data['osids'];
-                $oldaddrss = $data['addrss'];
-                $exps = $data['expirationDate'];
-                $curdt = date('Y/m/d');
-                if ($exps < $curdt) {
-                    http_response_code(403);
-                    die(json_encode(["message" => "Session Have been expired"]));
-                }
-                if ($osids != $savedOS && $savedOS != "unset") {
-                    http_response_code(403);
-                    die(json_encode(["message" => "Sessions already used on another device"]));
-                }
-                if ($oldaddrss !== $addrss) {
-                    http_response_code(403);
-                    die(json_encode([
-                        'message' => 'IP mismatch'
-                    ]));
-                }
-            } else {
-                http_response_code(401);
-                die(json_encode(["message" => "Failed to find sessions"]));
-            }
-            $update_auth = $connects->prepare("UPDATE sessionlogs SET addrss = ?, osids = ?, lastlogs = NOW() WHERE sessiontokens = ? ;");
-            $update_auth->bind_param("sss", $addrss, $osids, $sessiontokens);
-            $update_auth->execute();
-            if ($update_auth) {
-                $check_profile = $connects->prepare("SELECT * FROM profiles WHERE profileTags = ? ;");
-                $check_profile->bind_param("s", $Tags);
-                $check_profile->execute();
-                $result_check_profile = $check_profile->get_result();
-                $value = $result_check_profile->fetch_assoc();
-                if ($value) {
-                    http_response_code(200);
-                    echo json_encode([
-                        "message"       => "Logged in successfully",
-                        "profileTags"   => $Tags,
-                        "profileAttachs"=> $value['profileAttachs'],
-                        "profileNames"  => $value['profileNames'],
-                        "profileBios"   => $value['profileBios'],
-                        "profileJDates" => $value['profileJDates'],
-                        "Badge"         => $value['Badge'],
-                        "mkot"          => $value['mkot'],
-                        "oState"        => $value['oState']
-                    ], JSON_UNESCAPED_SLASHES);
-                }
-                exit;
-            }
             break;
         default:
             echo json_encode(["message" => "Invalid request"]);

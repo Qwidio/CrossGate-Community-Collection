@@ -99,7 +99,7 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         <?php
                     if ($attachs != "empty.png" && isset($attachs)) {
         ?>
-            <img src="ArchFiles/<?php echo $attachs;?>" alt="" class="posa c0 coverfit">
+            <img src="../topicImg/<?php echo $attachs;?>" alt="" class="posa c0 coverfit">
         <?php
                     };
         ?>

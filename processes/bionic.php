@@ -51,7 +51,9 @@ if (isset($_POST['submit']) && isset($_SESSION['profileTags'])) {
                 if(in_array($fileType, $allowTypes)) {
                     $randKey = bin2hex(random_bytes(8));
                     $clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $tempProfilePic);
-                    $tempProfilePic =  time() . '_' . $randKey . '_' . $clean_name;
+                    $createfromformat = DateTime::createFromFormat('Y/m/d', date('Y/m/d'));
+                    $unixdate = $createfromformat->getTimestamp();
+                    $tempProfilePic =  $unixdate . '_' . $randKey . '_' . $clean_name;
                     $tempPath = $_FILES["profilepic"]["tmp_name"];
                     $targetPath = $targetdir . $tempProfilePic;
                     if(move_uploaded_file($tempPath, $targetPath)) {

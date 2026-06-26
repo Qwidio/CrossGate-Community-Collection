@@ -58,7 +58,10 @@ if (isset($_POST['submit'])) {
         };
         $FoIds = str_replace("/", "", $dates) . bin2hex(random_bytes(12));
         if (isset($_FILES["file"]["name"]) && $_FILES['file']['name'][0] != "") {
-            $targetdir = "../ArchFiles/";
+            $targetdir = "../img/" . $FoIds . "/";
+            if (!file_exists($targetdir)) {
+                mkdir($targetdir, 0777, true);
+            }
             $Fattach = basename($_FILES["file"]["name"]);
             $tarfilepath = $targetdir . strtolower($Fattach);
             $fileType = pathinfo($tarfilepath, PATHINFO_EXTENSION);
@@ -67,7 +70,9 @@ if (isset($_POST['submit'])) {
                 if(in_array($fileType, $allowTypes)) {
                     $random = bin2hex(random_bytes(8));
                     $clean_name = preg_replace("/[^a-zA-Z0-9.]/", "", $Fattach);
-                    $Fattach = $FoIds . '_' . time() . '_' . $random . '_' . $clean_name;
+                    $createfromformat = DateTime::createFromFormat('Y/m/d', date('Y/m/d'));
+                    $unixdate = $createfromformat->getTimestamp();
+                    $Fattach = $FoIds . '_' . $unixdate . '_' . $random . '_' . $clean_name;
                     $tempPath = $_FILES["file"]["tmp_name"];
                     $targetPath = $targetdir . $Fattach;
                     if(move_uploaded_file($tempPath, $targetPath)) {

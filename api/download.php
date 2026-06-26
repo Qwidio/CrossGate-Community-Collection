@@ -53,7 +53,7 @@ if ($active == 0) {
     ]));
 }
 if (!hash_equals($hashedKeys, $secret)) {
-    http_response_code(403);
+    http_response_code(401);
     die(json_encode([
         'message' => 'Invalid API key'
     ]));
