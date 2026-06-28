@@ -13,25 +13,20 @@
 
 ## Documentation & Journals
   for documentation on how to use, please refer to [website documentation](https://porosive.com/documentation/docs.php)<br>
-  changelog and in progress improvement cam be seen on [this page](https://porosive.com/documentation/changelog.php)
-  I'd write some journal note on all progression I remember [here](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/journals.md)<br>
+  changelog and in progress improvement cam be seen on [this page](https://porosive.com/documentation/changelog.php)<br>
+  I'd write some journal note on all progression I remember [here](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/journals.md)
   
-## Installing the client
-
 
 ## Running webserver locally
-  in your local machine it is recommended for you to have these in your enviroment:
+in your local machine it is recommended for you to have these in your enviroment:
   - PHP 8+ installed
   - compatible MySQL instalation
-  <br>
 
-  I'm using XAMPP 8.2.12 because those already installed along with it,
-  <br>
-  open the phpmyadmin panel via the XAMP control panel
-  <br>
-  Import the `cgcc.sql` from this repository to your database and make sure the database name are the same in your database config file on `processes/database.php`.
-  <br>
-  to check if the site are working open up this link `localhost/thePathNameYouExtractThisProjectOn/index.php` on your browser
+I'm using XAMPP 8.2.12 because those already installed along with it,
+
+1. Download the [zip file of this repository](https://github.com/Qwidio/CrossGate-Community-Collection/archive/refs/heads/main.zip)
+2. extract to the public directory of you apache server (htdocs in case of XAMPP)
+4. Import the `cgcc.sql` from the `sql` directory to your MySQL database and make sure the database name are the same in your database config file on `processes/database.php`.
 
 ## Credits
   [MarketingPipeline](https://github.com/MarketingPipeline), [MarkDown Tag](https://github.com/MarketingPipeline/Markdown-Tag) for MarkDown Renderer
