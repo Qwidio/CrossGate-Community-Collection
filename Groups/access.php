@@ -75,20 +75,15 @@ if (isset($_POST['submit'])) {
     // accepting invite and joins
     if ($initReq === "Join") {
         $newMembers = array();
-        if (!in_array($aidis, $newMembers)) {
-            $newMembers[$aidis];
-        }
         foreach ($members as $member) {
-            if ($member != $aidis) {
-                $newMembers[$member];
-            }
+            $newMembers[] = $member;
         }
-        $newMembers = json_encode($newMembers, JSON_UNESCAPED_SLASHES);
+        $newMembers[] = $aidis;
         $stmt_update_access = $connects->prepare("UPDATE groupaccess SET accountState = 'approved' WHERE profileTags = ? and og_identification = ? ;");
         $stmt_update_access->bind_param("ss", $aidis, $gids);
         $stmt_update_access->execute();
         if ($stmt_update_access->affected_rows > 0) {
-            $newMembers = json_encode($newMembers);
+            $newMembers = json_encode($newMembers, JSON_UNESCAPED_SLASHES);
             $addMember = $connects->prepare("UPDATE ogroup SET members = ? WHERE identification = ? ;");
             $addMember->bind_param("ss", $newMembers, $gids);
             $addMember->execute();
@@ -98,18 +93,25 @@ if (isset($_POST['submit'])) {
                 $expdate = date('Y/m/d', strtotime('+1 days'));
                 $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
                 $unixexpdate = $convertedexpdate->getTimestamp();
+                $osids = "browser";
                 $insert_session = $connects->prepare("INSERT INTO groupsession(token, profileTags, og_identification, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $insert_session->bind_param("sssssss", $tokens, $aidis, $gids, $addrss, $osids, $expdate, date('d/m/Y h:i'));
                 if($insert_session->execute()){
+                    $delete_invite = $connects->prepare("DELETE FROM groupinvite WHERE profileTags = ? and inviteToken = ? ;");
+                    $delete_invite->bind_param("ss", $aidis, $inviteToken);
+                    $delete_invite->execute();
+                    if ($delete_invite->affected_rows == 0) {
+                        $new_err = "Failed to dismissed invites. " . $delete_invite->error;
+                    }
                     $_SESSION['GroupsToken'] = $tokens;
                     $_SESSION['roles'] = $roles;
                     $_SESSION['resetPass'] = true;
-                    $_SESSION['corsmsg'] = "Successfully joined " . $gName;
+                    $_SESSION['corsmsg'] = "Successfully joined " . $gName . ", " . $new_err;
                     header('location: manage.php');
                     $insert_session->close();
                     exit;
                 }else{
-                    $_SESSION['corsmsg'] = 'Failed to add new sessions. ' . $insert_session->error;
+                    $_SESSION['corsmsg'] = 'Failed to create new sessions. ' . $insert_session->error;
                     header ('location: index.php');
                     $insert_session->close();
                     exit;
@@ -131,27 +133,23 @@ if (isset($_POST['submit'])) {
         }
     //  removing invites
     } else if ($initReq === "Dismiss") {
-        $stmt_update_invite = $connects->prepare("UPDATE groupaccess SET accountState = 'disabled' WHERE profileTags = ? and og_identification = ? ;");
-        $stmt_update_invite->bind_param("ss", $aidis, $gids);
-        $stmt_update_invite->execute();
-        if ($stmt_update_invite->affected_rows > 0) {
-            $_SESSION['corsmsg'] = "Dismissed " . $gName . " Invites.";
-            header ('location: ../profile.php?user=self');
-            exit;
-        } else {
-            $_SESSION['corsmsg'] = "Failed to check account access. " . $stmt_update_invite->error;
+        $delete_invite = $connects->prepare("DELETE FROM groupinvite WHERE profileTags = ? and inviteToken = ? ;");
+        $delete_invite->bind_param("ss", $aidis, $inviteToken);
+        $delete_invite->execute();
+        if ($delete_invite->affected_rows == 0) {
+            $_SESSION['corsmsg'] = "Failed to dismissed invites. " . $delete_invite->error;
             header ('location: ../profile.php?user=self');
             exit;
         }
-        $stmt_update_access = $connects->prepare("UPDATE groupaccess SET accountState = 'disabled' WHERE profileTags = ? and og_identification = ? ;");
-        $stmt_update_access->bind_param("ss", $aidis, $gids);
-        $stmt_update_access->execute();
-        if ($stmt_update_access->affected_rows > 0) {
+        $disable_access = $connects->prepare("UPDATE groupaccess SET accountState = 'disabled' WHERE profileTags = ? and og_identification = ? ;");
+        $disable_access->bind_param("ss", $aidis, $gids);
+        $disable_access->execute();
+        if ($disable_access->affected_rows > 0) {
             $_SESSION['corsmsg'] = "Dismissed " . $gName . " Invites.";
             header ('location: ../profile.php?user=self');
             exit;
         } else {
-            $_SESSION['corsmsg'] = "Failed to check account access. " . $stmt_update_access->error;
+            $_SESSION['corsmsg'] = "Failed to check account access. " . $disable_access->error;
             header ('location: ../profile.php?user=self');
             exit;
         }

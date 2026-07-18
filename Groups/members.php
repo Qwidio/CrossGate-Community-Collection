@@ -47,7 +47,7 @@ if (isset($_POST['submit'])) {
         $stmt_insert_access = $connects->prepare("INSERT INTO groupaccess (profileTags, passkeys, roles, og_identification, accountState) VALUES (?, 'unset', ?, ?, 'invited');");
         $stmt_insert_access->bind_param("sss", $profileTags, $roles, $gids);
         if ($stmt_insert_access->execute()) {
-            $randKey = bin2hex(random_bytes(64))
+            $randKey = bin2hex(random_bytes(64));
             if (isset($_POST['custom_msg']) || $_POST['custom_msg'] != "") {
                 $custom_msg = $_POST['custom_msg'];
             } else {
