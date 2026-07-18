@@ -6,8 +6,18 @@ if (!isset($specifics) || empty($specifics) || $specifics === "") {
     $specifics = "";
 }
 ?>
-<dialog id="reportDialog" class="posf c0 w100p h100p dp-none fld bg-half-gray ovh-s z999">
-    <div class="posr w100p blurbg flex"><h2 class="posr pad-s w100p txtc txt-b">Report Form</h2><p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('reportDialog')">X</p></div>
+<dialog id="reportDialog" class="posf c0 w100vh minw50 maxw100 h100p dp-none fld bg-def-1 ovh-s z999">
+    <div class="posr w100p blurbg flex">
+        <h2 class="posr pad-s w100p txtc txt-b">
+            Report 
+            <?php if ($specifics != "collection") { ?>
+                Form
+            <?php } else { ?>
+                Collection
+            <?php } ?>
+        </h2>
+        <p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('reportDialog')">X</p>
+    </div>
     <form id="reportForm" class="posr pad-n-v wh100p blurbg flex fld gap10" action="<?php echo $root_route;?>report.php" method="post" enctype="multipart/form-data">
         <input class="hiddeninp" type="text" name="reportsource" hidden required>
         <input class="hiddeninp" type="text" name="ids" hidden required>
@@ -26,27 +36,30 @@ if (!isset($specifics) || empty($specifics) || $specifics === "") {
                 if ($specifics != "collection") {
                 ?>
                 <option name="reportReason" value="spambot" required>spam/bot</option>
+                <option name="reportReason" value="aislop" required>AI Slop</option>
+                <option name="reportReason" value="inappropriate" required>Inappropriate Content</option>
+                <option name="reportReason" value="misinformation" required>Spreading Misinformation</option>
+                <option name="reportReason" value="hatespeech" required>Hate Speech</option>
+                <option name="reportReason" value="copysteal" required>Stealing works & taking credits without any modification</option>
                 <?php
                 }
                 ?>
-                <option name="reportReason" value="aislop" required>AI Slop</option>
-                <option name="reportReason" value="inappropriate" required>Inappropriate Content</option>
-                <option name="reportReason" value="hatespeech" required>Hate Speech</option>
-                <option name="reportReason" value="copysteal" required>Stealing works & taking credits without any modification</option>
-                <option name="reportReason" value="misinformation" required>Spreading Misinformation</option>
                 <?php
                 if ($specifics === "collection") {
                 ?>
-                <option name="reportReason" value="copyright" required>Copyright infringement</option>
-                <option name="reportReason" value="malicious" required>Contain Malware/Virus</option>
+                <option name="reportReason" value="fraud" required>Fraud</option>
+                <option name="reportReason" value="defamatory" required>Defamatory</option>
+                <option name="reportReason" value="broken" required>Broken</option>
+                <option name="reportReason" value="copyright" required>Legal Violation</option>
+                <option name="reportReason" value="malicious" required>Harmful - contain Malware/Virus</option>
                 <?php
                 }
                 ?>
             </select>
         </div>
         <div class="posr sideMg w88p flex fld">
-            <label for="fullcontext">Describe Context</label>
-            <textarea class="inptxt h20 border-b ovh-s" type="text" id="fullcontext" name="fullcontext" placeholder="give the full context why the report happens" autocomplete="off" required></textarea>
+            <label for="fullcontext">Enter additional information that you feel is relevant here:</label>
+            <textarea class="inptxt h20 border-b ovh-s" type="text" id="fullcontext" name="fullcontext" placeholder="e.g. the detailed context if needed" autocomplete="off" required></textarea>
         </div>
         <div class="posr sideMg w88p flex fld">
             <input class="pad-s txtc txt-n bgc-purple border-1 border-hover-white hover-text-orange points" type="submit" name="submit" value="Report">
