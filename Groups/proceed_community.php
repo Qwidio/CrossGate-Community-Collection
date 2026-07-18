@@ -90,9 +90,6 @@ if (isset($_POST['submit'])) {
     $initReq = $_POST['submit'];
     $initReq = htmlspecialchars($initReq, ENT_QUOTES, 'UTF-8');
     if ($initReq === "Post") {
-        $rnum = random_int(100000, 989798);
-        $rword = getRandomWord();
-        $FoIds = $rnum . $rword;
         $Fcreators = $aidis;
         $Ftitles = $_POST['ForumTitles'];
         $Ftopics = $_POST['ForumTopics'];
@@ -100,6 +97,7 @@ if (isset($_POST['submit'])) {
         $Fstate = 'Publics';
         $FHighlight = 'NOs';
         $dates = date('d/m/Y');
+        $FoIds = str_replace("/", "", $dates) . bin2hex(random_bytes(12));
         if (isset($_FILES["file"]["name"]) && $_FILES['file']['name'][0] != "") {
             $targetdir = "../TS/img/" . $FoIds . "/";
             if (!file_exists($targetdir)) {
@@ -190,8 +188,9 @@ if (isset($_POST['submit'])) {
             header('location: community.php?lIds='.$libsIds.'&lc='.$topicIds);
             exit;
         };
-        $update_post = $connects->prepare("UPDATE forums SET ForumState = 'Deleted' WHERE ForumIds = ? ;");
-        $update_post->bind_param("s", $FoIds);
+        $New_FoIds = "deleted_" . $FoIds;
+        $update_post = $connects->prepare("UPDATE forums SET ForumIds = ?, ForumState = 'Deleted' WHERE ForumIds = ? ;");
+        $update_post->bind_param("ss", $New_FoIds, $FoIds);
         $update_post->execute();
         if ($update_post->affected_rows > 0) {
             $_SESSION['corsmsg'] = "removed " . $ForumTitles;

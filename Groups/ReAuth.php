@@ -37,12 +37,15 @@ if (isset($_SESSION['GroupsToken'])) {
     $update_auth->execute();
     if ($update_auth) {
         unset($_SESSION["gids"]);
-        $check_groups = $connects->prepare("SELECT og_identification, roles FROM groupaccess WHERE og_identification = ? AND profileTags = ? ");
+        $check_groups = $connects->prepare("SELECT passkeys, og_identification, roles FROM groupaccess WHERE og_identification = ? AND profileTags = ? ");
         $check_groups->bind_param("ss", $gids, $Tags);
         $check_groups->execute();
         $result_check_groups = $check_groups->get_result();
         $profile_data = $result_check_groups->fetch_assoc();
         if ($profile_data) {
+            if ($profile_data['passkeys'] != "unset") {
+                $_SESSION['resetPass'] = false;
+            }
             $_SESSION['gids'] = $profile_data['og_identification'];
             $_SESSION['roles'] = $profile_data['roles'];
         } else {
