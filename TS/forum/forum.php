@@ -117,7 +117,7 @@ if ($result_check_topic->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../styling/pallate.css">
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <link rel="stylesheet" href="../../styling/footer.css">
@@ -301,7 +301,7 @@ if ($result_check_topic->num_rows > 0) {
         };
         if (isset($aidis)) {
         ?>
-        <form action="../component/post_out.php" method="post" class="posr topMg-s10 pad-s-v w95p sideMg flex border-b border-t gap-s">
+        <form action="../../processes/post_out.php" method="post" class="posr topMg-s10 pad-s-v w95p sideMg flex border-b border-t gap-s">
             <input type="text" name="fids" value="<?php echo $fids;?>" required hidden>
             <input type="text" name="usrIds" value="<?php echo $aidis;?>" required hidden>
             <input class="pad-n-s pad-m-v w88 bg-transparent c-white bora-s" type="text" name="cmtContnt" placeholder="Leave a reply..." auto-complete="off" maxlength="2000" required>
@@ -326,7 +326,7 @@ if ($result_check_topic->num_rows > 0) {
                 $Comments = $value['Comments'];
                 $Cdates = $value['CommentDates'];
         ?>
-            <div class="posr pad-s-v pad-m-s flex fld bg-half-gray box-shad-black-1 border-purple bora-s gap5">
+            <div class="posr pad-s flex fld bg-half-gray box-shad-black-1 border-purple bora-s gap5">
                 <div class="posr flex gap5">
                     <a href="../../profile.php?user=<?php echo $Tags;?>"><?php echo $Names;?></a>
                     <span>|</span>

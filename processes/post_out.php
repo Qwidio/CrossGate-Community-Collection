@@ -1,10 +1,10 @@
 <?php
-require_once '../../processes/database.php';
+require_once 'database.php';
 $errors = array();
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
-    header ('location: ../../index.php');
+    header ('location: ../index.php');
     exit;
 }
 if (isset($_POST['submit'])) {
@@ -17,7 +17,7 @@ if (isset($_POST['submit'])) {
         $pfname = $getname['profileNames'];
     } else {
         $_SESSION['corsmsg'] = 'unidentified user';
-        header ('location: ../../index.php');
+        header ('location: ../index.php');
         exit;
     }
     $initReq = $_POST['submit'];
@@ -32,11 +32,11 @@ if (isset($_POST['submit'])) {
         $stmt_cmtPost->bind_param("ssssss", $cmids, $fids, $cmterTags, $pfname, $comment, $dates);
         if($stmt_cmtPost->execute()){
             $_SESSION['corsmsg'] = 'comment got posted';
-            header ('location: ../forum/forum.php?ids=' . $fids);
+            header ('location: ../TS/forum/forum.php?ids=' . $fids);
             exit;
         }else{
             $_SESSION['corsmsg'] = 'the comment failed to get posted';
-            header ('location: ../forum/dashboard.php');
+            header ('location: ../TS/forum/dashboard.php');
             exit;
         };
         $stmt_cmtPost->close();
@@ -53,12 +53,12 @@ if (isset($_POST['submit'])) {
         $result_check_topic = $check_topic->get_result();
         if ($result_check_topic->num_rows == 0) {
             $_SESSION['corsmsg'] = "Selected topic does not exist";
-            header ('location: ../forum/dashboard.php');
+            header ('location: ../TS/forum/dashboard.php');
             exit;
         };
         $FoIds = str_replace("/", "", $dates) . bin2hex(random_bytes(12));
         if (isset($_FILES["file"]["name"]) && $_FILES['file']['name'][0] != "") {
-            $targetdir = "../img/" . $FoIds . "/";
+            $targetdir = "../TS/img/" . $FoIds . "/";
             if (!file_exists($targetdir)) {
                 mkdir($targetdir, 0777, true);
             }
@@ -82,22 +82,22 @@ if (isset($_POST['submit'])) {
                         if($stmt_frmPost->execute()){
                             $_SESSION['corsmsg'] = 'Forum got posted';
                             $stmt_frmPost->close();
-                            header ('location: ../forum/forum.php?ids=' . $FoIds);
+                            header ('location: ../TS/forum/forum.php?ids=' . $FoIds);
                             exit;
                         } else {
                             $_SESSION['corsmsg'] = 'The Forum failed to post';
                             $stmt_frmPost->close();
-                            header ('location: ../forum/dashboard.php');
+                            header ('location: ../TS/forum/dashboard.php');
                             exit;
                         };
                     } else {
                         $_SESSION['corsmsg'] = 'An error occured when uploading forum attachment';
-                        header ('location: ../forum/dashboard.php');
+                        header ('location: ../TS/forum/dashboard.php');
                         exit;
                     };
                 } else {
                     $_SESSION['corsmsg'] = 'only jpg, jpeg, png, webp, & gif format allowed for the forum attachment';
-                    header ('location: ../forum/dashboard.php');
+                    header ('location: ../TS/forum/dashboard.php');
                     exit;
                 };
             } else {
@@ -107,11 +107,11 @@ if (isset($_POST['submit'])) {
                 if($stmt_frmPost->execute()){
                     $_SESSION['corsmsg'] = 'Forum got posted, uploaded file exceed 5MB';
                     $stmt_frmPost->close();
-                    header ('location: ../forum/forum.php?ids=' . $FoIds);
+                    header ('location: ../TS/forum/forum.php?ids=' . $FoIds);
                     exit;
                 } else {
                     $_SESSION['corsmsg'] = 'The Forum failed to post';
-                    header ('location: ../forum/dashboard.php');
+                    header ('location: ../TS/forum/dashboard.php');
                     $stmt_frmPost->close();
                     exit;
                 };  
@@ -123,11 +123,11 @@ if (isset($_POST['submit'])) {
             if($stmt_frmPost->execute()){
                 $_SESSION['corsmsg'] = 'Forum got posted';
                 $stmt_frmPost->close();
-                header ('location: ../forum/forum.php?ids=' . $FoIds);
+                header ('location: ../TS/forum/forum.php?ids=' . $FoIds);
                 exit;
             } else {
                 $_SESSION['corsmsg'] = 'The Forum failed to post';
-                header ('location: ../forum/dashboard.php');
+                header ('location: ../TS/forum/dashboard.php');
                 $stmt_frmPost->close();
                 exit;
             };

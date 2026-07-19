@@ -98,7 +98,7 @@ if ($result_check_topic->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../styling/pallate.css">
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <link rel="stylesheet" href="../../styling/footer.css">
@@ -302,7 +302,7 @@ if ($result_check_topic->num_rows > 0) {
 <!-- forum create dialog -->
     <dialog id="postForumDialog" class="posf c0 wh100p dp-none fld acjc bg-half-gray ovh-s z999">
         <div class="posr w100p flexblurbg flex"><h2 class="posr rightMg pad-s txt-b">Make New Forum</h2><p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('postForumDialog')">X</p></div>
-        <form class="posr wh100p flexblurbg flex" action="../component/post_out.php" method="post" enctype="multipart/form-data">
+        <form class="posr wh100p flexblurbg flex" action="../../processes/post_out.php" method="post" enctype="multipart/form-data">
             <div class="posr autoMg h50p r16-9 flex fld acjc gap5">
                 <img id="prevs" class="posr sideMg wh100p containfit bg-half-white">
                 <input class="posa c0 wh100p txtc c-black" type="file" name="file" accept="image/*" onchange="uniLoadFile(event, 'prevs')">
