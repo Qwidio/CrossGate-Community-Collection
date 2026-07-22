@@ -1,0 +1,253 @@
+2026-06-26 20:48:07,976 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:57808
+2026-06-26 20:48:07,976 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-26 20:48:09,079 - INFO - Verifying session token with API.
+2026-06-26 20:48:09,098 - INFO - 127.0.0.1 - - [26/Jun/2026 20:48:09] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-26 20:48:34,760 - INFO - 127.0.0.1 - - [26/Jun/2026 20:48:34] "GET /get_command HTTP/1.1" 200 -
+2026-06-26 20:48:35,218 - INFO - Tray Exit clicked. Hard stopping processes.
+2026-06-26 20:48:35,263 - INFO - 127.0.0.1 - - [26/Jun/2026 20:48:35] "GET /get_command HTTP/1.1" 200 -
+2026-06-26 20:48:36,770 - INFO - Helper closed. Terminating UI...
+2026-06-29 23:46:34,965 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:54078
+2026-06-29 23:46:34,965 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 23:46:36,048 - INFO - Verifying session token with API.
+2026-06-29 23:46:36,148 - ERROR - Session verification failed: 401 Client Error: Unauthorized for url: http://localhost/crossgate/crossgate-community-collection/api/reauth.php
+2026-06-29 23:46:36,148 - INFO - 127.0.0.1 - - [29/Jun/2026 23:46:36] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-29 23:49:07,784 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:54118
+2026-06-29 23:49:07,784 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 23:49:08,878 - INFO - Verifying session token with API.
+2026-06-29 23:49:23,896 - ERROR - Session verification failed: HTTPConnectionPool(host='126.0.0.1', port=80): Max retries exceeded with url: /crossgate/crossgate-community-collection/api/reauth.php (Caused by ConnectTimeoutError(<HTTPConnection(host='126.0.0.1', port=80) at 0x1fffb0c6c00>, 'Connection to 126.0.0.1 timed out. (connect timeout=15)'))
+2026-06-29 23:49:23,897 - INFO - 127.0.0.1 - - [29/Jun/2026 23:49:23] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-29 23:49:41,306 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-29 23:49:48,749 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:54128
+2026-06-29 23:49:48,749 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 23:49:49,777 - INFO - Verifying session token with API.
+2026-06-29 23:49:49,788 - ERROR - Session verification failed: 401 Client Error: Unauthorized for url: http://127.0.0.1/crossgate/crossgate-community-collection/api/reauth.php
+2026-06-29 23:49:49,789 - INFO - 127.0.0.1 - - [29/Jun/2026 23:49:49] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-29 23:51:04,647 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-29 23:51:43,524 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:54152
+2026-06-29 23:51:43,524 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 23:51:44,620 - INFO - Verifying session token with API.
+2026-06-29 23:51:44,623 - ERROR - Session verification failed: Invalid URL '127.0.0.1/crossgate/crossgate-community-collection/api/reauth.php': No scheme supplied. Perhaps you meant https://127.0.0.1/crossgate/crossgate-community-collection/api/reauth.php?
+2026-06-29 23:51:44,623 - INFO - 127.0.0.1 - - [29/Jun/2026 23:51:44] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-29 23:51:49,982 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-29 23:52:39,095 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:54178
+2026-06-29 23:52:39,095 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-29 23:52:40,125 - INFO - Verifying session token with API.
+2026-06-29 23:52:40,138 - ERROR - Session verification failed: 401 Client Error: Unauthorized for url: http://localhost/crossgate/crossgate-community-collection/api/reauth.php
+2026-06-29 23:52:40,138 - INFO - 127.0.0.1 - - [29/Jun/2026 23:52:40] "[35m[1mPUT /ID: ae1d0904dc0f59513e49b597ffc9f32824909300c16acbf18b54f1c071617ff6 HTTP/1.1[0m" 500 -
+2026-06-29 23:52:52,152 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:45:37,019 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62188
+2026-06-30 05:45:37,019 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:45:38,056 - INFO - Verifying session token with API.
+2026-06-30 05:45:38,070 - ERROR - Session verification failed: 401 Client Error: Unauthorized for url: http://localhost/crossgate/crossgate-community-collection/api/reauth.php
+2026-06-30 05:45:38,071 - INFO - 127.0.0.1 - - [30/Jun/2026 05:45:38] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-30 05:45:47,669 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:46:42,454 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62199
+2026-06-30 05:46:42,454 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:46:43,544 - INFO - Verifying session token with API.
+2026-06-30 05:46:43,547 - ERROR - Session verification failed: Invalid URL '127.0.0.1/crossgate/crossgate-community-collection/api/reauth.php': No scheme supplied. Perhaps you meant https://127.0.0.1/crossgate/crossgate-community-collection/api/reauth.php?
+2026-06-30 05:46:43,547 - INFO - 127.0.0.1 - - [30/Jun/2026 05:46:43] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-30 05:47:08,026 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:47:11,532 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62206
+2026-06-30 05:47:11,533 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:47:12,563 - INFO - Verifying session token with API.
+2026-06-30 05:47:12,573 - ERROR - Session verification failed: 401 Client Error: Unauthorized for url: http://127.0.0.1/crossgate/crossgate-community-collection/api/reauth.php
+2026-06-30 05:47:12,574 - INFO - 127.0.0.1 - - [30/Jun/2026 05:47:12] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-30 05:48:55,930 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62229
+2026-06-30 05:48:55,931 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:48:57,040 - INFO - Verifying session token with API.
+2026-06-30 05:48:57,057 - ERROR - Session verification failed: 401 Client Error: Unauthorized for url: http://localhost/crossgate/crossgate-community-collection/api/reauth.php
+2026-06-30 05:48:57,058 - INFO - 127.0.0.1 - - [30/Jun/2026 05:48:57] "[35m[1mPUT /verifysession HTTP/1.1[0m" 500 -
+2026-06-30 05:49:04,055 - INFO - Attempting login for taka to the API
+2026-06-30 05:49:04,107 - INFO - 127.0.0.1 - - [30/Jun/2026 05:49:04] "POST /login HTTP/1.1" 200 -
+2026-06-30 05:49:16,767 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:50:24,751 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62248
+2026-06-30 05:50:24,751 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:50:25,802 - INFO - Verifying session token with API.
+2026-06-30 05:50:25,817 - INFO - 127.0.0.1 - - [30/Jun/2026 05:50:25] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 05:50:36,109 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:52:00,322 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62264
+2026-06-30 05:52:00,323 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:52:01,419 - INFO - Verifying session token with API.
+2026-06-30 05:52:01,434 - INFO - 127.0.0.1 - - [30/Jun/2026 05:52:01] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 05:52:08,098 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:52:42,094 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62279
+2026-06-30 05:52:42,094 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:52:43,128 - INFO - Verifying session token with API.
+2026-06-30 05:52:43,142 - INFO - 127.0.0.1 - - [30/Jun/2026 05:52:43] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 05:52:49,930 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:58:05,319 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62368
+2026-06-30 05:58:05,319 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:58:06,404 - INFO - Verifying session token with API.
+2026-06-30 05:58:06,417 - INFO - 127.0.0.1 - - [30/Jun/2026 05:58:06] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 05:58:28,665 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 05:58:35,494 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62378
+2026-06-30 05:58:35,495 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 05:58:36,526 - INFO - Verifying session token with API.
+2026-06-30 05:58:36,541 - INFO - 127.0.0.1 - - [30/Jun/2026 05:58:36] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 05:58:43,835 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 06:00:05,560 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62409
+2026-06-30 06:00:05,560 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 06:00:06,654 - INFO - Verifying session token with API.
+2026-06-30 06:00:06,669 - INFO - 127.0.0.1 - - [30/Jun/2026 06:00:06] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 06:00:11,817 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 06:02:33,178 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62443
+2026-06-30 06:02:33,179 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 06:02:34,263 - INFO - Verifying session token with API.
+2026-06-30 06:02:34,281 - INFO - 127.0.0.1 - - [30/Jun/2026 06:02:34] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 06:02:39,232 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 06:03:43,181 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62464
+2026-06-30 06:03:43,181 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 06:03:44,227 - INFO - Verifying session token with API.
+2026-06-30 06:03:44,241 - INFO - 127.0.0.1 - - [30/Jun/2026 06:03:44] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 06:03:51,100 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 06:09:02,013 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:62501
+2026-06-30 06:09:02,013 - INFO - [33mPress CTRL+C to quit[0m
+2026-06-30 06:09:03,110 - INFO - Verifying session token with API.
+2026-06-30 06:09:03,127 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:03] "PUT /verifysession HTTP/1.1" 200 -
+2026-06-30 06:09:06,927 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:06] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:07,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:07] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:07,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:07] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:08,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:08] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:08,922 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:08] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:09,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:09] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:09,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:09] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:10,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:10] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:10,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:10] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:11,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:11] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:11,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:11] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:12,422 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:12] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:12,919 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:12] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:13,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:13] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:13,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:13] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:14,501 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:14] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:14,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:14] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:15,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:15] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:15,920 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:15] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:16,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:16] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:16,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:16] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:17,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:17] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:17,922 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:17] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:18,425 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:18] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:18,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:18] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:19,422 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:19] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:19,962 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:19] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:20,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:20] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:20,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:20] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:21,429 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:21] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:21,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:21] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:22,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:22] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:22,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:22] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:23,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:23] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:23,922 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:23] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:24,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:24] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:24,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:24] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:25,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:25] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:25,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:25] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:26,421 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:26] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:26,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:26] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:27,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:27] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:27,921 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:27] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:28,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:28] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:28,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:28] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:29,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:29] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:29,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:29] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:30,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:30] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:30,944 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:30] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:31,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:31] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:31,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:31] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:32,425 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:32] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:32,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:32] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:33,423 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:33] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:33,925 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:33] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:34,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:34] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:34,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:34] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:35,420 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:35] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:35,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:35] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:36,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:36] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:36,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:36] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:37,422 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:37] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:37,922 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:37] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:38,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:38] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:38,921 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:38] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:39,425 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:39] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:39,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:39] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:40,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:40] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:40,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:40] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:41,421 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:41] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:41,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:41] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:42,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:42] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:42,923 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:42] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:43,425 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:43] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:43,925 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:43] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:44,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:44] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:44,925 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:44] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:45,425 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:45] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:45,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:45] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:46,425 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:46] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:46,926 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:46] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:47,426 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:47] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:47,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:47] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:48,424 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:48] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:48,922 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:48] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:49,421 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:49] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:49,924 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:49] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:50,425 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:50] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:50,921 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:50] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:51,426 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:51] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:51,925 - INFO - 127.0.0.1 - - [30/Jun/2026 06:09:51] "GET /get_command HTTP/1.1" 200 -
+2026-06-30 06:09:52,056 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-06-30 06:09:53,430 - INFO - Helper closed. Terminating UI...
+2026-07-01 07:41:09,376 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:64234
+2026-07-01 07:41:09,377 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-01 07:41:10,452 - INFO - Verifying session token with API.
+2026-07-01 07:41:10,513 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:10] "PUT /verifysession HTTP/1.1" 200 -
+2026-07-01 07:41:15,169 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:15] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:15,661 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:15] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:16,000 - INFO - Tray clicked: SETTINGS
+2026-07-01 07:41:16,166 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:16] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:16,655 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:16] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:17,165 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:17] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:17,655 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:17] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:18,164 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:18] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:18,657 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:18] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:19,164 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:19] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:19,667 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:19] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:20,161 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:20] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:20,657 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:20] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:21,166 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:21] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:21,661 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:21] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:22,165 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:22] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:22,663 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:22] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:23,155 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:23] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:23,666 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:23] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:24,168 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:24] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:24,663 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:24] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:25,168 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:25] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:25,661 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:25] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:26,166 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:26] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:26,659 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:26] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:27,161 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:27] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:27,658 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:27] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:28,166 - INFO - 127.0.0.1 - - [01/Jul/2026 07:41:28] "GET /get_command HTTP/1.1" 200 -
+2026-07-01 07:41:28,330 - INFO - Executing Tray Exit. Hard stopping processes.
+2026-07-01 07:41:29,672 - INFO - Helper closed. Terminating UI...

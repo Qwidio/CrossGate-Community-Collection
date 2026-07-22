@@ -1,102 +1,83 @@
-# note: the code is AI assisted but always goes through my own modification since it still bad at doing UI than me despite my lack of Python experience
+# this UI still uses mock data on the MOCK_APPS array below
 
 import sys
 import os
+import requests
+import logging
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, 
     QPushButton, QLabel, QStackedWidget, QListWidget, QListWidgetItem,
-    QFileDialog, QLineEdit, QFrame, QSplitter
+    QFileDialog, QLineEdit, QFrame, QSplitter, QProgressBar, QScrollArea
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 
-# Mock Database including banner colors (as placeholders for banner images)
+HELPER_PORT = sys.argv[1] if len(sys.argv) > 1 else "8080"
+INITIAL_PAGE = sys.argv[2] if len(sys.argv) > 2 else "HOME"
+
+logging.basicConfig(
+    filename='launcher_helper.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+
+# use this for testing UI w'out api's
 MOCK_APPS = [
     {
-        "id": "NIE", 
-        "title": "NamelessInExistence", 
-        "desc": "Within the nothingness. everything that can, will exist",
-        "status": "Ready to Play", 
-        "banner_color": "#4f83d6",
-        "icon_text": "NIE"
-    },
+    "id": "NIE", "title": "NamelessInExistence", "desc": "Within the nothingness. everything that can, will exist",
+    "status": "Ready to Play", "banner_color": "#4f83d6", "icon_text": "NIE", "banner": "test.png"
+    }
 ]
 
+# yes just reuse these things
 OPTIONS = [
-    {
-        "id": "1", 
-        "title": "Library", 
-        "icon_img": "lbr.svg",
-        "icon_text": "LBR"
-    },
-    {
-        "id": "2", 
-        "title": "Downloads", 
-        "icon_img": "dl.svg", 
-        "icon_text": "DL"
-    },
-    {
-        "id": "3", 
-        "title": "Settings", 
-        "icon_img": "stg.svg",
-        "icon_text": "STG"
-    },
+    {"id": "1", "title": "Library", "icon_img": "lbr.svg", "icon_text": "LBR"},
+    {"id": "2", "title": "Downloads", "icon_img": "dl.svg", "icon_text": "DL"},
+    {"id": "3", "title": "Settings", "icon_img": "stg.svg", "icon_text": "STG"},
 ]
 
 class LauncherApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("App Launcher")
+        self.setWindowTitle("Launcher")
         self.resize(1366, 768)
-        self.download_directory = os.path.expanduser("~/Downloads") # Default Path
+        self.download_directory = os.path.expanduser("~/Downloads")
         
-        # Base Dark Mode Theme
         self.setStyleSheet("""
             QMainWindow { background-color: #111213; }
             QWidget { color: #e3e3e3; font-family: 'Segoe UI', sans-serif; }
             QLineEdit { background-color: #1e1f22; border: 1px solid #2b2d31; border-radius: 4px; padding: 6px; color: white; }
             QListWidget { background-color: transparent; border: none; }
+            QProgressBar { border: 1px solid #2b2d31; border-radius: 4px; text-align: center; background-color: #1e1f22; color: white; }
+            QProgressBar::chunk { background-color: #2979ff; }
         """)
 
-        # Main horizontal layout structure
         main_layout = QHBoxLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # -------------------------------------------------------------
-        # 1. LEFTMOST SQUARE ICON BAR (Apps)
-        # -------------------------------------------------------------
+        # app icon bar
         self.icon_bar = QWidget()
         self.icon_bar.setFixedWidth(65)
         self.icon_bar.setStyleSheet("background-color: #1e1f22; border-right: 1px solid #2b2d31;")
         icon_layout = QVBoxLayout(self.icon_bar)
         icon_layout.setContentsMargins(5, 15, 5, 15)
-        icon_layout.setSpacing(10)
         icon_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        # Generate square buttons for each app
         for app_data in MOCK_APPS:
             btn = QPushButton(app_data["icon_text"])
             btn.setFixedSize(55, 55)
-            # You can add background-image here later just like the options bar
-            btn.setStyleSheet(f"""
-                QPushButton {{ 
-                    background-color: {app_data['banner_color']}; color: white;
-                    font-weight: bold; border-radius: 8px; font-size: 14px; border: 2px solid #2b2d31;
-                }}
-                QPushButton:hover {{ border: 2px solid #5865f2; }}
-            """)
-            # Clicking an icon forces the main stack to "Home" and updates the background
+            btn.setStyleSheet(f"background-color: {app_data['banner_color']}; color: white; border-radius: 8px; font-weight: bold;")
             btn.clicked.connect(lambda checked, data=app_data: self.switch_to_home_app(data))
             icon_layout.addWidget(btn)
 
-        # PAGES (QStackedWidget)
+        # Pages
         self.page_stack = QStackedWidget()
+        self.init_home_page()       
+        self.init_library_page()    
+        self.init_downloads_page()  
+        self.init_settings_page()   
         
-        self.init_home_page()       # Index 0
-        self.init_library_page()    # Index 1
-        self.init_downloads_page()  # Index 2
-        self.init_settings_page()   # Index 3
-
         # Vertical navbar
         self.options_bar = QWidget()
         self.options_bar.setFixedWidth(40)
@@ -106,12 +87,11 @@ class LauncherApp(QMainWindow):
         options_layout.setSpacing(10)
         options_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        # Map options to their respective page stack indices (Library=1, Downloads=2, Settings=3)
+        # Mapping options (Library=1, Downloads=2, Settings=3)
         for index, opt_data in enumerate(OPTIONS):
             btn = QPushButton("")
             btn.setFixedSize(30, 30)
-            
-            # Use border-image to stretch the png over the button. 
+            # Used border-image to stretch the png over the button. 
             # If the image isn't found, it defaults to the background color and shows the icon_text.
             btn.setStyleSheet(f"""
                 QPushButton {{
@@ -128,80 +108,93 @@ class LauncherApp(QMainWindow):
             btn.clicked.connect(lambda checked, idx=index: self.page_stack.setCurrentIndex(idx + 1))
             options_layout.addWidget(btn)
 
-        # -------------------------------------------------------------
-        # ASSEMBLE LAYOUT (Left to Right)
-        # -------------------------------------------------------------
-        main_layout.addWidget(self.icon_bar)      # Left
-        main_layout.addWidget(self.page_stack)    # Center
-        main_layout.addWidget(self.options_bar)   # Right
+        main_layout.addWidget(self.icon_bar)
+        main_layout.addWidget(self.page_stack)
+        main_layout.addWidget(self.options_bar)
 
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
-        
-        # Load the first app on initialization
-        if MOCK_APPS:
-            self.switch_to_home_app(MOCK_APPS[0])
 
-    # PAGE HOME PANEL
+        if INITIAL_PAGE == "LIBRARY": 
+            self.page_stack.setCurrentIndex(1)
+        elif INITIAL_PAGE == "DOWNLOADS": 
+            self.page_stack.setCurrentIndex(2)
+        elif INITIAL_PAGE == "SETTINGS": 
+            self.page_stack.setCurrentIndex(3)
+        else:
+            if MOCK_APPS:
+                self.switch_to_home_app(MOCK_APPS[0])
+
+        # Polling Timer for Helper Connection and Tray Commands
+        self.health_timer = QTimer(self)
+        self.health_timer.timeout.connect(self.poll_helper)
+        self.health_timer.start(500)
+
+    def poll_helper(self):
+        try:
+            resp = requests.get(f"http://127.0.0.1:{HELPER_PORT}/get_command", timeout=1)
+            data = resp.json()
+            cmd = data.get("command")
+            
+            # Bring window to front
+            if cmd:
+                self.showNormal()
+                self.activateWindow()
+                
+                # Switch pages set from tray command
+                if cmd == "HOME": self.page_stack.setCurrentIndex(0)
+                elif cmd == "LIBRARY": self.page_stack.setCurrentIndex(1)
+                elif cmd == "DOWNLOADS": self.page_stack.setCurrentIndex(2)
+                elif cmd == "SETTINGS": self.page_stack.setCurrentIndex(3)
+
+        except requests.ConnectionError:
+            logging.info("Helper closed. Terminating UI...")
+            QApplication.quit()
+
+    # --- HOME PAGE ---
     def init_home_page(self):
         self.home_page = QFrame()
         layout = QVBoxLayout(self.home_page)
         layout.setContentsMargins(30, 40, 30, 40)
         
-        # App details (Top Left)
-        self.home_title = QLabel("Game Title")
+        self.home_title = QLabel("Title")
         self.home_title.setStyleSheet("font-size: 32px; font-weight: bold; color: white;")
         layout.addWidget(self.home_title)
         
-        self.home_desc = QLabel("Game Description goes here.")
+        self.home_desc = QLabel("Desc")
         self.home_desc.setWordWrap(True)
         self.home_desc.setFixedWidth(400)
         self.home_desc.setStyleSheet("font-size: 14px; color: white; margin-top: 10px;")
         layout.addWidget(self.home_desc)
+        layout.addStretch() 
         
-        layout.addStretch() # Push launch button to the bottom
-        
-        # Launch Button container (Bottom Left)
         launch_layout = QHBoxLayout()
         self.btn_launch = QPushButton("LAUNCH")
         self.btn_launch.setFixedSize(220, 60)
-        self.btn_launch.setStyleSheet("""
-            QPushButton {
-                background-color: #ffc107; color: #111213; border: none;
-                font-size: 20px; font-weight: bold; border-radius: 6px;
-            }
-            QPushButton:hover { background-color: #ffe066; }
-        """)
-        self.btn_launch.clicked.connect(self.on_launch_clicked)
         launch_layout.addWidget(self.btn_launch)
         launch_layout.addStretch()
-        
         layout.addLayout(launch_layout)
         self.page_stack.addWidget(self.home_page)
 
     def switch_to_home_app(self, app_data):
-        self.current_home_app = app_data
         self.home_title.setText(app_data["title"])
         self.home_desc.setText(app_data["desc"])
         
         if app_data["status"] == "Ready to Play":
             self.btn_launch.setText("LAUNCH")
-            self.btn_launch.setStyleSheet("QPushButton { background-color: #00c853; color: black; font-size: 20px; font-weight: bold; border-radius: 6px; border: none; } QPushButton:hover { background-color: #2edb69; }")
+            self.btn_launch.setStyleSheet("background-color: #00c853; color: black; font-size: 20px; font-weight: bold; border-radius: 6px;")
         elif app_data["status"] == "Update Available":
             self.btn_launch.setText("UPDATE")
-            self.btn_launch.setStyleSheet("QPushButton { background-color: #ff9100; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; border: none; } QPushButton:hover { background-color: #ffa726; }")
+            self.btn_launch.setStyleSheet("background-color: #ff9100; color: white; font-size: 20px; font-weight: bold; border-radius: 6px;")
         else:
             self.btn_launch.setText("DOWNLOAD")
-            self.btn_launch.setStyleSheet("QPushButton { background-color: #2979ff; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; border: none; } QPushButton:hover { background-color: #60a5fa; }")
+            self.btn_launch.setStyleSheet("background-color: #2979ff; color: white; font-size: 20px; font-weight: bold; border-radius: 6px;")
 
-        self.home_page.setStyleSheet(f"background-color: {app_data['banner_color']}; border-radius: 0px;")
+        self.home_page.setStyleSheet(f"background-color: {app_data['banner_color']};")
         self.page_stack.setCurrentIndex(0)
 
-    def on_launch_clicked(self):
-        print(f"Action triggered from Home for: {self.current_home_app['title']} -> State: {self.btn_launch.text()}")
-
-    # PAGE LIBRARY PANEL (Minimalist + Split Detail Panel)
+    # --- LIBRARY PAGE ---
     def init_library_page(self):
         page = QWidget()
         layout = QHBoxLayout(page)
@@ -209,17 +202,11 @@ class LauncherApp(QMainWindow):
         layout.setSpacing(0)
         
         splitter = QSplitter(Qt.Orientation.Horizontal)
-        splitter.setStyleSheet("QSplitter::handle { background-color: #2b2d31; width: 1px; }")
         
         self.lib_list = QListWidget()
         self.lib_list.setStyleSheet("""
-            QListWidget::item { 
-                padding: 15px; color: #b5bac1; border-bottom: 1px solid #1e1f22; 
-            }
-            QListWidget::item:selected { 
-                background-color: #2b2d31; color: white; font-weight: bold; 
-            }
-            QListWidget::item:hover { background-color: #1e1f22; }
+            QListWidget::item { padding: 15px; color: #b5bac1; border-bottom: 1px solid #1e1f22; }
+            QListWidget::item:selected { background-color: #2b2d31; color: white; font-weight: bold; }
         """)
         
         for app in MOCK_APPS:
@@ -227,11 +214,11 @@ class LauncherApp(QMainWindow):
             item.setData(Qt.ItemDataRole.UserRole, app)
             self.lib_list.addItem(item)
             
-        self.lib_list.currentItemChanged.connect(self.update_library_detail_panel)
+        self.lib_list.currentItemChanged.connect(self.update_library_detail)
         splitter.addWidget(self.lib_list)
         
         self.detail_panel = QFrame()
-        self.detail_panel.setStyleSheet("background-color: #1e1f22; padding: 20px;")
+        self.detail_panel.setStyleSheet("background-color: #111213; padding: 20px;")
         self.detail_layout = QVBoxLayout(self.detail_panel)
         self.detail_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
@@ -243,53 +230,79 @@ class LauncherApp(QMainWindow):
         self.detail_status.setStyleSheet("color: #b5bac1; font-size: 14px; margin-top: 5px;")
         self.detail_layout.addWidget(self.detail_status)
         
-        self.detail_action_btn = QPushButton("Action")
-        self.detail_action_btn.setFixedWidth(150)
-        self.detail_action_btn.setVisible(False)
-        self.detail_layout.addWidget(self.detail_action_btn)
-        
         splitter.addWidget(self.detail_panel)
         splitter.setSizes([400, 600])
-        
         layout.addWidget(splitter)
         self.page_stack.addWidget(page)
         
-        if self.lib_list.count() > 0:
-            self.lib_list.setCurrentRow(0)
+        if self.lib_list.count() > 0: self.lib_list.setCurrentRow(0)
 
-    def update_library_detail_panel(self, current, previous):
-        if not current:
-            return
+    def update_library_detail(self, current, previous):
+        if not current: return
         app_data = current.data(Qt.ItemDataRole.UserRole)
-        
         self.detail_title.setText(app_data["title"])
-        self.detail_status.setText(f"Status: {app_data['status']}\n\nInstall Path Reference:\n{self.download_directory}/{app_data['title']}")
-        self.detail_action_btn.setVisible(True)
-        self.detail_action_btn.setText(app_data["status"])
-        
-        base_btn_style = "border: none; padding: 8px 16px; border-radius: 4px;"
-        if app_data["status"] == "Ready to Play":
-            self.detail_action_btn.setStyleSheet(f"background-color: #00c853; color: black; font-weight: bold; {base_btn_style}")
-        elif app_data["status"] == "Update Available":
-            self.detail_action_btn.setStyleSheet(f"background-color: #ff9100; color: white; font-weight: bold; {base_btn_style}")
-        else:
-            self.detail_action_btn.setStyleSheet(f"background-color: #2979ff; color: white; font-weight: bold; {base_btn_style}")
+        self.detail_status.setText(f"Status: {app_data['status']}\n\nInstall Path:\n{self.download_directory}/{app_data['title']}")
 
-    # PAGE DOWNLOADS PANEL
+    # --- DOWNLOADS PAGE ---
     def init_downloads_page(self):
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setContentsMargins(30, 30, 30, 30)
         
-        title = QLabel("Downloads")
-        title.setStyleSheet("font-size: 24px; font-weight: bold; color: white;")
-        layout.addWidget(title)
+        header = QLabel("MANAGE DOWNLOADS")
+        header.setStyleSheet("font-size: 24px; font-weight: bold; color: white; padding-bottom: 10px;")
+        layout.addWidget(header)
         
-        layout.addWidget(QLabel("No Active Downloads running in queue."))
-        layout.addStretch()
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
+        
+        scroll_content = QWidget()
+        scroll_layout = QVBoxLayout(scroll_content)
+        scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        # Mock Download Item
+        dl_frame = QFrame()
+        dl_frame.setStyleSheet("background-color: #1e1f22; border-radius: 8px; padding: 15px;")
+        dl_layout = QVBoxLayout(dl_frame)
+        
+        info_row = QHBoxLayout()
+        title = QLabel("Void Runners - High Res Texture Pack")
+        title.setStyleSheet("font-weight: bold; font-size: 16px;")
+        speed = QLabel("14.5 MB/s  |  Network")
+        speed.setStyleSheet("color: #00c853; font-weight: bold;")
+        
+        info_row.addWidget(title)
+        info_row.addStretch()
+        info_row.addWidget(speed)
+        dl_layout.addLayout(info_row)
+        
+        prog_bar = QProgressBar()
+        prog_bar.setValue(45)
+        prog_bar.setFixedHeight(15)
+        dl_layout.addWidget(prog_bar)
+        
+        status_row = QHBoxLayout()
+        size_lbl = QLabel("1.2 GB / 2.8 GB")
+        size_lbl.setStyleSheet("color: #b5bac1;")
+        
+        btn_pause = QPushButton("⏸ Pause")
+        btn_pause.setStyleSheet("background-color: #2b2d31; padding: 6px 12px; border-radius: 4px;")
+        btn_cancel = QPushButton("⏹ Cancel")
+        btn_cancel.setStyleSheet("background-color: #ff5252; color: white; padding: 6px 12px; border-radius: 4px;")
+        
+        status_row.addWidget(size_lbl)
+        status_row.addStretch()
+        status_row.addWidget(btn_pause)
+        status_row.addWidget(btn_cancel)
+        dl_layout.addLayout(status_row)
+        
+        scroll_layout.addWidget(dl_frame)
+        scroll.setWidget(scroll_content)
+        layout.addWidget(scroll)
         self.page_stack.addWidget(page)
 
-    # PAGE SETTINGS PANEL
+    # --- SETTINGS PAGE ---
     def init_settings_page(self):
         page = QWidget()
         layout = QVBoxLayout(page)
@@ -301,7 +314,7 @@ class LauncherApp(QMainWindow):
         title.setStyleSheet("font-size: 24px; font-weight: bold; color: white;")
         layout.addWidget(title)
         
-        dir_label = QLabel("Downloads Installation Directory")
+        dir_label = QLabel("Global Installation Directory")
         dir_label.setStyleSheet("font-size: 14px; color: #b5bac1; font-weight: bold;")
         layout.addWidget(dir_label)
         
@@ -320,19 +333,15 @@ class LauncherApp(QMainWindow):
         self.page_stack.addWidget(page)
 
     def browse_download_directory(self):
-        selected_dir = QFileDialog.getExistingDirectory(
-            self, 
-            "Select Global Installation Directory", 
-            self.download_directory
-        )
+        selected_dir = QFileDialog.getExistingDirectory(self, "Select Global Installation Directory", self.download_directory)
         if selected_dir:
             self.download_directory = selected_dir
             self.dir_input.setText(selected_dir)
             
+            # Refresh library detail view if open
             current_item = self.lib_list.currentItem()
             if current_item:
-                self.update_library_detail_panel(current_item, None)
-
+                self.update_library_detail(current_item, None)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
