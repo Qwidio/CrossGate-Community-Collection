@@ -33,9 +33,10 @@ if (isset($_POST['libsids']) && isset($_POST['MarkOut'])) {
         $value = $result_check_profile->fetch_assoc();
         $mkot = $value['mkot'];
         $data = json_decode($mkot, true);
-        $ltlnData = $data['lastLogin'];
         $markedData = $data['marked'];
         $private = $data['private'];
+        $favbadge = $data['favbadge'];
+        $themes = $data['themes'];
     } else {
         $_SESSION['corsmsg'] = "Error user missing defaults credentials";
         header ('location: ../index.php');
@@ -82,9 +83,10 @@ if (isset($_POST['libsids']) && isset($_POST['MarkOut'])) {
     exit;
 }
 $usrDatTemp = [
-    "lastLogin" => $ltlnData,
     "marked"    => $marked,
-    "private"   => $private
+    "private"   => $private,
+    "favbadge"  => $favbadge,
+    "themes"    => $themes
 ];
 $usrDatTemp = json_encode($usrDatTemp, JSON_UNESCAPED_SLASHES);
 $update_mkot = $connects->prepare("UPDATE profiles SET mkot = ? WHERE profileTags = ? ;");

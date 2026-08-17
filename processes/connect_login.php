@@ -52,53 +52,42 @@ if (isset($_POST['Login'])) {
         if ($result_check_password->num_rows == 1) {
             $value = $result_check_password->fetch_assoc();
             $aidis = $value['profileTags'];
-            if (isset($_POST['sessionless'])) {
-                $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE profileTags = ?;");
-                $check_session->bind_param("s", $aidis);
-                $check_session->execute();
-                $result_check_session = $check_session->get_result();
-                if ($result_check_session->num_rows > 2) {
-                    $_SESSION['corsmsg'] = 'Your account exceeds the number of session allowed';
-                    header ('location: ../connect_it/connect_it.php');
-                    exit;
-                };
-                function generateApiKey($length) {
-                    return bin2hex(random_bytes($length / 2));
-                }
-                $tokens = generateApiKey(64);
-                $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE sessiontokens = ?;");
-                $check_session->bind_param("s", $tokens);
-                $check_session->execute();
-                $result_check_session = $check_session->get_result();
-                if ($result_check_session->num_rows == 0) {
-                    $addrss = getIpAddr();
-                    $osids = $_POST['os'] ?? 'Unknown';
-                    $expdate = date('Y/m/d', strtotime('+15 days'));
-                    $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
-                    $unixexpdate = $convertedexpdate->getTimestamp();
-                    $insert_session = $connects->prepare("INSERT INTO sessionlogs(profileTags, sessiontokens, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?)");
-                    $insert_session->bind_param("ssssss", $aidis, $tokens, $addrss, $osids, $expdate, date('d/m/Y h:i'));
-                    if($insert_session->execute()){
-                        unset($_COOKIE['sessionToken']);
-                        setcookie("sessionToken", $tokens, $unixexpdate, "/");
-                        $_SESSION['profileTags'] = $aidis;
-                        $_SESSION['corsmsg'] = 'Login Successful';
-                        header('location: ../' . $prev_loc);
-                        exit;
-                    }else{
-                        $_SESSION['corsmsg'] = 'Failed to add new sessions';
-                        header ('location: ../connect_it/connect_it.php');
-                        exit;
-                    };
-                    $insert_session->close();
-                }
-                $check_session->close();
-            } else {
+            if (!isset($_POST['sessionless'])) {
                 $_SESSION['profileTags'] = $aidis;
                 $_SESSION['corsmsg'] = 'Login Successful';
                 header('location: ../' . $prev_loc);
                 exit;
             }
+            $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE profileTags = ?;");
+            $check_session->bind_param("s", $aidis);
+            $check_session->execute();
+            $result_check_session = $check_session->get_result();
+            if ($result_check_session->num_rows > 2) {
+                $_SESSION['corsmsg'] = 'Your account exceeds the number of session allowed';
+                header ('location: ../connect_it/connect_it.php');
+                exit;
+            };
+            $tokens = bin2hex(random_bytes(32));
+            $addrss = getIpAddr();
+            $osids = $_POST['os'] ?? 'Unknown';
+            $expdate = date('Y/m/d', strtotime('+15 days'));
+            $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
+            $unixexpdate = $convertedexpdate->getTimestamp();
+            $insert_session = $connects->prepare("INSERT INTO sessionlogs(profileTags, sessiontokens, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?)");
+            $insert_session->bind_param("ssssss", $aidis, $tokens, $addrss, $osids, $expdate, date('d/m/Y h:i'));
+            if($insert_session->execute()){
+                unset($_COOKIE['sessionToken']);
+                setcookie("sessionToken", $tokens, $unixexpdate, "/");
+                $_SESSION['profileTags'] = $aidis;
+                $_SESSION['corsmsg'] = 'Login Successful';
+                header('location: ../' . $prev_loc);
+                exit;
+            }else{
+                $_SESSION['corsmsg'] = 'Failed to add new sessions';
+                header ('location: ../connect_it/connect_it.php');
+                exit;
+            };
+            $insert_session->close();
         } else {
             $errors = "Password Invalid, try again";
             $_SESSION['corsmsg'] = $errors;

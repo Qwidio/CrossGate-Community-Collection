@@ -8,11 +8,6 @@ if (empty($_SESSION['prev_loc'])) {
 };
 
 if (isset($_POST['Register'])) {
-    function getRandomWord($len = 10) {
-        $word = array_merge(range('a', 'z'), range('A', 'Z'));
-        shuffle($word);
-        return substr(implode($word), 0, $len);
-    }
     $username = $_POST['username'];
     $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
     $password = $_POST['password'];
@@ -27,17 +22,16 @@ if (isset($_POST['Register'])) {
     $stmt_check->execute();
     $result_check = $stmt_check->get_result();
     if ($result_check->num_rows == 0) {
-        $rnum = random_int(1000, 9897);
-        $rword = getRandomWord();
-        $profileTags = $username . "_" . $rword . "_" . $rnum;
+        $profileTags = $username . bin2hex(random_bytes(32 / 2));
         $stmt_insert = $connects->prepare("INSERT INTO user (profileTags, username, password, Email) VALUES (?, ?, MD5(?), ?)");
         $stmt_insert->bind_param("ssss", $profileTags, $username, $password, $Email);
         if ($stmt_insert->execute()) {
             $date = date('d/m/Y h:i');
             $usrDatTemp = [
-                "lastLogin"   => "$date",
                 "marked"      => "empty",
-                "private"     => false
+                "private"     => false,
+                "favbadge"    => "none",
+                "themes"      => "0"
             ];
             $encodedMkot = json_encode($usrDatTemp, JSON_UNESCAPED_SLASHES);
             $stmt_profile_insert = $connects->prepare("INSERT INTO profiles (profileTags, profileNames, profileJDates, mkot) VALUES (?, ?, ?, ?)");
