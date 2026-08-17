@@ -48,8 +48,14 @@ if (isset($_POST['Register'])) {
     $stmt_check_GName->execute();
     $result_check_GName = $stmt_check_GName->get_result();
     if ($result_check_GName->num_rows == 0) {
-        $randKey = generateApiKey(32);
-        $new_gids = $GName . "_" . $randKey;
+        $randKey = generateApiKey(16);
+        $sanitized = str_replace('%', 'prcn', $GName);
+        $sanitized = str_replace(' ', '_', $sanitized);
+        $sanitized = str_replace('/', 'I', $sanitized);
+        if (strlen($sanitized) > 500) {
+            $sanitized = substr($sanitized,0,500);
+        }
+        $new_gids = $sanitized . "_" . $randKey;
         $members = ["$aidis"];
         $sites[] = [
             "site"  => "", 
@@ -110,97 +116,65 @@ if (isset($_POST['Register'])) {
         header ('location: index.php');
         exit;
     }
-    $username = $_POST['username'];
-    $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
-    $passkeys = $_POST['passkeys'];
-    if (empty($username) || empty($passkeys)) {
+    if (!isset($_POST['passkeys']) ||!isset($_POST['selectedGids']) || empty($_POST['passkeys']) || empty($_POST['selectedGids'])) {
         $_SESSION['corsmsg'] = "missing credentials";
         header('location: ../Groups/index.php');
         exit;
     }
-    $stmt_check_username = $connects->prepare("SELECT userState, profileTags FROM user WHERE username = ?");
-    $stmt_check_username->bind_param("s", $username);
-    $stmt_check_username->execute();
-    $result_check_username = $stmt_check_username->get_result();
-    if ($result_check_username->num_rows == 1) {
-        $value = $result_check_username->fetch_assoc();
-        $current_state = $value['userState'];
-        $profileTags = $value['profileTags'];
-        if ($aidis != $profileTags) {
-            $_SESSION['corsmsg'] = "use the same user credentials you currently logged with";
-            header('location: ../Groups/index.php');
+    $passkeys = $_POST['passkeys'];
+    $selectedGids = $_POST['selectedGids'];
+    $stmt_check_passkeys = $connects->prepare("SELECT roles FROM groupaccess WHERE og_identification = ? AND profileTags = ? AND passkeys = MD5(?) AND accountState = 'approved';");
+    $stmt_check_passkeys->bind_param("sss", $selectedGids, $aidis, $passkeys);
+    $stmt_check_passkeys->execute();
+    $result_check_passkeys = $stmt_check_passkeys->get_result();
+    if ($result_check_passkeys->num_rows == 1) {
+        $tempCheckPassValue = $result_check_passkeys->fetch_assoc();
+        $gids = $selectedGids;
+        $roles = $tempCheckPassValue['roles'];
+        $check_session = $connects->prepare("SELECT token FROM groupsession WHERE profileTags = ? AND og_identification = ?;");
+        $check_session->bind_param("ss", $aidis, $gids);
+        $check_session->execute();
+        $result_check_session = $check_session->get_result();
+        if ($result_check_session->num_rows > 0) {
+            $tempCheckSessValue = $result_check_session->fetch_assoc();
+            $OldToken = $tempCheckSessValue['token'];
+            $stmt_delete_oldsess = $connects->prepare("DELETE FROM groupsession WHERE token = ? AND profileTags = ?");
+            $stmt_delete_oldsess->bind_param("ss", $OldToken, $aidis);
+            if($stmt_delete_oldsess->execute()){
+                $errors = 'old session token deleted';
+            }else{
+                $errors = 'Failed to delete old sessions';
+            };
+            $stmt_delete_oldsess->close();
+        };
+        $tokens = generateApiKey(64);
+        $addrss = getIpAddr();
+        $osids = $_POST['os'];
+        $expdate = date('Y/m/d', strtotime('+15 days'));
+        $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
+        $unixexpdate = $convertedexpdate->getTimestamp();
+        $insert_session = $connects->prepare("INSERT INTO groupsession(token, profileTags, og_identification, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $insert_session->bind_param("sssssss", $tokens, $aidis, $gids, $addrss, $osids, $expdate, date('d/m/Y h:i'));
+        if($insert_session->execute()){
+            $_SESSION['GroupsToken'] = $tokens;
+            $_SESSION['roles'] = $roles;
+            $_SESSION['corsmsg'] = 'Login Successful. ' . $errors;
+            header('location: ../Groups/manage.php');
+            $insert_session->close();
             exit;
-        }
-        $state = "approved";
-        if ($current_state != $state) {
-            $errors = "your account currently still in review";
-            $_SESSION['corsmsg'] = $errors;
-            header('location: ../Groups/index.php');
+        }else{
+            $_SESSION['corsmsg'] = 'Failed to add new sessions. ' . $errors;
+            header ('location: ../Groups/index.php');
+            $insert_session->close();
             exit;
-        }
-        $stmt_check_passkeys = $connects->prepare("SELECT og_identification, roles FROM groupaccess WHERE profileTags = ? AND passkeys = MD5(?) AND accountState = ?");
-        $stmt_check_passkeys->bind_param("sss", $aidis, $passkeys, $state);
-        $stmt_check_passkeys->execute();
-        $result_check_passkeys = $stmt_check_passkeys->get_result();
-        if ($result_check_passkeys->num_rows == 1) {
-            $tempCheckPassValue = $result_check_passkeys->fetch_assoc();
-            $gids = $tempCheckPassValue['og_identification'];
-            $roles = $tempCheckPassValue['roles'];
-            $check_session = $connects->prepare("SELECT token FROM groupsession WHERE profileTags = ? AND og_identification = ?;");
-            $check_session->bind_param("ss", $aidis, $gids);
-            $check_session->execute();
-            $result_check_session = $check_session->get_result();
-            if ($result_check_session->num_rows > 0) {
-                $tempCheckSessValue = $result_check_session->fetch_assoc();
-                $OldToken = $tempCheckSessValue['token'];
-                $stmt_delete_oldsess = $connects->prepare("DELETE FROM groupsession WHERE token = ? AND profileTags = ?");
-                $stmt_delete_oldsess->bind_param("ss", $OldToken, $aidis);
-                if($stmt_delete_oldsess->execute()){
-                    $errors = 'old session token deleted';
-                }else{
-                    $errors = 'Failed to delete old sessions';
-                };
-                $stmt_delete_oldsess->close();
-            };  
-            $tokens = generateApiKey(64);
-            $check_session = $connects->prepare("SELECT token FROM groupsession WHERE token = ?;");
-            $check_session->bind_param("s", $tokens);
-            $check_session->execute();
-            $result_check_session = $check_session->get_result();
-            if ($result_check_session->num_rows == 0) {
-                $addrss = getIpAddr();
-                $osids = $_POST['os'];
-                $expdate = date('Y/m/d', strtotime('+15 days'));
-                $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
-                $unixexpdate = $convertedexpdate->getTimestamp();
-                $insert_session = $connects->prepare("INSERT INTO groupsession(token, profileTags, og_identification, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $insert_session->bind_param("sssssss", $tokens, $aidis, $gids, $addrss, $osids, $expdate, date('d/m/Y h:i'));
-                if($insert_session->execute()){
-                    $_SESSION['GroupsToken'] = $tokens;
-                    $_SESSION['roles'] = $roles;
-                    $_SESSION['corsmsg'] = 'Login Successful. ' . $errors;
-                    header('location: ../Groups/manage.php');
-                    $insert_session->close();
-                    exit;
-                }else{
-                    $_SESSION['corsmsg'] = 'Failed to add new sessions. ' . $errors;
-                    header ('location: ../Groups/index.php');
-                    $insert_session->close();
-                    exit;
-                };
-            }
-            $check_session->close();
-        } else {
-            $_SESSION['corsmsg'] = "Invalid Passkeys, try again. " . $result_check_passkeys->error;
-            header('location: ../Groups/index.php');
-            exit;
-        }
-        $stmt_check_passkeys->close();
+        };
+        $check_session->close();
     } else {
-        $_SESSION['corsmsg'] = "User data inaccessible. " . $result_check_username->error;
+        $_SESSION['corsmsg'] = "Invalid Passkeys, try again. " . $result_check_passkeys->error;
         header('location: ../Groups/index.php');
         exit;
     }
+    $stmt_check_passkeys->close();
     $stmt_check_username->close();
 }
 ?>

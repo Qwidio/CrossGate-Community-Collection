@@ -1,6 +1,5 @@
 <?php
 require_once '../processes/database.php';
-$errors = array();
 $root_route = "../";
 require_once '../secureSession.php';
 require_once 'ReAuth.php';
@@ -17,7 +16,6 @@ if (isset($_SESSION['profileTags']) && isset($_SESSION['GroupsToken'])) {
 $gids = $_SESSION['gids'];
 $sitesArr = [];
 $publishing = false;
-$access = false;
 $prebind = '"' . $aidis . '"';
 $check_orgs = $connects->prepare("SELECT names, about, founded, members, logo, banner, sites FROM ogroup WHERE identification = ? AND founder = ? OR JSON_CONTAINS(members, ?);");
 $check_orgs->bind_param("sss", $gids, $aidis, $prebind);
@@ -150,6 +148,12 @@ if ($result_check_api->num_rows > 0) {
         $scope = $rca_val['useScope'];
         $hashedKeys = $rca_val['hashedKeys'];
         $apiState = $rca_val['active'];
+        if ($apiState == 1) {
+            $apiState = "active";
+        } else {
+            $apiState = "deactivated";
+        }
+        
         $addedDate = $rca_val['addedDate'];
         if($scope === "Development"){
             $NDAPI = $tempApiToken . "." . $hashedKeys;
@@ -175,7 +179,7 @@ if ($result_check_api->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <link rel="stylesheet" href="../styling/footer.css">
@@ -239,18 +243,30 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                 <h2 class="txt-n txtc semibold">DOCS</h2>
                 <a href="../documentation/docs.php" class="link-cover hover-white">.</a>
             </div>
-            <div class="posr pad-n flex fld acjc bg-half-gray">
+            <!-- <div class="posr pad-n flex fld acjc bg-half-gray">
                 <h2 class="txt-n txtc semibold">OPTIONS</h2>
                 <a class="link-cover hover-white" onclick="uniDisplaySwitch('options');">.</a>
-            </div>
+            </div> -->
         </div>
     </div>
     <!-- settings/option -->
-    <dialog id="options" class="posr pad-n-s pad-s-v w100p maxh40 dp-none fld bg-half-gray blurbg border-none border-b z15">
-        <div class="posr pad-s-s flex gap5">
+    <dialog id="options" class="posr pad-n-s pad-s-v w100p maxh40 flex fld bg-half-gray blurbg border-none border-b z15">
+        <div class="posr flex gap5">
+            <?php
+            if ($ChangerRoles === "founder") {
+            ?>
             <button onclick="uniDisplaySwitch('addMemberDialog');" class="pad-s txtc txt-s c-white bgc-orange border-purple bora-s box-shad-black-1 hover-text-black">Add Members</button>
+            <?php
+            }
+            ?>
             <button onclick="uniDisplaySwitch('editPasskeys')" class="pad-s txtc txt-s c-white bgc-orange border-purple bora-s box-shad-black-1 hover-text-black">Change Account Passkeys</button>
+            <?php
+            if ($ChangerRoles === "founder" || $ChangerRoles === "developer") {
+            ?>
             <button onclick="uniDisplaySwitch('apipanel'); uniLoad(this, 'apiForm');" data-apidevtoken="<?php echo $NDAPI;?>" data-apiprodtoken="<?php echo $NPAPI;?>" class="pad-s txtc txt-s c-white bgc-orange border-purple bora-s box-shad-black-1 hover-text-black">API Panel</button>
+            <?php
+            }
+            ?>
         </div>
     </dialog>
     <!-- api -->
@@ -327,7 +343,7 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                     <div class="topMg-s5 w100p minh10 txt-s wrap ovh"><?php echo $about;?></div>
                     <?php
                     if ($ChangerRoles === "founder") {
-                        ?>
+                    ?>
                     <div class="posr vertiMg pad-s-v flex gap5">
                     <?php
                         if ($site != "") {
@@ -442,7 +458,7 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
         <form id="formOg" class="posr wh100p flexblurbg flex gap10" action="update_prf.php" method="post" enctype="multipart/form-data">
             <div class="posr vertiMg leftMg rightMg-s10 h30p maxh30 r1-1 flex fld acjc gap5">
                 <img id="preview" class="posr sideMg wh100p containfit">
-                <input class="posa c0 wh100p bg-fifth-gray txtc" type="file" name="logo" accept="image/*" onchange="uniLoadFile(event, 'preview');">
+                <input class="posa c0 wh100p bg-thin-gray txtc" type="file" name="logo" accept="image/*" onchange="uniLoadFile(event, 'preview');">
             </div>
             <div class="vertiMg leftMg-s10 rightMg w60p flex fld gap5">
                 <div class="sideMg w100p flex fld">
@@ -482,7 +498,7 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
     <dialog id="addMemberDialog" class="posf pad-b-s pad-bb c0 minw100px w20 maxh50 dp-none fld bg-half-purple blurbg border-1 bora-s z999">
         <form class="wh100p flex fld" action="members.php" method="post">
             <h2 class="pad-n-v w100p txt-b txtc">Invite New Member</h2>
-            <select name="profiletags" class="inpselect topMg-s10 bottomMg-s5 txtc" required>
+            <select name="profiletags" class="inpselect topMg-s10 bottomMg-s5 txtc ovh" required>
                 <?php
                 $stmt_get_user = $connects->prepare("SELECT profileTags, profileNames FROM profiles WHERE allowInvite = 'active';");
                 $stmt_get_user->execute();
@@ -494,7 +510,7 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                     while ($values =  $result_get_user->fetch_assoc()) {
                         $proflsTags = $values['profileTags'];
                         $profsName = $values['profileNames'];
-                        echo "<option name='profiletags' value='$proflsTags' required>$profsName</option>";
+                        echo "<option name='profiletags' value='$proflsTags' required>$profsName - $proflsTags</option>";
                     };
                 ?>
             </select>
@@ -565,11 +581,6 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
     <script src="../scriptstuff/script.js"></script>
     <script src="../scriptstuff/alert.js"></script>
     <?php
-    if (!empty($errors)) {
-        echo "<script> ";
-        echo "alerter('"; foreach ($errors as $error) {echo $error .";";} echo "')";
-        echo "</script>";
-    }
     if (!empty($_SESSION['corsmsg'])) {
         $corsmsg = $_SESSION['corsmsg']; 
         echo "<script> ";

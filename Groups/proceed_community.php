@@ -44,7 +44,7 @@ if (isset($_POST['submit'])) {
         exit;
     }
     $prebind = '"' . $aidis . '"';
-    $check_orgs = $connects->prepare("SELECT names, about, founded, founder, admins, members, logo, banner, role_publish FROM ogroup WHERE identification = ? AND founder = ? OR JSON_CONTAINS(members, ?);");
+    $check_orgs = $connects->prepare("SELECT names, about, founded, founder, members, logo, banner FROM ogroup WHERE identification = ? AND founder = ? OR JSON_CONTAINS(members, ?);");
     $check_orgs->bind_param("sss", $gids, $aidis, $prebind);
     $check_orgs->execute();
     $result_check_orgs = $check_orgs->get_result();
@@ -54,7 +54,6 @@ if (isset($_POST['submit'])) {
             $about = $value['about'];
             $founder = $value['founder'];
             $founded = $value['founded'];
-            $admins = $value['admins'];
             $members = $value['members'];
             $logo = $value['logo'];
             $banner = $value['banner'];
@@ -82,11 +81,6 @@ if (isset($_POST['submit'])) {
         header('location: community.php?lIds='.$libsIds.'&lc='.$topicIds);
         exit;
     };
-    function getRandomWord($len = 40) {
-        $word = array_merge(range('a', 'z'), range('A', 'Z'));
-        shuffle($word);
-        return substr(implode($word), 0, $len);
-    }
     $initReq = $_POST['submit'];
     $initReq = htmlspecialchars($initReq, ENT_QUOTES, 'UTF-8');
     if ($initReq === "Post") {

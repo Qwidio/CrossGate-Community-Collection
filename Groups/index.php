@@ -1,6 +1,5 @@
 <?php
 require_once '../processes/database.php';
-$errors = array();
 $root_route = "../";
 require_once '../secureSession.php';
 require_once '../Groups/ReAuth.php';
@@ -8,10 +7,25 @@ if (!isset($_SESSION['profileTags'])) {
     header ('location: ../connect_it/connect_it.php');
     exit;
 }
+$aidis = $_SESSION['profileTags'];
 if (isset($_SESSION['GroupsToken'])) {
     $gToken = $_SESSION['GroupsToken'];
+} else {
+    $joinedGroups = array();
+    $check_joined_groups = $connects->prepare("SELECT groupaccess.og_identification, ogroup.names 
+    FROM groupaccess INNER JOIN ogroup ON groupaccess.og_identification = ogroup.identification
+    WHERE groupaccess.profileTags = ? AND groupaccess.accountState = 'approved';");
+    $check_joined_groups->bind_param("s", $aidis);
+    $check_joined_groups->execute();
+    $result_check = $check_joined_groups->get_result();
+    if ($result_check->num_rows > 0) {
+        while($tempCheckVal = $result_check->fetch_assoc()){
+            if (!in_array($tempCheckVal['og_identification'], $joinedGroups)) {
+            $joinedGroups[$tempCheckVal['og_identification']] = $tempCheckVal['names'];
+            }
+        }
+    }
 }
-$aidis = $_SESSION['profileTags'];
 
 ?>
 <!DOCTYPE html>
@@ -19,10 +33,14 @@ $aidis = $_SESSION['profileTags'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <link rel="stylesheet" href="../styling/footer.css">
+<?php
+$inGroups = false;
+if (!isset($_SESSION['GroupsToken']) && !isset($_SESSION['gids'])) {
+?>
     <script>
     function jscd(window) {
         {
@@ -208,6 +226,9 @@ $aidis = $_SESSION['profileTags'];
     }
     jscd(this);
     </script>
+<?php
+}
+?>
     <title>CGCC-GROUPS</title>
 </head>
 <body class="wh100p minh100 ovh-s ovs-v">
@@ -224,8 +245,7 @@ $aidis = $_SESSION['profileTags'];
             </div>
         </div>
 <?php
-$inGroups = false;
-if (isset($_SESSION['GroupsToken']) && $_SESSION['gids']) {
+if (isset($_SESSION['GroupsToken']) && isset($_SESSION['gids'])) {
     $check_orgs = $connects->prepare("SELECT og_identification FROM groupaccess WHERE profileTags = ? AND og_identification = ?;");
     $check_orgs->bind_param("ss", $aidis, $_SESSION['gids']);
     $check_orgs->execute();
@@ -238,8 +258,8 @@ if (isset($_SESSION['GroupsToken']) && $_SESSION['gids']) {
                 </p>
             </div>
 <?php
+        $inGroups = true; 
     }
-    $inGroups = true; 
 }
 ?>
     </div>
@@ -296,12 +316,29 @@ if (!isset($_SESSION['GroupsToken'])) {
                 <input class="hiddeninp" type="text" id="mobile" name="mobile" autocomplete="off" tabindex="999" required readonly>
                 <input class="hiddeninp" type="text" id="uad" name="uad" autocomplete="off" tabindex="999" required readonly>
                 <div class="sideMg w88p flex fld">
-                    <label for="username">Username</label>
-                    <input class="inptxt border-b" type="text" id="username" name="username" placeholder="Use your account username" autocomplete="off" tabindex="1" required>
+                    <label for="selectedGids">Select your Groups</label>
+                    <?php
+                    if (isset($joinedGroups)) {
+                    ?>
+                    <select name="selectedGids" class="inpselect bg-transparent c-white border-purple bora-none"  tabindex="1" required>
+                        <option name="" value="" selected disabled>Select ones</option>
+                        <?php
+                        foreach ($joinedGroups as $gIndex => $gValue) {
+                            $og_identification = $gIndex;
+                            $og_names = $gValue;
+                        ?>
+                            <option name='selectedGids' value="<?php echo $og_identification;?>"><?php echo "$og_names - $og_identification";?></option>;
+                        <?php
+                        };
+                        ?>
+                    </select>
+                    <?php
+                    };
+                    ?>
                 </div>
                 <div class="sideMg w88p flex fld">
-                    <label for="passkeys">Groups PassKeys</label>
-                    <input class="inptxt border-b" type="password" id="passkeys" name="passkeys" placeholder="Input the correct PassKeys" autocomplete="off" tabindex="2" required>
+                    <label for="passkeys">Access Account PassKeys</label>
+                    <input class="inptxt bg-transparent c-white border-purple bora-none" type="password" id="passkeys" name="passkeys" placeholder="Input the correct PassKeys" autocomplete="off" tabindex="2" required>
                 </div>
                 <div class="sideMg w88p flex fld">
                     <button type="submit" class="pad-s bgc-gold txt-n c-black" name="Login" tabindex="3">Sign in</button>
@@ -318,6 +355,9 @@ if (!isset($_SESSION['GroupsToken'])) {
 ?>
     </div>
     <?php include_once '../extra/footers.php';?>
+<?php
+if (!isset($_SESSION['GroupsToken']) && !isset($_SESSION['gids'])) {
+?>
     <script>
         function outputData() {
             const data = {
@@ -336,6 +376,9 @@ if (!isset($_SESSION['GroupsToken'])) {
         }
         window.addEventListener('DOMContentLoaded', outputData);
     </script>
+<?php
+}
+?>
 <!-- messages alerter -->
     <div id="alertcard">
         <p id="alertcontent"></p>

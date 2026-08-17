@@ -16,7 +16,7 @@ $gids = $_GET['gids'];
 $_SESSION['prev_loc'] = "Groups/profile.php?gids=" . $gids;
 $publishing = false;
 $State = "Publics";
-$check_orgs = $connects->prepare("SELECT names, about, founded, founder, admins, members, logo, banner, sites FROM ogroup WHERE identification = ?;");
+$check_orgs = $connects->prepare("SELECT names, about, founded, founder, members, logo, banner, sites FROM ogroup WHERE identification = ?;");
 $check_orgs->bind_param("s", $gids);
 $check_orgs->execute();
 $result_check_orgs = $check_orgs->get_result();
@@ -105,11 +105,11 @@ foreach ($memberslist as $Members => $datas) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <link rel="stylesheet" href="../styling/footer.css">
-    <title><?php echo $names;?> || CrossGate Profile</title>
+    <title>Publisher Profile: <?php echo $names;?></title>
 </head>
 <body class="minh100">
     <img src="../img/contour3bw.png" alt="" class="posf ins0 wh100 coverfit filInvert opacity05 z-1">
@@ -308,7 +308,6 @@ if (isset($aidis)) {
                 $Tags = $value['profileTags'];
                 $pfAttachs = $value['profileAttachs'];
                 $Names = $value['profileNames'];
-                $iconAlt = ucfirst(substr($Names, 0, 1));
         ?>
             <div class="posr pad-m-v pad-s-s w100p flex border-1 z4">
             <?php
