@@ -59,10 +59,12 @@ header("Content-Type: application/json");
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 if ($method === "POST") {
+    $badgegroups = $input['groupref'] ?? null;
+    $target = $input['target'] ?? null;
     $sessiontokens = $input['tokens'] ?? null;
     $addrss = $input['address'] ?? 'Unknown';
     $osids = $input['os'] ?? 'Unknown';
-    if (!isset($sessiontokens)) {
+    if (!isset($sessiontokens) || !isset($badgegroups) || !isset($target)) {
         die(json_encode(["message" => "Missing Required session token"]));
     }
     $session_check = $connects->prepare("SELECT profileTags, osids, addrss, expirationDate FROM sessionlogs WHERE sessiontokens = ?");
@@ -92,60 +94,56 @@ if ($method === "POST") {
         http_response_code(401);
         die(json_encode(["message" => "Failed to find session"]));
     }
-    $libsIds = $input['libsIds'];
-    $isRollback = $input['isRollback'];
-    $ver = $input['ver'];
-    if (!isset($libsIds) || !isset($isRollback) || !isset($ver)) {
-        http_response_code(403);
-        die(json_encode([
-            'message' => 'Missing Input'
-        ]));
-    }
-    $check_software = $connects->prepare("SELECT libsPublisher, libsTitles, fdrLibs, rollbacks, detailData FROM libslist WHERE libsIds = ? AND libsState = 'Publics';");
-    $check_software->bind_param("s", $libsIds);
-    $check_software->execute();
-    $result_check_software = $check_software->get_result();
-    if ($result_check_software->num_rows > 0) {
-        $publishing = true;
-        while ($value = $result_check_software->fetch_assoc()) {
-            $libsTitles = $value['libsTitles'];
-            $libsPublisher = $value['libsPublisher'];
-            $detailData = json_decode($value['detailData'], true);
-            if ($isRollback == true) {
-                $targetFile = $value['rollbacks'];
-                $verCheck = $detailData["rollbacks"]["ver"] ?? '';
-            } else {
-                $targetFile = $value['fdrLibs'];
-                $verCheck = $detailData["fdrLibs"]["ver"] ?? '';
-            }
-            $file_path = '../vaults/' . $libsPublisher . '/' . $libsIds . "/" . $targetFile;
-            if (!file_exists($file_path) || !is_readable($file_path)) {
-                http_response_code(404);
-                echo json_encode(["message" => "Error: File not found"]);
-                exit;
-            }
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
 
-            $file_name = basename($file_path);
-            $file_size = filesize($file_path);
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename*=UTF-8\'\'' . rawurlencode($file_name));
-            header('Content-Length: ' . $file_size);
-            header('Cache-Control: no-cache');
-            header('Pragma: public');
+    $errors = array();
+    $badgeGroups= array();
 
-            readfile($file_path);
-            $connects->close();
-            exit;
+    $check_profile = $connects->prepare("SELECT Badge FROM profiles WHERE profileTags = ? ;");
+    $check_profile->bind_param("s", $profileTags);
+    $check_profile->execute();
+    $result_check_profile = $check_profile->get_result();
+    if ($result_check_profile->num_rows == 1) {
+        $value = $result_check_profile->fetch_assoc();
+        $ownedBadges = $value['Badge'];
+        $ownedBadges = json_decode($ownedBadges, true);
+        if (in_array($target, $ownedBadges)) {
+            die(json_encode(["message" => "cannot add badges"]));
+        }
+        $check_badges = $connects->prepare("SELECT 
+        badges.badgeName, badges.badgeDesc, badges.badgeType, badges.badgeRefs, badges.icon, badgegroup.state, badgegroup.badgeList
+        FROM badges INNER JOIN badgegroup ON badges.badgeRefs = badgegroup.groupRefs
+        WHERE badges.badgeIds = ? ;");
+        $check_badges->bind_param("s", $target);
+        $check_badges->execute();
+        $result_check_badges = $check_badges->get_result();
+        if ($result_check_badges->num_rows > 0) {
+            $value = $result_check_badges->fetch_assoc();
+            $tempBadgeList = json_decode($value['badgeList'], true);
+            if (!in_array($target, $tempBadgeList)) {
+                http_response_code(403);
+                die(json_encode(["message" => "Target does not exist in the Referenced badges groups"]));
+            }
+            if ($value['state'] != "publics") {
+                http_response_code(403);
+                die(json_encode(["message" => "The specified badges unavailable"]));
+            }
+        }
+        $ownedBadges["$target"] = date("d/m/Y H:i");
+        $ownedBadges = json_encode($ownedBadges, JSON_UNESCAPED_SLASHES);
+        $update_badge = $connects->prepare("UPDATE profiles SET Badge = ? WHERE profileTags = ? ;");
+        $update_badge->bind_param("ss", $ownedBadges, $profileTags);
+        $update_badge->execute();
+        if ($update_badge->affected_rows > 0) {
+            die(json_encode(["message" => "Successfully added the Badge"]));
+        } else {
+            http_response_code(404);
+            die(json_encode(["message" => "Failed to add the Badges",]));
         }
     } else {
-        http_response_code(403);
-        die(json_encode(["message" => "No Collection found"]));
+        http_response_code(404);
+        die(json_encode(["message" => "user account does not exists or on a temporary bans"]));
     }
 } else {
     http_response_code(403);
     die(json_encode(["message" => "Invalid request method"]));
 }
-?>

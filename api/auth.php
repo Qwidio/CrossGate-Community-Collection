@@ -101,57 +101,50 @@ if (!hash_equals($hashedKeys, $secret)) {
                             die(json_encode(["message" => "Your account exceeds the number of session allowed"]));
                         };
                         $tokens = generateApiKey(64);
-                        $check_session = $connects->prepare("SELECT sessiontokens FROM sessionlogs WHERE sessiontokens = ?;");
-                        $check_session->bind_param("s", $tokens);
-                        $check_session->execute();
-                        $result_check_session = $check_session->get_result();
-                        if ($result_check_session->num_rows == 0) {
-                            $addrss = $input['address'] ?? 'Unknown';
-                            $osids = $input['os'] ?? 'Unknown';
-                            $expdate = date('Y/m/d', strtotime('+15 days'));
-                            $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
-                            $unixexpdate = $convertedexpdate->getTimestamp();
-                            $lastlogs = date('d/m/Y h:i');
-                            $insert_session = $connects->prepare("INSERT INTO sessionlogs(profileTags, sessiontokens, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?)");
-                            $insert_session->bind_param("ssssss", $aidis, $tokens, $addrss, $osids, $expdate, $lastlogs);
-                            if($insert_session->execute()){
-                                http_response_code(200);
-                                $check_profile = $connects->prepare("SELECT * FROM profiles WHERE profileTags = ? ;");
-                                $check_profile->bind_param("s", $aidis);
-                                $check_profile->execute();
-                                $result_check_profile = $check_profile->get_result();
-                                $value = $result_check_profile->fetch_assoc();
-                                if ($value) {
-                                    $returnData = [
-                                            "message" => "Login Successful",
-                                            "sessionToken"  => $tokens,
-                                            "unixexpdate"   => $unixexpdate,
-                                            "profileTags"   => $aidis,
-                                            "profileAttachs"=> $value['profileAttachs'],
-                                            "profileNames"  => $value['profileNames'],
-                                            "profileBios"   => $value['profileBios'],
-                                            "profileJDates" => $value['profileJDates'],
-                                            "profileBadge"  => $value['Badge'],
-                                            "profileMarkOut"=> $value['mkot'],
-                                            "activityState" => $value['oState']
-                                    ];
-                                    if ($debugMode == true) {
-                                        $returnData = array_merge($returnData, [
-                                            "clientDev"     => $og_identification,
-                                            "useScope"      => $scope,
-                                        ]);
-                                    }
-                                    die(json_encode($returnData, JSON_UNESCAPED_SLASHES));
+                        $addrss = $input['address'] ?? 'Unknown';
+                        $osids = $input['os'] ?? 'Unknown';
+                        $expdate = date('Y/m/d', strtotime('+15 days'));
+                        $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
+                        $unixexpdate = $convertedexpdate->getTimestamp();
+                        $lastlogs = date('d/m/Y H:i:s');
+                        $insert_session = $connects->prepare("INSERT INTO sessionlogs(profileTags, sessiontokens, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?)");
+                        $insert_session->bind_param("ssssss", $aidis, $tokens, $addrss, $osids, $expdate, $lastlogs);
+                        if($insert_session->execute()){
+                            http_response_code(200);
+                            $check_profile = $connects->prepare("SELECT * FROM profiles WHERE profileTags = ? ;");
+                            $check_profile->bind_param("s", $aidis);
+                            $check_profile->execute();
+                            $result_check_profile = $check_profile->get_result();
+                            $value = $result_check_profile->fetch_assoc();
+                            if ($value) {
+                                $returnData = [
+                                        "message" => "Login Successful",
+                                        "sessionToken"  => $tokens,
+                                        "unixexpdate"   => $unixexpdate,
+                                        "profileTags"   => $aidis,
+                                        "profileAttachs"=> $value['profileAttachs'],
+                                        "profileNames"  => $value['profileNames'],
+                                        "profileBios"   => $value['profileBios'],
+                                        "profileJDates" => $value['profileJDates'],
+                                        "profileBadge"  => $value['Badge'],
+                                        "profileMarkOut"=> $value['mkot'],
+                                        "activityState" => $value['oState']
+                                ];
+                                if ($debugMode == true) {
+                                    $returnData = array_merge($returnData, [
+                                        "clientDev"     => $og_identification,
+                                        "useScope"      => $scope,
+                                    ]);
                                 }
-                            }else{
-                                http_response_code(401);
-                                die(json_encode([
-                                    "message" => "Failed to add new sessions"
-                                ]));
-                            };
-                            $insert_session->close();
-                        }
-                        $check_session->close();
+                                die(json_encode($returnData, JSON_UNESCAPED_SLASHES));
+                            }
+                        }else{
+                            http_response_code(401);
+                            die(json_encode([
+                                "message" => "Failed to add new sessions"
+                            ]));
+                        };
+                        $insert_session->close();
                     } else {
                         $check_profile = $connects->prepare("SELECT * FROM profiles WHERE profileTags = ? ;");
                         $check_profile->bind_param("s", $aidis);
@@ -159,7 +152,6 @@ if (!hash_equals($hashedKeys, $secret)) {
                         $result_check_profile = $check_profile->get_result();
                         $value = $result_check_profile->fetch_assoc();
                         if ($value) {
-                            http_response_code(200);
                             if ($debugMode == true) {
                                 die(json_encode([
                                     "message" => "Login Successful",
