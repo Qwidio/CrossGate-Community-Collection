@@ -15,8 +15,7 @@ if (isset($_SESSION['profileTags']) && isset($_SESSION['GroupsToken'])) {
     $ChangerRoles = $_SESSION['roles'];
     if ($ChangerRoles === "founder" || $ChangerRoles === "developer") {
         $allowChanges = true;
-    }
-    if ($allowChanges == false) {
+    } else {
         $_SESSION['corsmsg'] = "Unpermited access";
         header ('location: ../Groups/manage.php');
         exit;
@@ -28,7 +27,7 @@ if (isset($_SESSION['profileTags']) && isset($_SESSION['GroupsToken'])) {
 }
 $publishing = false;
 $prebind = '"' . $aidis . '"';
-$check_orgs = $connects->prepare("SELECT names, about, founded, founder, admins, members, logo, banner, role_publish FROM ogroup WHERE identification = ? AND founder = ? OR JSON_CONTAINS(members, ?);");
+$check_orgs = $connects->prepare("SELECT names, about, founded, founder, members, logo, banner FROM ogroup WHERE identification = ? AND founder = ? OR JSON_CONTAINS(members, ?);");
 $check_orgs->bind_param("sss", $gids, $aidis, $prebind);
 $check_orgs->execute();
 $result_check_orgs = $check_orgs->get_result();
@@ -38,11 +37,9 @@ if ($result_check_orgs->num_rows > 0) {
         $about = $value['about'];
         $founder = $value['founder'];
         $founded = $value['founded'];
-        $admins = $value['admins'];
         $members = $value['members'];
         $logo = $value['logo'];
         $banner = $value['banner'];
-        $role = $value['role_publish'];
     }
 } else {
     $_SESSION['corsmsg'] = "You are not allowed to access this page";
@@ -126,10 +123,6 @@ if ($result_check_software->num_rows > 0) {
         $recspecs = $value['recspecs'];
         $devstats = $value['devstats'];
         $BannersFirst = json_decode($BannersFirst, true);
-        $targetdir = "../vaults/" . $gids . "/" . $fdrLibs;
-        if (!file_exists($targetdir)) {
-            $fdrLibs = "";
-        }
         if (!in_array($ids, $tempLibsArr)) {
             $tempLibsArr[$ids] = [
             "libsIds"           => "$ids",
@@ -156,6 +149,19 @@ if ($result_check_software->num_rows > 0) {
     };
 };
 $encodedLibsArr = json_encode($tempLibsArr, JSON_UNESCAPED_SLASHES);
+$categoryArr = array();
+$stmt_get_categorys = $connects->prepare("SELECT * FROM categorys WHERE categoryState = 'publics';");
+$stmt_get_categorys->execute();
+$result_get_categorys = $stmt_get_categorys->get_result();
+if ($result_get_categorys->num_rows > 0) {
+    while ($values =  $result_get_categorys->fetch_assoc()) {
+        $categoryIds = $values['categoryIds'];
+        $categoryTitles = $values['categoryTitles'];
+        if (!in_array($categoryIds, $categoryArr)) {
+            $categoryArr[$categoryIds] = $categoryTitles;
+        };
+    };
+};
 ?>
 
 <!DOCTYPE html>
@@ -163,7 +169,7 @@ $encodedLibsArr = json_encode($tempLibsArr, JSON_UNESCAPED_SLASHES);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <link rel="stylesheet" href="../styling/footer.css">
@@ -188,16 +194,16 @@ $encodedLibsArr = json_encode($tempLibsArr, JSON_UNESCAPED_SLASHES);
                 <h2 class="txt-n txtc semibold">FILE MANAGER</h2>
                 <a onclick="uniDisplaySwitch('filemanager');" class="link-cover hover-white">.</a>
             </div>
+            <div class="posr pad-n flex fld acjc bg-half-gray">
+                <h2 class="txt-n txtc semibold">BADGES</h2>
+                <a onclick="uniDisplaySwitch('badgemanager');" class="link-cover hover-white">.</a>
+            </div>
             <?php
             }
             ?>
             <div class="posr pad-n flex fld acjc bg-half-gray">
-                <h2 class="txt-n txtc semibold">PROFILE</h2>
-                <a href="../Groups/profile.php?gids=<?php echo $gids;?>" class="link-cover hover-white">.</a>
-            </div>
-            <div class="posr pad-n flex fld acjc bg-half-gray">
                 <h2 class="txt-n txtc semibold">DOCS</h2>
-                <a href="../documentation/docs.php" class="link-cover hover-white">.</a>
+                <a href="../documentation/groupspublishing.php" class="link-cover hover-white">.</a>
             </div>
         </div>
     </div>
@@ -210,7 +216,7 @@ if (isset($_GET['view']) || isset($FilterReq) && isset($targetIds)) {
 <?php
 }
 ?>
-            <button onclick="uniDisplaySwitch('newColletionDialog');" class="pad-s w100p txtc txt-s bg-transparent border-orange bora-s hover-text-orange">New Collection</button>
+            <button onclick="uniDisplaySwitch('newCollectionDialog');" class="pad-s w100p txtc txt-s bg-transparent border-orange bora-s hover-text-orange">New Collection</button>
             <a href="manage.php?filter=none&view=draft" class="pad-s w100p txtc txt-s bg-transparent border-blue box-shad-white-2 bora-s hover-text-orange">Drafted Collection</a>
             <a href="manage.php?filter=none&view=archived" class="pad-s w100p txtc txt-s bg-transparent border-green box-shad-white-2 bora-s hover-text-orange">Archived Collection</a>
         </div>
@@ -263,15 +269,15 @@ if (!empty($tempLibsArr) && $publishing == true) {
         $recspecs       = $value['recspecs'];
         $devstats       = $value['devstats'];
 ?>
-        <div class="posr bottomMg w30p r16-9 flex fld bgc-black bora-s ovh z2">
-            <img src="../Library/libsImg/<?php echo $libsPublisher . "/" . $BannersFirst;?>" alt="" class="posa wh100p coverfit opacity5 z1">
+        <div class="posr bottomMg w30p r16-9 flex fld bora-s ovh z2">
+            <img src="../Library/libsImg/<?php echo $libsPublisher . "/" . $BannersFirst;?>" alt="" class="posa wh100p coverfit z1">
             <div class="posr topMg pad-s flex fld bg-half-gray gap5 z3">
                 <h2 class="posr txt-n txtnowrap ovh z4"><?php echo $titles;?></h2>
                 <p class="posr txt-s txtnowrap ovh z4">Marked: <?php echo $cltNumbs . " | Created on " . $addedDates;?></p>
             </div>
             <div class="sideMg w100p flex z3">
                 <a href="file_manager.php?libsids=<?php echo $libsIds;?>" class="pad-s w40p txt-s txtc bgc-purple points hover-text-black z4">File Manager</a>
-                <button onclick="uniDisplaySwitch('cltEdit'); uniLoad(this, 'editForm'); uniReloadFile('<?php echo '../Library/libsImg/' . $libsPublisher . '/' . $attachs;?>', 'editAttachPrev'); createLinkElem(libsArr.<?php echo $libsIds;?>.extlink, 'extlinkContainer'); createBannerElem(libsArr.<?php echo $libsIds;?>.libsBanners, '<?php echo $libsPublisher;?>', 'bannerContainer2')" class="pad-s w40p txt-s txtc bg-red border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-libsvt="<?php echo $libsVT;?>" data-newtitle="<?php echo $titles;?>" data-desc="<?php echo $desc;?>" data-ctype="<?php echo $ctype;?>" data-categoryIds="<?php echo $category;?>" data-repolink="<?php echo $repolink;?>" data-md="<?php echo $libsMD;?>">Edit</button>
+                <button onclick="uniDisplaySwitch('cltEdit'); uniLoad(this, 'editForm'); uniReloadFile('<?php echo '../Library/libsImg/' . $libsPublisher . '/' . $attachs;?>', 'editAttachPrev'); createLinkElem(libsArr.<?php echo $libsIds;?>.extlink, 'extlinkContainer'); createBannerElem(libsArr.<?php echo $libsIds;?>.libsBanners, '<?php echo $libsPublisher;?>', 'bannerContainer2'); fillSpecInput(libsArr.<?php echo $libsIds;?>.recspecs);" class="pad-s w40p txt-s txtc bg-red border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-libsvt="<?php echo $libsVT;?>" data-newtitle="<?php echo $titles;?>" data-desc="<?php echo $desc;?>" data-ctype="<?php echo $ctype;?>" data-categoryIds="<?php echo $category;?>" data-repolink="<?php echo $repolink;?>" data-md="<?php echo $libsMD;?>">Edit</button>
                 <button onclick="uniDisplaySwitch('changeState'); uniLoad(this, 'predata');" class="pad-s w40p txt-s txtc txtnowrap bg-green border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-titles="<?php echo $titles;?>" data-cltnumbs="<?php echo $cltNumbs;?>" data-devstats="<?php echo $devstats;?>" data-status="<?php echo $viewState;?>">Change State</button>
             </div>
         </div>
@@ -285,8 +291,8 @@ if (!empty($tempLibsArr) && $publishing == true) {
     ?>
     </section>
     <!-- publish new dialog -->
-    <dialog id="newColletionDialog" class="posf c0 w100p h100p bg-half-gray fld ovh-s z999">
-        <div class="posr w100p blurbg flex border-b"><h2 class="posr rightMg pad-s txt-b">Create New Collection</h2><p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('newColletionDialog')">X</p></div>
+    <dialog id="newCollectionDialog" class="posf c0 w100p h100p bg-half-gray fld ovh-s z999">
+        <div class="posr w100p blurbg flex border-b"><h2 class="posr rightMg pad-s txt-b">Create New Collection</h2><p class="posr pad-s-v pad-n-s txt-b hover-red" onclick="uniDisplaySwitch('newCollectionDialog')">X</p></div>
         <form class="posr w100p blurbg flex fld gap10" action="create_collection.php" method="post" enctype="multipart/form-data">
             <div class="posr sideMg pad-n w88p flex fld acjc gap5 ovh-v">
                 <label for="attachPrev" class="txt-b bold">Collection Logo</label>
@@ -344,20 +350,11 @@ if (!empty($tempLibsArr) && $publishing == true) {
                     <select name="categoryids" class="inpselect" required>
                         <option value="" selected disabled>Select one category</option>
                         <?php
-                        $stmt_get_categoryss = $connects->prepare("SELECT * FROM categorys WHERE categoryState = 'publics';");
-                        $stmt_get_categoryss->execute();
-                        $result_get_categoryss = $stmt_get_categoryss->get_result();
-                        if ($result_get_categoryss->num_rows > 0) {
-                            $uniqueT = [];
-                            while ($values =  $result_get_categoryss->fetch_assoc()) {
-                                $categoryIds = $values['categoryIds'];
-                                $categoryTitles = $values['categoryTitles'];
-                                if (!in_array($categoryIds, $uniqueT)) {
-                                    echo "<option name='categoryids' value='$categoryIds' required>$categoryTitles</option>";
-                                    $uniqueT[] = $topicIds;
-                                };
-                            };
-                        };
+                        foreach ($categoryArr as $catgkey => $catgval) {
+                            $categoryIds = $catgkey;
+                            $categoryTitles = $catgval;
+                            echo "<option name='categoryids' value='$categoryIds' required>$categoryTitles</option>";
+                        }
                         ?>
                     </select>
                 </div>
@@ -365,14 +362,14 @@ if (!empty($tempLibsArr) && $publishing == true) {
                     <label for="devstats">status</label>
                     <select name="devstats" class="inpselect" required>
                         <option value="" selected disabled>Select current development status</option>
-                        <option name='devstats' onclick="uniDisplaySwitch('dsd')" value='earlyaccess' required>Early Access</option>
-                        <option name='devstats' onclick="uniDisplaySwitch('dsd')" value='beta' required>Beta Access</option>
-                        <option name='devstats' onclick="uniDisplaySwitch('dsd')" value='full' required>Full Release</option>
+                        <option name='devstats' value='earlyaccess' required>Early Access</option>
+                        <option name='devstats' value='beta' required>Beta Access</option>
+                        <option name='devstats' value='full' required>Full Release</option>
                     </select>
                 </div>
-                <div id="dsd" class="sideMg w88p dp-none fld">
+                <div class="sideMg w88p flex fld">
                     <label for="devstatdesc">Describe current development state</label>
-                    <textarea type="text" name="devstatdesc" class="inptxt h10 ovh-s"  placeholder="give an explanation" auto-complete="off" required>-</textarea>
+                    <textarea type="text" name="devstatdesc" class="inptxt h10 ovh-s"  placeholder="Provide explanation except for the full release status" auto-complete="off" required></textarea>
                 </div>
                 <div class="posr sideMg pad-s w88p flex fld gap5 border-1 bora-s">
                     <p class="rightMg">Links</p>
@@ -410,6 +407,26 @@ if (!empty($tempLibsArr) && $publishing == true) {
             </select>
         </form>
         <button class="topMg-s10 pad-s-v w100p txt-n txtc c-black border-1 hover-red hover-text-white" onclick="uniDisplaySwitch('filemanager')">Cancel</button>
+    </dialog>
+    <dialog id="badgemanager" class="posf pad-b-s pad-bb c0 minw100px w20 maxh50 dp-none fld bg-half-gray blurbg border-1 bora-s z999">
+        <form class="posr wh100p flex fld gap10">
+            <h2 class="pad-nt pad-sb w100p txt-b txtc border-b">Open Collection Badges</h2>
+            <select name="libsids" class="inpselect" required>
+                <option value="" selected disabled>Select Collection</option>
+                <?php
+                if (!empty($tempLibsArr) && $publishing == true) {
+                    foreach ($tempLibsArr as $id => $value) {
+                        $ids    = $value['libsIds'];
+                        $titles = $value['libsTitles'];
+                ?>
+                <option onclick="linker('badges.php?libsids=<?php echo $ids;?>')"><?php echo $titles;?></option>
+                <?php
+                    };
+                };
+                ?>
+            </select>
+        </form>
+        <button class="topMg-s10 pad-s-v w100p txt-n txtc c-black border-1 hover-red hover-text-white" onclick="uniDisplaySwitch('badgemanager')">Cancel</button>
     </dialog>
     <!-- detail form -->
     <dialog id="info" class="posf c0 minw50 h80p fld bg-half-gray border-purple bora-s ovh-s z999">
@@ -497,22 +514,30 @@ if (!empty($tempLibsArr) && $publishing == true) {
                     <select name="categoryids" class="inpselect" required>
                         <option value="" selected disabled>Select one category</option>
                         <?php
-                        $stmt_get_categoryss = $connects->prepare("SELECT * FROM categorys WHERE categoryState = 'publics';");
-                        $stmt_get_categoryss->execute();
-                        $result_get_categoryss = $stmt_get_categoryss->get_result();
-                        if ($result_get_categoryss->num_rows > 0) {
-                            $uniqueT = [];
-                            while ($values =  $result_get_categoryss->fetch_assoc()) {
-                                $categoryIds = $values['categoryIds'];
-                                $categoryTitles = $values['categoryTitles'];
-                                if (!in_array($categoryIds, $uniqueT)) {
-                                    echo "<option name='categoryids' value='$categoryIds' required>$categoryTitles</option>";
-                                    $uniqueT[] = $topicIds;
-                                };
-                            };
-                        };
+                        foreach ($categoryArr as $catgkey => $catgval) {
+                            $categoryIds = $catgkey;
+                            $categoryTitles = $catgval;
+                            echo "<option name='categoryids' value='$categoryIds' required>$categoryTitles</option>";
+                        }
                         ?>
                     </select>
+                </div>
+                <div class="posr sideMg pad-s w88p flex fld gap5 border-1 bora-s">
+                    <p class="rightMg">Recommended System Spec</p>
+                    <div class="posr w100p flex fld">
+                        <div class="posr topMg-s5 pad-m w100p flex fld border-1 bora-s">
+                            <label for="cpu">CPU</label>
+                            <input type="text" id="cpu" name="cpu" class="inptxt" placeholder="Example: 2 Core/2 Thread" auto-complete="off" maxlength="300">
+                            <label for="ram">RAM Amount</label>
+                            <input type="text" id="ram" name="ram" class="inptxt" placeholder="Example: 4GB" auto-complete="off" maxlength="300">
+                            <label for="gpu">GPU Specs</label>
+                            <input type="text" id="gpu" name="gpu" class="inptxt" placeholder="Example: GTX 1060 3GB" auto-complete="off" maxlength="300">
+                            <label for="win">OS Support (leave empty if not supported)</label>
+                            <input type="text" id="win" name="win" class="inptxt" placeholder="Supported Windows Version" auto-complete="off" maxlength="300">
+                            <input type="text" id="linux" name="linux" class="inptxt" placeholder="Supported Linux Distro-Version" auto-complete="off" maxlength="300">
+                            <input type="text" id="mac" name="mac" class="inptxt" placeholder="Supported MacOS Version" auto-complete="off" maxlength="300">
+                        </div>
+                    </div>
                 </div>
                 <div class="sideMg w88p flex fld">
                     <label for="devstats">status</label>
@@ -585,7 +610,6 @@ if ($viewState === "draft") {
             </div>
         </form>
     </dialog>
-    <?php include_once '../extra/footers.php';?>
     <div id="alertcard">
         <p id="alertcontent"></p>
         <div id="borderanimate"></div>

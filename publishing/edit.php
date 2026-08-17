@@ -30,7 +30,7 @@ if (isset($_SESSION['profileTags']) && isset($_SESSION['GroupsToken'])) {
     header ('location: ../index.php');
     exit;
 }
-$check_software = $connects->prepare("SELECT libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBannersFirst, libsBanners, libsTitles, libsDesc, libsMD, extlink, addedDates, cltNumbs, libsCategorys, libsType, fdrLibs, recspecs, devstats, devstatdesc, libsState FROM libslist WHERE libsIds = ? AND libsPublisher = ? ;");
+$check_software = $connects->prepare("SELECT libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS firstBanner, libsBanners, libsTitles, libsDesc, repolink, libsMD, addedDates, cltNumbs, libsCategorys, libsType, fdrLibs, detailData, recspecs, devstats, devstatdesc, libsState FROM libslist WHERE libsIds = ? AND libsPublisher = ? ;");
 $check_software->bind_param("ss", $libsIds, $gids);
 $check_software->execute();
 $result_check_software = $check_software->get_result();
@@ -41,25 +41,28 @@ if ($result_check_software->num_rows > 0) {
         $libsVT = $value['libsVT'];
         $libsAttachs = $value['libsAttachs'];
         $libsBanners = $value['libsBanners'];
-        $BannersFirst = $value['libsBannersFirst'];
+        $BannersFirst = $value['firstBanner'];
         $libsTitles = $value['libsTitles'];
         $libsDesc = $value['libsDesc'];
-        $repolink = $value['repolink'];
         $libsMD = $value['libsMD'];
-        $extlink = $value['extlink'];
+        $repolink = $value['repolink'];
         $addedDates = $value['addedDates'];
         $cltNumbs = $value['cltNumbs'];
         $libsType = $value['libsType'];
         $libsCatg = $value['libsCategorys'];
         $fdrLibs = $value['fdrLibs'];
+        $detailData = json_decode($value['detailData'], true);
+        $releaseDetail = $detailData["fdrLibs"];
+        $rollbackDetail = $detailData["rollbacks"];
+        $theme = $detailData["theme"];
         $recspecs = $value['recspecs'];
         $devstats = $value['devstats'];
         $devstatdesc = $value['devstatdesc'];
         $libsState = $value['libsState'];
-        $extlink = json_decode($extlink, true);
+        $recspecs = json_decode($recspecs, true);
         $libsBanners = json_decode($libsBanners, true);
         $BannersFirst = json_decode($BannersFirst, true);
-        $targetdir = "../vaults/" . $gids . "/" . $fdrLibs;
+        $targetdir = "../vaults/" . $gids . '/' . $libsIds . "/" . $fdrLibs;
         if (!file_exists($targetdir)) {
             $fdrLibs = "";
         }
@@ -138,26 +141,33 @@ if ($initReq === "Update") {
             array_push($errors,"exceeding 5MB size limit ");
         }
     }
-    $countExtlimit = 1;
+
+    $finalSpec = [];
+    foreach ($recspecs as $specIndex => $specVal) {
+        $finalSpecVal = ($_POST[$specIndex] != $specVal) ? $_POST[$specIndex] : $specVal ;
+        $finalSpec[$specIndex] = $finalSpecVal; 
+    }
+    $finalSpec = json_encode($finalSpec, JSON_UNESCAPED_SLASHES);
+
+    $ExtLinkCount = 1;
     $stopExtCount = false;
-    while ($countExtlimit < 10 && $stopExtCount == false) {
-        $linkName = "linkname" . $countExtlimit;
-        $CurrentExtLink = "extlink" . $countExtlimit;
-        $linkName = htmlspecialchars($linkName, ENT_QUOTES, 'UTF-8');
-        $CurrentExtLink = htmlspecialchars($CurrentExtLink, ENT_QUOTES, 'UTF-8');
+    while ($ExtLinkCount < 10 && $stopExtCount == false) {
+        $linkName = "linkname" . $ExtLinkCount;
+        $CurrentExtLink = "extlink" . $ExtLinkCount;
         if (isset($_POST[$CurrentExtLink]) && $_POST[$CurrentExtLink] != "" && isset($_POST[$linkName]) && $_POST[$linkName] != "")  {
-            $extLink = [
-                $_POST[$linkName] => [$_POST[$CurrentExtLink]],
-            ];
-            $countExtlimit++;
+            $linkName = htmlspecialchars($_POST[$linkName], ENT_QUOTES, 'UTF-8');
+            $CurrentExtLink = htmlspecialchars($_POST[$CurrentExtLink], ENT_QUOTES, 'UTF-8');
+            $newExtLink[$linkName] = $CurrentExtLink;
+            $ExtLinkCount++;
         } else {
             $stopExtCount = true;
-            $countExtlimit = 11;
+            $ExtLinkCount = 11;
         }
     }
-    $extLink = json_encode($extLink, JSON_UNESCAPED_SLASHES);
+    $newExtLink = json_encode($newExtLink, JSON_UNESCAPED_SLASHES);
     $countlimit = 1;
     $stopCount = false;
+
     $finalLibsBanners = [];
     foreach ($libsBanners as $bannerValue) {
         $countlimit++;
@@ -203,8 +213,8 @@ if ($initReq === "Update") {
         $finalLibsBanners = $libsBanners;
     }
     $finalLibsBanners = json_encode($finalLibsBanners, JSON_UNESCAPED_SLASHES);
-    $stmt_update_clts = $connects->prepare("UPDATE libslist SET libsVT = ?, libsAttachs = ?, libsBanners = ?, libsTitles = ?, libsDesc = ?, repolink = ?, libsMD = ?, extlink = ?, libsType = ?, libsCategorys = ?, devstats = ?, devstatdesc = ? WHERE libsIds = ? AND libsPublisher = ? ;");
-    $stmt_update_clts->bind_param("ssssssssssssss", $libsVT, $libsAttachs, $finalLibsBanners, $libsTitles, $libsDesc, $repolink, $libsMD, $extLink, $libsType, $libsCatg, $devstats, $devstatdesc ,$libsIds ,$gids);
+    $stmt_update_clts = $connects->prepare("UPDATE libslist SET libsVT = ?, libsAttachs = ?, libsBanners = ?, libsTitles = ?, libsDesc = ?, repolink = ?, libsMD = ?, extlink = ?, libsType = ?, libsCategorys = ?, recspecs = ?, devstats = ?, devstatdesc = ? WHERE libsIds = ? AND libsPublisher = ? ;");
+    $stmt_update_clts->bind_param("sssssssssssssss", $libsVT, $libsAttachs, $finalLibsBanners, $libsTitles, $libsDesc, $repolink, $libsMD, $newExtLink, $libsType, $libsCatg, $finalSpec, $devstats, $devstatdesc ,$libsIds ,$gids);
     if($stmt_update_clts->execute()){
         if (!empty($errors)){
             $errors = json_decode($errors,true);
@@ -267,6 +277,83 @@ if ($initReq === "Update") {
     } else {
         $_SESSION['corsmsg'] = "Failed to archive " . $stmt_publish->error;
         header ('location: manage.php');
+        exit;
+    }
+} else if ($initReq === "ChangeDetail") {
+    $totalChanges = 0;
+    $newDetailData = array();
+    $releaseDetailArr = array();
+    $rollbackDetailArr = array();
+
+    $releaseexecutables = $releaseDetail["executables"];
+    $releaseuninst = $releaseDetail["uninst"];
+    $releasever = $releaseDetail["ver"];
+
+    $rollbackexecutables = $rollbackDetail["executables"];
+    $rollbackuninst = $rollbackDetail["uninst"];
+    $rollbackver = $rollbackDetail["ver"];
+
+    if (isset($_POST['releaseexecutables']) && $_POST['releaseexecutables'] != $releaseexecutables) {
+        $releaseexecutables = $_POST['releaseexecutables'];
+        $totalChanges++;
+    }
+    if (isset($_POST['releaseuninst']) && $_POST['releaseuninst'] != $releaseuninst) {
+        $releaseuninst = $_POST['releaseuninst'];
+        $totalChanges++;
+    }
+    if (isset($_POST['releasever']) && $_POST['releasever'] != $releasever) {
+        $releasever = $_POST['releasever'];
+        $totalChanges++;
+    }
+
+    if (isset($_POST['rollbackexecutables']) && $_POST['rollbackexecutables'] != $rollbackexecutables) {
+        $rollbackexecutables = $_POST['rollbackexecutables'];
+        $totalChanges++;
+    }
+    if (isset($_POST['rollbackuninst']) && $_POST['rollbackuninst'] != $rollbackuninst) {
+        $rollbackuninst = $_POST['rollbackuninst'];
+        $totalChanges++;
+    }
+    if (isset($_POST['rollbackver']) && $_POST['rollbackver'] != $rollbackver) {
+        $rollbackver = $_POST['rollbackver'];
+        $totalChanges++;
+    }
+    if (isset($_POST['theme']) && $_POST['theme'] != $theme) {
+        $theme = $_POST['theme'];
+        $totalChanges++;
+    }
+    if ($totalChanges == 0) {
+        $_SESSION['corsmsg'] = "no changes detected";
+        header ('location: file_manager.php?libsids=' . $libsIds);
+        exit;
+    }
+
+    $releaseDetailArr = [
+        "executables"   => $releaseexecutables,
+        "uninst"        => $releaseuninst,
+        "ver"           => $releasever
+    ];
+    $rollbackDetailArr = [
+        "executables"   => $rollbackexecutables,
+        "uninst"        => $rollbackuninst,
+        "ver"           => $rollbackver
+    ];
+    $newDetailData = [
+        "fdrLibs"   => $releaseDetailArr,
+        "rollbacks" => $rollbackDetailArr,
+        "theme"     => $theme
+    ];
+    $newDetailData = json_encode($newDetailData, JSON_UNESCAPED_SLASHES);
+    $update_detailData = $connects->prepare("UPDATE libslist SET detailData = ? WHERE libsIds = ? AND libsPublisher = ? ;");
+    $update_detailData->bind_param("sss", $newDetailData ,$libsIds, $gids);
+    $update_detailData->execute();
+    if ($update_detailData->affected_rows > 0) {
+        $_SESSION['corsmsg'] = "Details saved";
+        header('location: file_manager.php?libsids=' . $libsIds);
+        exit;
+    } else {
+        $_SESSION['corsmsg'] = "Failed to update details " . $update_detailData->error;
+        header ('location: file_manager.php?libsids=' . $libsIds);
         exit;
     }
 } else {

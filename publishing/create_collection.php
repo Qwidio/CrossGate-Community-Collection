@@ -36,7 +36,10 @@ $libsTitles = htmlspecialchars($libsTitles, ENT_QUOTES, 'UTF-8');
 $sanitized = str_replace('%', 'prcn', $libsTitles);
 $sanitized = str_replace(' ', '_', $sanitized);
 $sanitized = str_replace('/', 'I', $sanitized);
-$libsTopics = $sanitized . '_topic_' . bin2hex(random_bytes(8 / 2));
+if (strlen($sanitized) > 100) {
+    $sanitized = substr($sanitized,0,100);
+}
+$libsTopics = $sanitized . '_topic';
 if (isset($_POST['custIds'])) {
     $libsIds = $_POST['custIds'];
 } else {
@@ -128,7 +131,7 @@ $extLink = json_encode($extLink, JSON_UNESCAPED_SLASHES);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <title>creating collection</title>

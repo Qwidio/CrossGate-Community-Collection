@@ -1,9 +1,13 @@
 <?php
 require_once '../processes/database.php';
-if (!isset($_POST['submit']) || !isset($_POST['libsids'])) {
-    $_SESSION['corsmsg'] = 'Missing required input';
+if (!isset($_POST['request']) || !isset($_POST['libsids'])) {
+    $_SESSION['corsmsg'] = "Missing required input " . $_POST['libsids'] . $_POST['request'] . " .";
     header ('location: manage.php');
     exit;   
+}if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && $_SERVER['CONTENT_LENGTH'] > 0) {
+    $_SESSION['corsmsg'] = "The uploaded file exceeds the server's upload limit.";
+    header("Location: manage.php");
+    exit;
 }
 $errors = '';
 $allowChanges = false;
@@ -29,9 +33,9 @@ if (isset($_SESSION['profileTags']) && isset($_SESSION['GroupsToken'])) {
     exit;
 }
 $libsIds = $_POST['libsids'];
-$initReq = $_POST['submit'];
+$initReq = $_POST['request'];
 if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
-    $targetdir = "../vaults/" . $gids . "/";
+    $targetdir = "../vaults/" . $gids . '/' . $libsIds . "/";
     if (!file_exists($targetdir)) {
         mkdir($targetdir, 0777, true);
     }
@@ -44,7 +48,6 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
         header ('location: manage.php');
         exit;
     }
-    // if($_FILES["zipfile"]["size"] === UPLOAD_ERR_INI_SIZE) {
     if($_FILES["zipfile"]["size"] > 524288000) { // ~500MB
         $_SESSION['corsmsg'] = "exceeding file size limit ";
         header ('location: manage.php');
@@ -56,7 +59,7 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
         <link rel="stylesheet" href="../styling/pallate.css">
         <link rel="stylesheet" href="../styling/Mindex.css">
         <title>proceeding data</title>
@@ -107,7 +110,7 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
     };
 } else if ($initReq === "Activate" && isset($_POST["filenamedata"])) {
     $newFile = $_POST["filenamedata"];
-    $check_existing_collection = $connects->prepare("SELECT libsIds, libsPublisher, libsTitles, libsState FROM libslist WHERE libsIds = ? AND fdrLibs = ? ;");
+    $check_existing_collection = $connects->prepare("SELECT libsIds, libsTitles FROM libslist WHERE libsPublisher = ? AND fdrLibs = ? ;");
     $check_existing_collection->bind_param("ss", $gids, $newFile);
     $check_existing_collection->execute();
     $result_check_existing_collection = $check_existing_collection->get_result();
@@ -136,7 +139,7 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
                 exit;
             }
             $fdrLibs = $value['fdrLibs'];
-            $targetdir = "../vaults/" . $gids . "/" . $fdrLibs;
+            $targetdir = "../vaults/" . $gids . '/' . $libsIds . "/" . $fdrLibs;
             if (!file_exists($targetdir)) {
                 $fdrLibs = "";
             }
@@ -151,7 +154,7 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
         header ('location: manage.php');
         exit;
     }
-    $targetdir = "../vaults/" . $gids . "/";
+    $targetdir = "../vaults/" . $gids . '/' . $libsIds . "/";
     $tarfilepath = $targetdir . $newFile;
     if (!file_exists($tarfilepath)) {
         $_SESSION['corsmsg'] = "Cannot find the selected file";
@@ -173,8 +176,97 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
         header ('location: file_manager.php');
         exit;
     };
+}  else if ($initReq === "Rollback" && isset($_POST["rollbackfilename"])) {
+    $newFile = $_POST["rollbackfilename"];
+    $check_existing_collection = $connects->prepare("SELECT libsIds, libsTitles FROM libslist WHERE libsPublisher = ? AND rollbacks = ? ;");
+    $check_existing_collection->bind_param("ss", $gids, $newFile);
+    $check_existing_collection->execute();
+    $result_check_existing_collection = $check_existing_collection->get_result();
+    if ($result_check_existing_collection->num_rows > 0) {
+        $otherLibsIds = $value['libsIds'];
+        $otherlibsTitles = $value['libsTitles'];
+        if ($libsIds === $otherLibsIds) {
+            $_SESSION['corsmsg'] = "file used in other collection: " . $otherlibsTitles;
+            header ('location: manage.php');
+            exit;
+        }
+    }
+    $check_existing_collection->close();
+    $check_collection = $connects->prepare("SELECT libsPublisher, libsTitles, rollbacks, libsState FROM libslist WHERE libsIds = ? AND libsPublisher = ? ;");
+    $check_collection->bind_param("ss", $libsIds, $gids);
+    $check_collection->execute();
+    $result_check_collection = $check_collection->get_result();
+    if ($result_check_collection->num_rows > 0) {
+        $publishing = true;
+        while ($value = $result_check_collection->fetch_assoc()) {
+            $libsPublisher = $value['libsPublisher'];
+            $libsTitles = $value['libsTitles'];
+            if ($gids != $libsPublisher) {
+                $_SESSION['corsmsg'] = "Unpermited access";
+                header ('location: manage.php');
+                exit;
+            }
+            $rollbacks = $value['rollbacks'];
+            $targetdir = "../vaults/" . $gids . '/' . $libsIds . "/" . $rollbacks;
+            if (!file_exists($targetdir)) {
+                $rollbacks = "";
+            }
+        }
+    } else {
+        $_SESSION['corsmsg'] = "Inexistent collection";
+        header ('location: manage.php');
+        exit;
+    }
+    if ($newFile === $rollbacks) {
+        $_SESSION['corsmsg'] = "File's already activated";
+        header ('location: manage.php');
+        exit;
+    }
+    $targetdir = "../vaults/" . $gids . '/' . $libsIds . "/";
+    $tarfilepath = $targetdir . $newFile;
+    if (!file_exists($tarfilepath)) {
+        $_SESSION['corsmsg'] = "Cannot find the selected file";
+        header ('location: manage.php');
+        exit;
+    }
+    $stmt_activate = $connects->prepare("UPDATE libslist SET rollbacks = ? WHERE libsIds = ?");
+    $stmt_activate->bind_param("ss", $newFile, $libsIds);
+    if($stmt_activate->execute()){
+        $_SESSION['corsmsg'] = 'selected file active';
+        $_SESSION['libsids'] = $libsIds;
+        $stmt_activate->close();
+        header ('location: file_manager.php');
+        exit;
+    } else {
+        $_SESSION['corsmsg'] = "failed to activate " . $newFile . ". " . $stmt_activate->error;
+        $_SESSION['libsids'] = $libsIds;
+        $stmt_activate->close();
+        header ('location: file_manager.php');
+        exit;
+    };
 } else if ($initReq === "Remove" && isset($_POST["deletefilenamedata"])) {
     $requestedFile = $_POST["deletefilenamedata"];
+    $targetDir = "../vaults/" . $gids . '/' . $libsIds . "/";
+    $fileDir = "../vaults/" . $gids . '/' . $libsIds . "/" . $requestedFile;
+    if ($dh = opendir($fileDir)){
+        if (readdir($dh) !== false){
+            $tmpFile = basename($requestedFile); 
+            $tmpPath = $fileDir . strtolower($tmpFile);
+            $fileType = pathinfo($tmpPath, PATHINFO_EXTENSION);
+            $typeAllow = array('zip');
+            if(!in_array($fileType, $typeAllow)) {
+                $_SESSION['corsmsg'] = 'selected file is not in .zip format';
+                header ('location: manage.php');
+                exit;
+            }
+        } else {
+            $_SESSION['corsmsg'] = "Cannot find the selected file";
+            header ('location: manage.php');
+            exit;
+        }
+        closedir($dh);
+    }
+    
     $check_software = $connects->prepare("SELECT libsPublisher, libsTitles, fdrLibs, libsState FROM libslist WHERE libsIds = ? AND libsPublisher = ? ;");
     $check_software->bind_param("ss", $libsIds, $gids);
     $check_software->execute();
@@ -190,7 +282,7 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
                 exit;
             }
             $fdrLibs = $value['fdrLibs'];
-            $targetdir = "../vaults/" . $gids . "/" . $fdrLibs;
+            $targetdir = "../vaults/" . $gids . '/' . $libsIds . "/" . $fdrLibs;
             if (!file_exists($targetdir)) {
                 $fdrLibs = "";
             }
@@ -202,18 +294,13 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
     }
     if ($requestedFile === $fdrLibs) {
         $_SESSION['corsmsg'] = "File's currently active, activate another before removing";
-        header ('location: manage.php');
+        $_SESSION['libsids'] = $libsIds;
+        header ('location: file_manager.php');
         exit;
     }
-    $targetdir = "../vaults/" . $gids . "/";
-    $tarfilepath = $targetdir . $requestedFile;
-    if (!file_exists($tarfilepath)) {
-        $_SESSION['corsmsg'] = "Cannot find the selected file";
-        header ('location: manage.php');
-        exit;
-    }
+
     $old = getcwd(); // Save the current directory
-    chdir($targetdir);
+    chdir($targetDir);
     if(unlink($requestedFile)){
         chdir($old); // Restore the old working directory
         $_SESSION['corsmsg'] = 'selected file removed';
@@ -228,6 +315,7 @@ if ($initReq === "Upload" && isset($_FILES["zipfile"]["name"])) {
         exit;
     };
 } else {
+    $_SESSION['corsmsg'] = "Invalid request " . $_POST['libsids'] . " / " . $_FILES["zipfile"]["name"] . " / " .  $_POST['request'] . " .";
     $_SESSION['libsids'] = $libsIds;
     header ('location: file_manager.php');
     exit;
