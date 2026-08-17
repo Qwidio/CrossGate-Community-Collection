@@ -1,5 +1,5 @@
-function linker(reqstate) {
-    window.location.replace(reqstate);
+function linker(req) {
+    window.location.replace(req);
 };
 function decodeHtml(str) {
   return new DOMParser().parseFromString(str, "text/html").documentElement.textContent;
@@ -73,6 +73,13 @@ function createBannerElem(libsBanners, gids, containerId) {
         p.innerHTML = "+";
         container.appendChild(p);
     }
+}
+function fillSpecInput(recspecs) {
+    const specs = JSON.parse(recspecs);
+    Object.entries(specs).forEach(([name, value]) => {
+        specInput = document.getElementById(name);
+        specInput.value = value;
+    });
 }
 
 function createMarkOut(inputArr, gids, containerId) {

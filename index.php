@@ -1,7 +1,6 @@
 <?php
 require_once 'processes/database.php';
 $errors = array();
-$_SESSION['prev_loc'] = "index.php";
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
@@ -11,12 +10,12 @@ if (isset($_SESSION['profileTags'])) {
 
 $State = "publics";
 $tempLibsArr = array();
+$usedCatg = [];
 $stmt_check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = ? ORDER BY addedDates DESC LIMIT 10;");
 $stmt_check_software->bind_param("s", $State);
 $stmt_check_software->execute();
 $result_check_software = $stmt_check_software->get_result();
 if ($result_check_software->num_rows > 0) {
-    $uniqueItem = [];
     while ($value = $result_check_software->fetch_assoc()) {
         $ids = $value['libsIds'];
         $attachs = $value['libsAttachs'];
@@ -28,7 +27,7 @@ if ($result_check_software->num_rows > 0) {
         $addedDates = $value['addedDates'];
         $cltNumbs = $value['cltNumbs'];
         $category = $value['libsCategorys'];
-        if (!in_array($ids, $uniqueItem)) {
+        if (!in_array($ids, $tempLibsArr)) {
             $tempLibsArr[$ids] = [
             "libsIds"        => "$ids",
             "libsPublisher"  => "$libsPublisher",
@@ -41,21 +40,25 @@ if ($result_check_software->num_rows > 0) {
             "cltNumbs"       =>  $cltNumbs,
             ];
         };
+        if (!in_array($category, $usedCatg)) {
+            $usedCatg[$category] = [$category];
+        };
     };
 };
 
 $tempCatgArray = [];
-$stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryState = ?;");
-$stmt_check_category->bind_param("s", $State);
-$stmt_check_category->execute();
-$result_check_category = $stmt_check_category->get_result();
-if ($result_check_category->num_rows > 0) {
-    $uniqueItem = [];
-    while ($value = $result_check_category->fetch_assoc()) {
-        $ids = $value['categoryIds'];
-        $titles = $value['categoryTitles'];
-        if (!in_array($ids, $uniqueItem)) {
-            $tempCatgArray[$ids] = $titles;
+foreach ($usedCatg as $catgIds => $ctgIds) {
+    $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryIds = ? AND categoryState = ?;");
+    $stmt_check_category->bind_param("ss", $catgIds, $State);
+    $stmt_check_category->execute();
+    $result_check_category = $stmt_check_category->get_result();
+    if ($result_check_category->num_rows > 0) {
+        while($value = $result_check_category->fetch_assoc()) {
+            $ids = $value['categoryIds'];
+            $titles = $value['categoryTitles'];
+            if (!in_array($ids, $tempCatgArray)) {
+                $tempCatgArray[$ids] = $titles;
+            }
         }
     }
 }
@@ -66,41 +69,41 @@ if ($result_check_category->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="styling/pallate.css">
     <link rel="stylesheet" href="styling/footer.css">
     <link rel="stylesheet" href="styling/Mindex.css">
     <link rel="stylesheet" href="styling/slides.css">
-    <title>CGCC</title>
+    <title>Home / CGCC</title>
 </head>
 <?php
 if (!isset($_SESSION['profileTags'])) {
 ?>
-<body class="wh100p bg-5 ovh">
+<body class="wh100p bg-prf-2 ovh">
     <img src="img/contour3bw.png" alt="" class="posf ins0 wh100 coverfit filInvert opacity3 z1">
     <!-- unlogged welcome -->
     <div class="posr w100p h100 flex blurbg z2">
-        <div class="posr pad-n w40p h100p flex fld blurbg bg-prf-default border-custom-r z3">
+        <div class="posr pad-n w40p h100p flex fld blurbg bg-prf-1 border-custom-r z3">
             <h2 class="pad-nt trlt-b-5 pad-b-s txt-maintext bold text-stroke">CROSSGATES</h2>
             <h2 class="bottomMg-s10 pad-nb pad-b-s txt-l c-orange text-stroke">Community Collection</h2>
             <div class="posr pad-s-v pad-b-s flex fld">
                 <h2 class="txt-b semibold">BROWSE</h2>
-                <a href="Library/core/list.php" class="link-cover hover-white">.</a>
+                <a href="Library/core/list.php" class="link-cover hover-white" tabindex="1">.</a>
             </div>
             <div class="posr pad-s-v pad-b-s flex fld">   
                 <h2 class="txt-b semibold">CATEGORY</h2>
-                <a href="Library/core/category.php" class="link-cover hover-white">.</a>
+                <a href="Library/core/category.php" class="link-cover hover-white" tabindex="2">.</a>
             </div>
             <div class="posr pad-s-v pad-b-s flex fld">
                 <h2 class="txt-b semibold">FORUM</h2>
-                <a href="TS/forum/dashboard.php" class="link-cover hover-white">.</a>
+                <a href="TS/forum/dashboard.php" class="link-cover hover-white" tabindex="3">.</a>
             </div>
             <div class="posr pad-s-v pad-b-s flex fld">
                 <h2 class="txt-b semibold">DOCS</h2>
-                <a href="documentation/docs.php" class="link-cover hover-white">.</a>
+                <a href="documentation/docs.php" class="link-cover hover-white" tabindex="4">.</a>
             </div>
             <div class="posr topMg pad-n-v pad-b-s flex fld">
-                <p class="posr pad-n-s pad-s-v txtc txt-n bg-prf-default border-3 hover-special-toright hover-enlarge ovh">LOGIN
+                <p class="posr pad-n-s pad-s-v txtc txt-n bg-prf-1 border-3 hover-special-toright hover-enlarge hover-purple ovh" tabindex="5">LOGIN
                     <a href="connect_it/connect_it.php?state=login" class="link-cover">.</a>
                 </p>
             </div>
@@ -159,23 +162,10 @@ if (!isset($_SESSION['profileTags'])) {
                 <h2 class="txt-n txtc semibold">PROFILE</h2>
                 <a href="profile.php?user=self" class="link-cover">.</a>
             </div>
-<?php
-$prebind = '"' . $aidis . '"';
-$check_orgs = $connects->prepare("SELECT identification FROM ogroup WHERE founder = ? OR JSON_CONTAINS(members, ?);");
-$check_orgs->bind_param("ss", $aidis, $prebind);
-$check_orgs->execute();
-$result_check_orgs = $check_orgs->get_result();
-if ($result_check_orgs->num_rows > 0) {
-    $value = $result_check_orgs->fetch_assoc();
-    $identification = $value['identification'];
-?>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">GROUPS</h2>
                 <a href="Groups/index.php" class="link-cover">.</a>
             </div>
-<?php
-}
-?>
             <div class="posr pad-s flex fld acjc">   
                 <h2 class="txt-n txtc semibold">CATEGORY</h2>
                 <a href="Library/core/category.php" class="link-cover">.</a>
@@ -276,9 +266,9 @@ if ($result_check_orgs->num_rows > 0) {
     </section>
 <!-- recommendation -->
     <div class="posr topMg-5 bottomMg-5 pad-b-s pad-n-v w65 blurbg flex gap5 bg-4 border-1 z2">
-        <h2 class="posr vertiMg txt-b semibold">Wanna see all listed software? browse on Library list</h2>
+        <h2 class="posr vertiMg txt-n">Wanna see all listed software? browse on Library list</h2>
         <div class="posr leftMg flex acjc border-1 bgc-purple">
-            <a href="Library/core/list.php" class="posr pad-s-v pad-n-s  wh100p txtc txt-b semibold hover-white hover-text-orange">Browse</a>
+            <a href="Library/core/list.php" class="posr pad-s-v pad-n-s  wh100p txtc txt-n hover-white hover-text-orange">Browse</a>
         </div>
     </div>
     <?php include_once 'footer.php';?>
