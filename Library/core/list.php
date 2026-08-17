@@ -4,7 +4,7 @@ $errors = array();
 $signed = false;
 $nolibs = false;
 $tempLibsArr = array();
-$_SESSION['prev_loc'] = "Library/core/list.php?";
+$usedCatg = [];
 if (isset($_GET['filter'])) {
     $FilterReq = $_GET['filter']; 
 } else {
@@ -15,7 +15,6 @@ if (isset($_GET['ids'])) {
     if($targetIds != "") {
         $targetIds = htmlspecialchars($targetIds, ENT_QUOTES, 'UTF-8');
         $searchTarget = "%".$targetIds."%";
-        $_SESSION['prev_loc'] = "Library/core/list.php?filter=" . $FilterReq . "&ids=" . $targetIds;
     } else {
         $FilterReq = "none";
         $targetIds = null;
@@ -25,21 +24,57 @@ if (isset($_SESSION['profileTags'])) {
     $signed = true;
     $aidis = $_SESSION['profileTags'];
 };
+$pages = 1;
+if (isset($_GET['page']) && $_GET['page'] > 0) {
+    $pages = $_GET['page'];
+}
+$totalDisplayed = 0;
+$currentOffset = 0;
+$currentIndex = 1;
+$displayLimit = 50;
+if ($pages > 1 && $currentIndex == $displayLimit) {
+    $currentOffset = $pages - 1 * $displayLimit;
+}
 
+$check_count = $connects->prepare("SELECT COUNT(libslist.libsIds) AS totalCount FROM libslist WHERE libsState = 'publics';");
+$check_count->execute();
+$check_count = $check_count->get_result();
+if ($check_count->num_rows > 0) {
+    while ($value = $check_count->fetch_assoc()) {
+        $totalCount = $value['totalCount'];
+    };
+} else {
+    $nolibs = true;
+    $FilterReq = "nodata";
+};
 switch ($FilterReq) {
     case 'none':
-        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY addedDates DESC;");
+        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY addedDates DESC LIMIT ? OFFSET ? ;");
+        $check_software->bind_param("ii", $displayLimit, $currentOffset);
         break;
     case 'oldtonew':
-        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY addedDates ASC;");
+        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY addedDates ASC LIMIT ? OFFSET ? ;");
+        $check_software->bind_param("ii", $displayLimit, $currentOffset);
+        break;
+    case 'az':
+        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY libsTitles ASC LIMIT ? OFFSET ? ;");
+        $check_software->bind_param("ii", $displayLimit, $currentOffset);
+        break;
+    case 'za':
+        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY libsTitles DESC LIMIT ? OFFSET ? ;");
+        $check_software->bind_param("ii", $displayLimit, $currentOffset);
         break;
     case 'search':
-        if($targetIds === "empty" || !isset($targetIds)) {
-            $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY addedDates DESC;");
+        if(!isset($searchTarget)) {
+            $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsState = 'publics' ORDER BY addedDates DESC LIMIT ? OFFSET ? ;");
+            $check_software->bind_param("ii", $displayLimit, $currentOffset);
         } else {
-            $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsTitles LIKE ? AND libsState = 'publics' ORDER BY addedDates DESC;");
-            $check_software->bind_param("s", $searchTarget);
+            $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsTitles, libsDesc, addedDates, cltNumbs, libsCategorys FROM libslist WHERE libsTitles LIKE ? AND libsState = 'publics' ORDER BY addedDates DESC LIMIT ? OFFSET ? ;");
+            $check_software->bind_param("sii",  $searchTarget, $displayLimit, $currentOffset);
         }
+        break;
+    case 'nodata':
+        $nolibs = true;
         break;
     default:
         $_SESSION['corsmsg'] = "Unknown filter";
@@ -47,52 +82,64 @@ switch ($FilterReq) {
         exit;
         break;
 }
-$check_software->execute();
-$result_check_software = $check_software->get_result();
-if ($result_check_software->num_rows > 0) {
-    $uniqueItem = [];
-    while ($value = $result_check_software->fetch_assoc()) {
-        $ids = $value['libsIds'];
-        $libsPublisher = $value['libsPublisher'];
-        $attachs = $value['libsAttachs'];
-        $libsBanners = $value['libsBanners'];
-        $libsBanners = str_replace('"', "", $libsBanners);
-        $titles = $value['libsTitles'];
-        $Desc = $value['libsDesc'];
-        $addedDates = $value['addedDates'];
-        $cltNumbs = $value['cltNumbs'];
-        $libsCategorys = $value['libsCategorys'];
-        if (!in_array($ids, $uniqueItem)) {
-            $tempLibsArr[$ids] = [
-            "libsIds"        => "$ids",
-            "libsPublisher"  => "$libsPublisher",
-            "libsAttachs"    => "$attachs",
-            "libsBanners"    => "$libsBanners",
-            "libsTitles"     => "$titles",
-            "libsDesc"       => "$Desc",
-            "libsCategorys"  => "$libsCategorys",
-            "addedDates"     => "$addedDates",
-            "cltNumbs"       =>  $cltNumbs
-            ];
+if ($FilterReq != "nodata") {
+    $check_software->execute();
+    $result_check_software = $check_software->get_result();
+    if ($result_check_software->num_rows > 0) {
+        while ($value = $result_check_software->fetch_assoc()) {
+            $ids = $value['libsIds'];
+            $libsPublisher = $value['libsPublisher'];
+            $attachs = $value['libsAttachs'];
+            $libsBanners = $value['libsBanners'];
+            $libsBanners = str_replace('"', "", $libsBanners);
+            $titles = $value['libsTitles'];
+            $Desc = $value['libsDesc'];
+            $addedDates = $value['addedDates'];
+            $cltNumbs = $value['cltNumbs'];
+            $libsCategorys = $value['libsCategorys'];
+            if (!in_array($ids, $tempLibsArr)) {
+                $tempLibsArr[$ids] = [
+                "libsIds"        => "$ids",
+                "libsPublisher"  => "$libsPublisher",
+                "libsAttachs"    => "$attachs",
+                "libsBanners"    => "$libsBanners",
+                "libsTitles"     => "$titles",
+                "libsDesc"       => "$Desc",
+                "libsCategorys"  => "$libsCategorys",
+                "addedDates"     => "$addedDates",
+                "cltNumbs"       =>  $cltNumbs
+                ];
+                $currentIndex++;
+            };
+            if (!in_array($libsCategorys, $usedCatg)) {
+                $usedCatg[$libsCategorys] = [$libsCategorys];
+            };
         };
+    } else {
+        $nolibs = true;
     };
-} else {
-    $nolibs = true;
-};
+}
+
 $tempCatgArray = [];
-$stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryState = 'publics';");
-$stmt_check_category->execute();
-$result_check_category = $stmt_check_category->get_result();
-if ($result_check_category->num_rows > 0) {
-    $uniqueItem = [];
-    while ($value = $result_check_category->fetch_assoc()) {
-        $ids = $value['categoryIds'];
-        $titles = $value['categoryTitles'];
-        if (!in_array($ids, $uniqueItem)) {
-            $tempCatgArray[$ids] = $titles;
+foreach ($usedCatg as $catgIds => $ctgIds) {
+    $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryIds = ? AND categoryState = 'publics';");
+    $stmt_check_category->bind_param("s", $catgIds);
+    $stmt_check_category->execute();
+    $result_check_category = $stmt_check_category->get_result();
+    if ($result_check_category->num_rows > 0) {
+        while($value = $result_check_category->fetch_assoc()) {
+            $ids = $value['categoryIds'];
+            $titles = $value['categoryTitles'];
+            if (!in_array($ids, $tempCatgArray)) {
+                $tempCatgArray[$ids] = $titles;
+            }
         }
     }
 }
+if (isset($tempLibsArr)) {
+    $totalDisplayed = count($tempLibsArr);
+}
+$_SESSION['prev_loc'] = "Library/core/list.php?filter=" . $FilterReq;
 ?>
 
 <!DOCTYPE html>
@@ -100,7 +147,7 @@ if ($result_check_category->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../styling/pallate.css">
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <link rel="stylesheet" href="../../styling/footer.css">
@@ -159,7 +206,43 @@ if ($result_check_category->num_rows > 0) {
         };
         ?>
     </div>
-    <section class="topMg-s10 bottomMg-s10 sideMg pad-s w70 minh70 flex fld border-custom-l-s border-custom-r-s gap5 z2" id="softwarelist">
+    <div class="posr sideMg w70 flex fld gap10 z15">
+        <div class="posr pad-s-v pad-n-s w100p flex bg-def-1 box-shad-black-1 border-purple">
+            <p class="posr txt-n c-lightgray gap5">Sort by 
+                <a class="c-lightpurple hover-text-white" href="list.php?filter=none">newest</a>
+                <a class="c-lightpurple hover-text-white" href="list.php?filter=oldtonew">oldest</a>
+                <a class="c-lightpurple hover-text-white" href="list.php?filter=az">A-Z</a>
+                <a class="c-lightpurple hover-text-white" href="list.php?filter=za">Z-A</a>
+            </p>
+            <div class="posr leftMg flex txt-n c-white gap5">
+                <?php
+                if ($pages > 1) {
+                ?>
+                <a class="posr pad-m-s txt-n c-white hover-text-blue" href="list.php?filter=<?php echo $FilterReq;?>&page=<?php echo $pages - 1;?>"><<</a>
+                <?php
+                } else {
+                ?>
+                <p class="posr pad-m-s txt-n c-gray"><<</p>
+                <?php
+                }
+                ?>
+                <p class="posr pad-m-s txt-n c-white bg-half-gray"><?php echo $pages;?></p>
+                <?php
+                if ($totalDisplayed == $displayLimit && $pages - 1 * $displayLimit < $totalCount - 1) {
+                ?>
+                <a class="posr pad-m-s txt-n c-white hover-text-blue" href="list.php?filter=<?php echo $FilterReq;?>&page=<?php echo $pages + 1;?>">>></a>
+                <?php
+                } else {
+                ?>
+                <p class="posr pad-m-s txt-n c-gray">>></p>
+                <?php
+                }
+                ?>
+                <p class="posr pad-sl txt-n c-lightgray border-l">showing out <?php echo $totalDisplayed;?> of <?php echo $totalCount;?></p>
+            </div>
+        </div>
+    </div>
+    <section class="bottomMg-s10 sideMg pad-s w70 minh70 flex fld border-custom-l-s border-custom-r-s gap5 z2" id="softwarelist">
 <?php
 switch ($FilterReq) {
     case 'none':
@@ -170,6 +253,16 @@ switch ($FilterReq) {
     case 'oldtonew':
 ?>
         <h2 class="pad-sb w100p">Listed Software Sorted from 'Oldest'</h2>
+<?php
+        break;
+    case 'az':
+?>
+        <h2 class="pad-sb w100p">Listed Software Sorted from 'A' to 'Z'</h2>
+<?php
+        break;
+    case 'za':
+?>
+        <h2 class="pad-sb w100p">Listed Software Sorted from 'Z' to 'A'</h2>
 <?php
         break;
     case 'search':
@@ -183,9 +276,15 @@ switch ($FilterReq) {
         break;
 }
 if ($nolibs == true) {
+    if ($FilterReq === "search") {
 ?>
     <h2 class="pad-n w100p txtc txt-n">can't find '<?php echo $targetIds;?>' published on the list</h2>
 <?php
+    } else {
+?>
+    <h2 class="pad-n w100p txtc txt-n">no collection found</h2>
+<?php
+    }
 } else {
     foreach ($tempLibsArr as $id => $value) {
         $ids = $value['libsIds'];

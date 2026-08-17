@@ -1,8 +1,6 @@
 <?php
 require_once '../../processes/database.php';
-$errors = array();
 $signed = false;
-
 if (!isset($_GET['type']) || $_GET['type'] === "") {
     $_SESSION['corsmsg'] = "empty view type";
     header ('location: ../../index.php');
@@ -28,7 +26,6 @@ switch ($Reqtype) {
         $nolibs = "no";
         $State = "publics";
         $tempLibsArr = [];
-        $tempCatgArray = [];
         $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryIds = ? AND categoryState = ?;");
         $stmt_check_category->bind_param("ss", $targetIds, $State);
         $stmt_check_category->execute();
@@ -76,20 +73,9 @@ switch ($Reqtype) {
     case 'clts':
         $specifics = "collection";
         $State = "publics";
+        $reservedArray = array();
+        $badgeGroups= array();
         $tempCatgArray = [];
-        $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryState = ?;");
-        $stmt_check_category->bind_param("s", $State);
-        $stmt_check_category->execute();
-        $result_check_category = $stmt_check_category->get_result();
-        if ($result_check_category->num_rows > 0) {
-            while ($value = $result_check_category->fetch_assoc()) {
-                $ids = $value['categoryIds'];
-                $titles = $value['categoryTitles'];
-                if (!in_array($ids, $tempCatgArray)) {
-                    $tempCatgArray[$ids] = $titles;
-                }
-            }
-        }
         $check_software = $connects->prepare("SELECT * FROM libslist WHERE libsIds = ? AND libsState = ? ;");
         $check_software->bind_param("ss", $targetIds, $State);
         $check_software->execute();
@@ -110,9 +96,8 @@ switch ($Reqtype) {
             $category = $value['libsCategorys'];
             $fdrLibs = $value['fdrLibs'];
             $libsForum = $value['libsForum'];
-            $recspecs = $value['recspecs'];
+            $recspecs = json_decode($value['recspecs'], true);
             $extlinkArr = json_decode($value['extlink'], true);
-            $catgList = $tempCatgArray[$category] ?? null;
             $check_groups = $connects->prepare("SELECT names, sites FROM ogroup WHERE identification = ? ;");
             $check_groups->bind_param("s", $libsPublisher);
             $check_groups->execute();
@@ -156,6 +141,52 @@ switch ($Reqtype) {
                 }
             };
         }
+        // category check
+        $stmt_check_category = $connects->prepare("SELECT * FROM categorys WHERE categoryIds = ? AND categoryState = ?;");
+        $stmt_check_category->bind_param("ss", $category, $State);
+        $stmt_check_category->execute();
+        $result_check_category = $stmt_check_category->get_result();
+        if ($result_check_category->num_rows > 0) {
+            while($value = $result_check_category->fetch_assoc()) {
+                $ids = $value['categoryIds'];
+                $titles = $value['categoryTitles'];
+                if (!in_array($ids, $tempCatgArray)) {
+                    $tempCatgArray[$ids] = $titles;
+                }
+            }
+        }
+        $catgList = $tempCatgArray[$category] ?? null;
+        // badge
+        $check_groupRefs = $connects->prepare("SELECT groupRefs, libsIds, badgeList FROM badgegroup WHERE libsIds = ? ");
+        $check_groupRefs->bind_param("s", $libsIds);
+        $check_groupRefs->execute();
+        $result_check_groupRefs = $check_groupRefs->get_result();
+        if ($result_check_groupRefs->num_rows > 0) {
+            while ($value = $result_check_groupRefs->fetch_assoc()) {
+                if (!in_array($value['groupRefs'], $badgeGroups)) {
+                    $badgeGroups[$value['groupRefs']] = [
+                        "libsIds"           => $value['libsIds'],
+                        "badgeList"         => json_decode($value['badgeList'], true),
+                    ];
+                }
+            };
+        }
+        foreach ($badgeGroups as $bgIndex => $bgValue) {
+            $check_badges = $connects->prepare("SELECT badges.badgeIds, badges.badgeRefs, badges.icon
+                FROM badges WHERE badgeType = 'achievement' AND badgeRefs = ? LIMIT 50;");
+            $check_badges->bind_param("s", $bgIndex);
+            $check_badges->execute();
+            $result_check_badges = $check_badges->get_result();
+            if ($result_check_badges->num_rows > 0) {
+                while($value = $result_check_badges->fetch_assoc()){
+                    $reservedArray[$value['badgeIds']] = [
+                        "Ids"  => $value['badgeIds'],
+                        "Refs" => $value['badgeRefs'],
+                        "Icon" => $value['icon']
+                    ];
+                }
+            }
+        }
         break;
     case 'prms':
         $stmt_check_prms = $connects->prepare("SELECT * FROM prms WHERE prmsIds = ? AND prmState = 'active';");
@@ -194,11 +225,42 @@ switch ($Reqtype) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../styling/pallate.css">
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <link rel="stylesheet" href="../../styling/footer.css">
-    <title><?php echo $uniTitles;?> || CrossGate</title>
+    <?php 
+    if ($Reqtype === "clts") {
+    ?>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+    <!-- <script src="../../scriptstuff/DOMPurify-3.4.13/dist/purify.min.js"></script> -->
+    <script src="../../scriptstuff/Markdown-Tag-1.0.4/parsers/showdown.min.js"></script>
+    <script src="../../scriptstuff/Markdown-Tag-1.0.4/markdown-tag-GitHub.js"></script>
+    <script>
+        function purify() {
+            fetch('<?php echo $libsMds;?>')
+                .then(response => response.text())
+                .then(markdownText => {
+                    const sanitizedHTML = DOMPurify.sanitize(markdownText);
+                    document.getElementById('markdown-content').innerHTML = sanitizedHTML;
+                })
+                .catch(error => {
+                    document.getElementById('markdown-content').innerHTML = 'Failed to load Markdown';
+                    console.error('Error loading the Markdown file:', error);
+                });
+        }
+    </script>
+    <?php
+    };
+    ?>
+    <style>
+        code {
+            background-color: rgba(236, 236, 236, 1) !important;
+            color: #001e3fff !important;
+        }
+    </style>
+    <title><?php echo $uniTitles;?> / CGCC</title>
 </head>
 <body class="wh100p">
 <img src="../../img/contour3bw.png" alt="" class="posf ins0 wh100 coverfit filInvert opacity05 z1">
@@ -252,10 +314,10 @@ switch ($Reqtype) {
 switch ($Reqtype) {
     case 'category':
 ?>
-    <section class="topMg-5 w100p flex fld z2">
+    <section class="topMg-s10 w100p flex fld z2">
         <div class="bottomMg-s10 sideMg w75p flex">
-            <div class="w100p h30 flex acjc bgc-lightpurple border-1">
-                <h2 class="w100p txt-30 txtc"><?php echo $catgTitles?></h2>
+            <div class="w100p h30 flex acjc bg-def-1 border-1">
+                <h2 class="w100p txt-30 txtc c-lightpurple"><?php echo $catgTitles?></h2>
             </div>
         </div>
         <div class="sideMg w75p minh40 flex fld gap5">
@@ -301,15 +363,7 @@ switch ($Reqtype) {
         break;
     case 'clts':
 ?>
-<?php include_once '../../reportTab.php';
-if ($signed == true) {
-?>
-    <div class="posf pad-n b0 r0 flex z999">
-        <img src="../../img/warning.svg" alt="" class="posr icon-t containfit bg-half-white opacity3 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="collections" data-ids="<?php echo $libsIds;?>">
-    </div>
-<?php
-}
-?>
+<?php include_once '../../reportTab.php';?>
     <section class="topMg-5 w100p flex fld z2">
         <div class="sideMg pad-sb w75p flex border-custom-b">
             <div class="w75p h60 r16-9 flex bg-3 ovh-v">
@@ -347,9 +401,9 @@ if ($signed == true) {
                     if (isset($indexes) ) {
                         if (!in_array($targetIds, $indexes)) {
                 ?>
-                <form class="topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
+                <form class="posr topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
                     <input class="hiddeninp" type="text" name="libsids" value="<?php echo $targetIds?>" hidden>
-                    <input class="pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s border-hover-white" type="submit" name="MarkOut" value="MarkOut">
+                    <button class="posr pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s hover-ltr-purple points ovh z4" type="submit" name="MarkOut" value="MarkOut">MarkOut</button>
                 </form>
                 <?php
                         } else {
@@ -359,9 +413,9 @@ if ($signed == true) {
                         }
                     } else {
                 ?>
-                <form class="topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
+                <form class="posr topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
                     <input class="hiddeninp" type="text" name="libsids" value="<?php echo $targetIds?>" hidden>
-                    <input class="pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s border-hover-white" type="submit" name="MarkOut" value="MarkOut">
+                    <button class="posr pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s hover-ltr-purple points ovh z4" type="submit" name="MarkOut" value="MarkOut">MarkOut</button>
                 </form>
                 <?php
                     }
@@ -423,56 +477,84 @@ if ($signed == true) {
                 <?php
                         }
                     }
-                    switch ($recspecs) {
-                        case '24a2w11u22':
                 ?>
-                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-half-gray box-shad-black-1 bora-s ovh">
-                    <h2 class="bottomMg-s5 w100p txt-s">Recommended System Spec</h2>
-                    <p class="bottomMg-s5 w100p txt-s">CPU: <span>2 Core/Thread</span></p>
-                    <p class="bottomMg-s5 w100p txt-s">RAM: <span>4GB DDR4</span></p>
-                    <p class="bottomMg-s5 w100p txt-s">GPU: <span>GTX 960 2GB/ RX 460 2GB</span></p>
-                </div>
-                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-half-gray box-shad-black-1 bora-s ovh">
-                    <h2 class="bottomMg-s5 w100p txt-s">Recommended OS</h2>
-                    <p class="bottomMg-s5 w100p txt-s">Windows: <span>10/11</span></p>
-                    <p class="bottomMg-s5 w100p txt-s">Linux: <span>Ubuntu 22.04.5 LTS</span></p>
-                </div>
+                <!-- inclided badge -->
                 <?php
-                            break;
-                        case '48a4w10u22':
+                if (!empty($reservedArray)) {
                 ?>
-                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-half-gray box-shad-black-1 bora-s ovh">
-                    <h2 class="bottomMg-s5 w100p txt-s">Recommended System Spec</h2>
-                    <p class="bottomMg-s5 w100p txt-s">CPU: <span>4 Core/Thread</span></p>
-                    <p class="bottomMg-s5 w100p txt-s">RAM: <span>8GB DDR4</span></p>
-                    <p class="bottomMg-s5 w100p txt-s">GPU: <span>GTX 1050 4GB/ RX 570 4GB</span></p>
-                </div>
-                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-half-gray box-shad-black-1 bora-s ovh">
-                    <h2 class="bottomMg-s5 w100p txt-s">Recommended OS</h2>
-                    <p class="bottomMg-s5 w100p txt-s">Windows: <span>10</span></p>
-                    <p class="bottomMg-s5 w100p txt-s">Linux: <span>Ubuntu 22.04.5 LTS</span></p>
-                </div>
+                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-def-1 box-shad-black-1 border-purple bora-s hover-border-white ovh z4" onclick="linker('../../acvb.php?type=clts&filter=all&ref=<?php echo $libsIds;?>&target=<?php echo $libsIds;?>)';">
+                    <h2 class="posr bottomMg-s5 w100p txt-n bold">Included <?php echo count($reservedArray);?> collectible badges</h2>
+                    <div class="posr pad-m-v w100p flex gap5 ovh-v">
                 <?php
-                            break;
-                        default:
-                            break;
+                    foreach ($badgeGroups as $bgIndex => $bgValue) {
+                        $bgGroupList = $bgValue['badgeList'];
+                        if (isset($bgGroupList)) {
+                            foreach ($bgGroupList as $raIds) {
+                                $reservedIcon = $reservedArray[$raIds]['Icon'];
+                                $reservedRefs = $reservedArray[$raIds]['Refs'];
+                                $reservedDir = "../../ab/" . $reservedRefs . "/";
+                ?>
+                        <a href="../../acvb.php?type=clts&filter=one&ref=<?php echo $libsIds;?>&target=<?php echo $raIds;?>" class='posr r1-1 h10 flex border-purple hover-white'>
+                            <?php
+                                if (empty($reservedIcon) || $reservedIcon === "empty") {
+                            ?>
+                                <img src="../libsImg/<?php echo $libsPublisher . "/" . $libsAttachs;?>" class="autoMg r1-1 h10 flex acjc blurbg containfit bora-s z15">
+                            <?php
+                                } else {
+                            ?>
+                                <img src="<?php echo $reservedDir . $reservedIcon;?>" alt="<?php echo $reservedName;?>" class="autoMg r1-1 h10 flex acjc containfit z15">
+                            <?php
+                                };
+                            ?>
+                        </a>
+                <?php
+                            }
+                        }
                     }
+                ?>
+                    </div>
+                </div>
+                <?php
+                }
+                if (!empty($recspecs)) {
+                    $cpu = $recspecs["cpu"];
+                    $ram = $recspecs["ram"];
+                    $gpu = $recspecs["gpu"];
+                    $win = $recspecs["win"];
+                    $linux = $recspecs["linux"];
+                    $mac = $recspecs["mac"];
+                ?>
+                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-half-gray box-shad-black-1 bora-s ovh">
+                    <h2 class="bottomMg-s5 w100p txt-s">Recommended System Spec</h2>
+                    <p class="bottomMg-s5 w100p txt-s">CPU: <span><?php echo $cpu;?></span></p>
+                    <p class="bottomMg-s5 w100p txt-s">RAM: <span><?php echo $ram;?></span></p>
+                    <p class="bottomMg-s5 w100p txt-s">GPU: <span><?php echo $gpu;?></span></p>
+                </div>
+                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-half-gray box-shad-black-1 bora-s ovh">
+                    <h2 class="bottomMg-s5 w100p txt-s">Recommended OS</h2>
+                    <p class="bottomMg-s5 w100p txt-s">Windows: <span><?php echo $win;?></span></p>
+                    <p class="bottomMg-s5 w100p txt-s">Linux: <span><?php echo $linux;?></span></p>
+                    <p class="bottomMg-s5 w100p txt-s">MacOS: <span><?php echo $mac;?></span></p>
+                </div>
+                <?php
+                }
+                if ($signed == true) {
+                ?>
+                <div class="posr bottomMg-s10 pad-s w100p flex fld bg-half-gray box-shad-black-1 bora-s ovh">
+                    <img src="../../img/warning.svg" alt="" class="posr icon-t containfit bg-half-white opacity7 hover-visible points" onclick="uniDisplaySwitch('reportDialog'); uniLoad(this, 'reportForm');" data-reportsource="collections" data-ids="<?php echo $libsIds;?>">
+                </div>
+                <?php
+                }
                 ?>
             </div>
         </div>
     </section>
     <section class="leftMg pad-s w79 h40"></section>
     <script>
-        fetch('<?php echo $libsMds;?>')
-            .then(response => response.text())
-            .then(markdownText => {
-                const sanitizedHTML = DOMPurify.sanitize(markdownText);
-                document.getElementById('markdown-content').innerHTML = sanitizedHTML;
-            })
-            .catch(error => {
-                console.error('Error loading the Markdown file:', error);
-            });
-        setTimeout(renderMarkdown(), 1500);
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(purify(), 500);
+            setTimeout(renderMarkdown(), 2700);
+        });
     </script>
 <?php
         break;
@@ -508,24 +590,12 @@ if ($signed == true) {
     <script src="../../scriptstuff/script.js"></script>
     <script src="../../scriptstuff/alert.js"></script>
     <?php
-    if (!empty($errors)) {
-        echo "<script> ";
-        echo "alerter('"; foreach ($errors as $error) {echo $error .";";} echo "')";
-        echo "</script>";
-    };
     if (!empty($_SESSION['corsmsg'])) {
         $corsmsg = $_SESSION['corsmsg'];
         echo "<script> ";
         echo "alerter('" . $corsmsg . "')";
         echo "</script>";
         $_SESSION['corsmsg'] = "";
-    };
-    if ($Reqtype === "clts") {
-    ?>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag.js"></script>
-    <?php
     };
     ?>
 </body>

@@ -5,7 +5,7 @@ require_once '../../secureSession.php';
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
-    header ('location: ../index.php');
+    header ('location: ../../index.php');
     exit;
 }
 
@@ -113,10 +113,18 @@ if (!empty($markedData) && $markedData != "empty") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../styling/pallate.css">
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <link rel="stylesheet" href="../../styling/footer.css">
+    <style>
+        .bg-6 {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--purplegray));
+        }
+        .bg-7 {
+            background: linear-gradient(to bottom, rgba(217, 177, 255, 0.027), rgba(76, 59, 99, 0.096));
+        }
+    </style>
     <title>MarkOut Software</title>
 </head>
 <body class="wh100p">
@@ -217,17 +225,15 @@ if ($noMkot == true) {
                 <img src="../../img/contour3bw.png" id="bgbanner" class="posr w100p r96-31 coverfit">
                 <img src="../../img/contour.png" class="posr w100p r96-31 coverfit opacity1 filInvert">
             </div>
-            <form id="cltDetail" class="posr wh100p minh100 flex fld z950" action="<?php echo $root_route;?>processes/markout.php" method="post" enctype="multipart/form-data">
+            <form id="cltDetail" class="posr wh100p minh100 flex fld z950" action="../../processes/markout.php" method="post" enctype="multipart/form-data">
                 <input class="hiddeninp" type="text" name="libsids" hidden required>
                 <div class="posr w100p flex fld ovh-v">
                     <div class="posr topMg pad-n-v pad-b-s w100p r96-31 flex">
-                        <img src="#" id="attach" class="topMg leftMg-10 rightMg icon-n containfit">
+                        <img src="#" id="attach" alt=" " class="topMg leftMg-10 rightMg icon-n containfit">
                     </div>
                     <div class="posr sideMg pad-n-v pad-b-s w100p flex acjc gap10 bg-thin-gray blurbg box-shad-black-1">
                         <p class="posr topMg pad-b-s pad-s-v r4-1 txt-n txtc bg-1 c-white box-shad-black-1 border-1 hover-red" onclick="uniDisplaySwitch('confirmRemove')">Remove</p>
                         <div class="posr topMg leftMg-5 rightMg flex">
-                            <!-- <input class="posr w50 bg-transparent txt-l c-lightgray border-none ovh-v" type="text" name="title" value="title" readonly disabled> -->
-                            <!-- <div class="posr w100p flex gap10"> -->
                             <div class="posr flex fld">
                                 <h2 class="txt-n">USAGE TIME</h2>
                                 <input class="posr bg-transparent txt-n c-lightgray border-none ovh-v" type="text" name="hour" value="hour" readonly disabled>
@@ -237,15 +243,18 @@ if ($noMkot == true) {
                                 <input class="posr w30 bg-transparent txt-n c-lightgray border-none ovh-v" type="text" name="lastlog" value="lastlog" readonly disabled>
                             </div>
                         </div>
-                        <div id="confirmRemove" class="posf pad-n c0 pad-n-v minw100px w20 dp-none fld bgc-purple blurbg border-1 bora-s z999">
+                        <div id="confirmRemove" class="posf pad-n c0 pad-n-v minw100px w20 dp-none fld bg-def-1 blurbg border-1 bora-s z999">
                             <h2 class="pad-s-v w100p txt-n txtc">Confirm to Remove this collection?</h2>
+                            <p class="posr pad-s-v w100p txtc txt-n c-red">
+                                REMOVING THE COLLECTION WILL ALSO DELETE THE COLLECTION MARKOUT STASTISTIC
+                            </p>
                             <button class="posr topMg-s5 pad-s-v w100p txt-n txtc c-black border-1 box-shad-black-1 bg-red hover-text-white border-hover-white" type="submit" name="MarkOut" value="Remove">Remove</button>
-                            <button class="posr topMg-s5 pad-s-v w100p txt-n txtc c-black border-1 box-shad-black-1 hover-green hover-text-white" onclick="uniDisplaySwitch('confirmRemove')">Cancel</button>
+                            <p class="posr topMg-s5 pad-s-v w100p txt-n txtc c-black bgc-white border-1 box-shad-black-1 hover-green hover-text-white" onclick="uniDisplaySwitch('confirmRemove')">Cancel</p>
                         </div> 
                     </div>
                 </div>
                 <div class="posr sideMg pad-n-v pad-b-s w100p h50 flex fld bg-7 blurbg">
-                    <div class="posr sideMg pad-n-v pad-s-s w100p h10 flex fld bg-fifth-gray blurbg">
+                    <div class="posr sideMg pad-n-v pad-s-s w100p h10 flex fld bg-thin-gray blurbg">
                         <textarea class="posr w100p bg-transparent txt-n c-white border-none ovh-v" type="text" id="desc" name="desc" autocomplete="off" readonly disabled></textarea>
                     </div>
                 </div>
@@ -346,7 +355,6 @@ if ($noMkot == false) {
             createMarkOut(<?php echo json_encode($tempPreEncode, JSON_UNESCAPED_SLASHES);?>, '<?php echo $libsPublisher;?>', 'mkotRecentCont');
         <?php
     }
-    // $encodedLibsArr = json_encode($tempPreEncode, JSON_UNESCAPED_SLASHES);
 }
 ?>
     </script>
