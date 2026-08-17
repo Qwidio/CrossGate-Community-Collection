@@ -16,7 +16,7 @@ if (isset($_SESSION['GroupsToken'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <link rel="stylesheet" href="../styling/footer.css">
@@ -111,11 +111,11 @@ if (isset($aidis)) {
         </div>
         <div class="posr pad-s w100p flex fld bg-half-gray box-shad-black-1 border-purple bora-s gap5">
             <h2 class='posr rightMg txt-n txtnowrap ovh'>corsmsg</h2>
-            <h3 class='posr rightMg txt-s txtc txtnowrap'>For sending output message/error between page and component</h3>
+            <h3 class='posr rightMg txt-s txtc txtnowrap'>For sending output message/error between pages and or components</h3>
         </div>
         <div class="posr pad-s w100p flex fld bg-half-gray box-shad-black-1 border-purple bora-s gap5">
             <h2 class='posr rightMg txt-n txtnowrap ovh'>GroupsToken</h2>
-            <h3 class='posr rightMg txt-s txtc txtnowrap'>Intended for groups auth security but unused in the time of writing</h3>
+            <h3 class='posr rightMg txt-s txtc txtnowrap'>Intended for auth security when accessing Groups-Flow</h3>
         </div>
     </div>
     <?php include_once '../extra/footers.php';?>

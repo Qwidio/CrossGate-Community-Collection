@@ -16,7 +16,7 @@ if (isset($_SESSION['profileTags'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/cgcclogotrsp.ico" type="image/x-icon">
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <script>
@@ -206,7 +206,7 @@ if (isset($_SESSION['profileTags'])) {
 <?php
 if ($state === 'login') {
 ?>
-    <title>Login || CrossGate</title>
+    <title>Login / CGCC</title>
 </head>
 <body class="h100 bg-def-1">
     <form class="sideMg pad-b-s pad-n-v minw200 w40 h100p flex fld acjc gap10 bg-half-white border-custom-l border-custom-r" action="../processes/connect_login.php" method="post">
@@ -238,7 +238,7 @@ if ($state === 'login') {
 <?php
 } else if ($state === 'register') {
 ?>
-  <title>Register new account || CrossGate</title>
+  <title>Register new account / CGCC</title>
 </head>
 <body class="h100 bg-def-1">
     <form class="autoMg pad-b-s pad-n-v minw200 w40 h100p flex fld acjc gap10 bg-half-white border-custom-l border-custom-r" action="../processes/connect_regist.php" method="post" onsubmit="return checkMail()">
