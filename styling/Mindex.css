@@ -137,11 +137,14 @@ span {
 .bg-def-1 {
     background: linear-gradient(to bottom, rgb(28, 30, 31), rgb(41, 40, 43));
 }
+.bg-def-2 {
+    background: linear-gradient(to bottom, rgba(21, 28, 31, 0.466), rgba(41, 40, 43, 0.507));
+}
 .bg-1 {
     background: var(--LibsBG1);
 }
 .bg-2 {
-    background: linear-gradient(to bottom, var(--monochrome1), rgb(89, 83, 105));
+    background: linear-gradient(to bottom, rgb(121, 128, 133), rgb(89, 83, 105));
 }
 .bg-3 {
     background: #00000068;
@@ -149,23 +152,22 @@ span {
 .bg-4 {
     background: linear-gradient(to bottom, var(--purplegray), rgba(255, 255, 255, 0));
 }
-.bg-5 {
-    background: linear-gradient(to right, black, rgb(53, 49, 63));
+
+.bg-prf-1 {
+    background: linear-gradient(to bottom, rgba(49, 0, 128, 0.198), rgba(24, 36, 41, 0.266));
 }
-.bg-6 {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--purplegray));
+.bg-prf-2 {
+    background: linear-gradient(to bottom right, rgba(24, 36, 41, 0.400), rgba(54, 50, 61, 0.507));
 }
-.bg-7 {
-    background: linear-gradient(to bottom, rgba(217, 177, 255, 0.027), rgba(181, 125, 255, 0.096));
+.bg-prf-3 {
+    background: linear-gradient(to bottom right,  rgba(59, 112, 112, 0.51), rgba(32, 24, 41, 0.400));
 }
-.bg-prf-default {
-    background: rgba(49, 0, 128, 0.198);
+.bg-prf-4 {
+    background: linear-gradient(to bottom left, rgba(255, 251, 0, 0.267), rgba(50, 57, 61, 0.507));
 }
+
 .bg-thin-gray {
     background: rgba(105, 105, 105, 0.1);
-}
-.bg-fifth-gray {
-    background: rgba(105, 105, 105, 0.2);
 }
 .bg-half-gray {
     background: rgba(105, 105, 105, 0.466);
@@ -192,9 +194,6 @@ span {
 .bgc-white {
     background-color: rgb(255, 255, 255);
 }
-.bgc-semiwhite {
-    background-color: rgb(87, 97, 104);
-}
 .bgc-red {
     background-color: red;
 }
@@ -202,22 +201,16 @@ span {
     background-color: rgb(255, 143, 39);
 }
 .bgc-blue {
-    background-color: rgb(4, 125, 182);
+    background-color: rgb(0, 162, 255);
 }
 .bgc-green {
     background-color: rgb(4, 182, 81);
-}
-.bgc-yellow {
-    background-color: rgb(220, 232, 4);
 }
 .bgc-gold {
     background-color: rgb(232, 213, 4);
 }
 .bgc-purple {
     background-color: var(--purples);
-}
-.bgc-lightpurple {
-    background-color: var(--lightpurples);
 }
 
 .bg-black {
@@ -250,6 +243,9 @@ span {
 }
 
 /* color */
+.c-trsp {
+    color: transparent;
+}
 .c-black {
     color: black;
 }
@@ -272,7 +268,7 @@ span {
     color: rgba(255, 255, 255, 0.737);
 }
 .c-gray {
-    color: rgb(138, 138, 138);
+    color: rgb(128, 128, 128);
 }
 .c-purple {
     color: var(--purples);
@@ -525,6 +521,12 @@ span {
 .wh50p {
     width: 50%;
     height: 50%;
+}
+.w5 {
+    width: 5vw;
+}
+.w5p {
+    width: 5%;
 }
 .w10 {
     width: 10vw;
@@ -828,6 +830,9 @@ span {
 .maxh70 {
     max-height: 70vh;
 }
+.maxh80 {
+    max-height: 80vh;
+}
 .maxh100 {
     max-height: 100vh;
 }
@@ -1015,10 +1020,10 @@ span {
     border: none;
 }
 .border-1 {
-    border: 1px solid var(--borderA);
+    border: 1px solid #818181;
 }
 .border-2 {
-    border: 1px solid var(--borderB);
+    border: 1px solid var(--subtlewhite);
 }
 .border-3 {
     border: 1px solid rgb(49, 0, 128);
@@ -1144,6 +1149,43 @@ span {
     background-color: rgba(255, 255, 255, 0.249);
     cursor: pointer;
 }
+.hover-purple:hover {
+    background-color: var(--lightpurples);
+    cursor: pointer;
+}
+
+.hover-ltr-blue:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(to right, rgb(62, 194, 255), rgb(0, 162, 255));
+    transition: width 0.6s ease-in-out;
+    z-index: -1;
+}
+.hover-ltr-blue:hover::before {
+    width: 100%;
+}
+
+.hover-ltr-purple {
+    background-color: var(--lightpurples);
+}
+.hover-ltr-purple:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(to right, rgb(158, 117, 253), rgb(142, 99, 243));
+    transition: width 0.6s ease-in-out;
+    z-index: -1;
+}
+.hover-ltr-purple:hover::before {
+    width: 100%;
+}
 
 .hover-enlarge:hover {
     transition: all ease-in-out 0.2s;
@@ -1172,10 +1214,23 @@ span {
 }
 
 .border-hover-white:hover {
-    border: 1px solid var(--borderB);
+    border: 1px solid var(--subtlewhite);
 }
 .border-hover-orange:hover {
     border: 1px solid rgb(255, 143, 39);
+}
+
+.hover-border-black:hover {
+    border: 1px solid rgb(0, 0, 0);
+    cursor: pointer;
+}
+.hover-border-white:hover {
+    border: 1px solid var(--subtlewhite);
+    cursor: pointer;
+}
+
+.hover-pad-l16:hover {
+    padding-left: 16px;
 }
 
 .hover-visible:hover {
@@ -1381,7 +1436,8 @@ span {
     left: 0;
     height: 4px;
     width: 100%;
-    background: #b085ffbe;
+    background: #782fffbe;
+    /* background: #b085ffbe; */
     overflow: hidden;
 }
 #borderanimate::before {
@@ -1402,36 +1458,3 @@ span {
         right: 100%;
     }
 }
-
-/* lets say these are just bandaids */
-/* Typography & Colors */
-.txt-l { font-size: 24px; }
-.txt-m-l { font-size: 18px; }
-.line-h-1-6 { line-height: 1.6; }
-.uppercase { text-transform: uppercase; }
-.letter-sp-1 { letter-spacing: 1px; }
-
-.c-highlight { color: var(--highlight); }
-.c-subtle { color: var(--subtletext); }
-.c-lightpurp { color: var(--lightpurples); }
-.c-accent { color: var(--accent); }
-.c-primary { color: var(--primary); }
-
-/* Visuals: Backgrounds, Borders, Shadows */
-.bg-card-subtle { background: rgba(65, 59, 78, 0.15); }
-.bg-primary-10 { background: rgba(39, 178, 243, 0.1); }
-.border-1-subtle { border: 1px solid var(--purplegray); }
-.border-bot-1-subtle { border-bottom: 1px solid var(--purplegray); }
-.border-bot-1-subtle-dark { border-bottom: 1px solid rgba(65, 59, 78, 0.4); }
-.border-top-1-subtle-dark { border-top: 1px solid rgba(65, 59, 78, 0.3); }
-.shadow-m { box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-
-/* Overflows & Scrolling */
-.custom-scrollbar::-webkit-scrollbar { width: 4px; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--purplegray); border-radius: 4px; }
-
-/* States & Interactions */
-.trs200ms { transition: all 0.2s ease; }
-.hover-bg-subtle:hover { background: rgba(182, 153, 250, 0.08); }
-.hover-c-highlight:hover { color: var(--highlight); }
-.hover-pl-16:hover { padding-left: 16px; }
