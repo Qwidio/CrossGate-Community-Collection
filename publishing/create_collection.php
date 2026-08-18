@@ -106,22 +106,21 @@ $libsMD = htmlspecialchars($libsMD, ENT_QUOTES, 'UTF-8');
 $libsCatg = htmlspecialchars($libsCatg, ENT_QUOTES, 'UTF-8');
 $devstats = htmlspecialchars($devstats, ENT_QUOTES, 'UTF-8');
 $devstatdesc = htmlspecialchars($devstatdesc, ENT_QUOTES, 'UTF-8');
-$countExtlimit = 1;
+
 $extLink = [];
+$ExtLinkCount = 1;
 $stopExtCount = false;
-while ($countExtlimit < 10 && $stopExtCount == false) {
-    $linkName = "linkname" . $countExtlimit;
-    $CurrentExtLink = "extlink" . $countExtlimit;
-    $linkName = htmlspecialchars($linkName, ENT_QUOTES, 'UTF-8');
-    $CurrentExtLink = htmlspecialchars($CurrentExtLink, ENT_QUOTES, 'UTF-8');
-    if (isset($_POST[$CurrentExtLink]) && $_POST[$CurrentExtLink] != "" && isset($_POST[$linkName]) && $_POST[$linkName] != "") {
-        $extLink = [
-            $linkName => [$_POST[$CurrentExtLink]],
-        ];
-        $countExtlimit++;
+while ($ExtLinkCount < 10 && $stopExtCount == false) {
+    $linkName = "linkname" . $ExtLinkCount;
+    $CurrentExtLink = "extlink" . $ExtLinkCount;
+    if (isset($_POST[$CurrentExtLink]) && $_POST[$CurrentExtLink] != "" && isset($_POST[$linkName]) && $_POST[$linkName] != "")  {
+        $linkName = htmlspecialchars($_POST[$linkName], ENT_QUOTES, 'UTF-8');
+        $CurrentExtLink = htmlspecialchars($_POST[$CurrentExtLink], ENT_QUOTES, 'UTF-8');
+        $extLink[$linkName] = $CurrentExtLink;
+        $ExtLinkCount++;
     } else {
         $stopExtCount = true;
-        $countExtlimit = 11;
+        $ExtLinkCount = 11;
     }
 }
 $extLink = json_encode($extLink, JSON_UNESCAPED_SLASHES);
@@ -147,7 +146,7 @@ $libsBanners = [];
 $stopCount = false;
 while ($countlimit < 10 && $stopCount == false) {
     $BannerIteration = "banners" . $countlimit;
-    if (isset($_FILES[$BannerIteration]["name"]) && $_FILES[$BannerIteration]["name"][0] != "") {
+    if (isset($_FILES[$BannerIteration]["name"]) && $_FILES[$BannerIteration]["name"][0] != "" && $_FILES[$BannerIteration]["size"] > 100) {
         $targetdir = "../Library/libsImg/" . $gids . "/";
         if (!file_exists($targetdir)) {
             mkdir($targetdir, 0777, true);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 21, 2026 at 11:39 AM
+-- Generation Time: Aug 18, 2026 at 05:12 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,33 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `cgbackup`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `achievement`
---
-
-CREATE TABLE `achievement` (
-  `libsIds` varchar(11) NOT NULL,
-  `achievementIds` varchar(11) NOT NULL,
-  `achievementName` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `achieverlist`
---
-
-CREATE TABLE `achieverlist` (
-  `achieverIds` varchar(100) NOT NULL,
-  `libsIds` varchar(11) NOT NULL,
-  `profileTags` text NOT NULL,
-  `achievementIds` varchar(11) NOT NULL,
-  `achievementName` text NOT NULL,
-  `dates` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -70,6 +43,52 @@ CREATE TABLE `api_keys` (
 INSERT INTO `api_keys` (`apiId`, `og_identification`, `useScope`, `hashedKeys`, `addedDate`, `active`) VALUES
 ('3a0741edc4b7725d2473e2f9e887eba2', 'POROSIVE', 'Production', '9310aef665af94f5e6f40ac3f71708ba03c6231c9705ac530dda434ab2b951b0', '2026-06-14 02:40:00', 1),
 ('95cc48d97a428b87725e53b707aaa930', 'POROSIVE', 'Development', '62966fe03aab8f61997833c4faf9e325238abc1efa646b41842c2678c70feae2', '2026-06-14 02:40:00', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `badgegroup`
+--
+
+CREATE TABLE `badgegroup` (
+  `bgIds` int(255) NOT NULL,
+  `groupRefs` varchar(127) NOT NULL,
+  `libsIds` varchar(200) NOT NULL,
+  `badgeGroupTitle` varchar(500) NOT NULL,
+  `badgeGroupDesc` varchar(2000) NOT NULL,
+  `badgeList` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '[]',
+  `icons` text NOT NULL,
+  `state` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `badgegroup`
+--
+
+INSERT INTO `badgegroup` (`bgIds`, `groupRefs`, `libsIds`, `badgeGroupTitle`, `badgeGroupDesc`, `badgeList`, `icons`, `state`) VALUES
+(1, 'CGCC', 'CGCC', 'CGCC 2026', 'Official 2026 Badges ', '[\"1\"]', '', 'publics');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `badges`
+--
+
+CREATE TABLE `badges` (
+  `badgeIds` varchar(100) NOT NULL,
+  `badgeName` varchar(1000) NOT NULL,
+  `badgeType` varchar(50) NOT NULL,
+  `badgeRefs` varchar(127) NOT NULL,
+  `badgeDesc` varchar(1000) NOT NULL,
+  `icon` varchar(1000) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `badges`
+--
+
+INSERT INTO `badges` (`badgeIds`, `badgeName`, `badgeType`, `badgeRefs`, `badgeDesc`, `icon`) VALUES
+('1', 'CROSSGATER', 'profile', 'CGCC', 'Have CrossGate on yo Desktop', 'cgcclogo.png');
 
 -- --------------------------------------------------------
 
@@ -124,6 +143,13 @@ CREATE TABLE `forumcomments` (
   `replyThreadId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `forumcomments`
+--
+
+INSERT INTO `forumcomments` (`CommentIds`, `ForumIds`, `profileTags`, `profileNames`, `Comments`, `CommentDates`, `CmVs`, `type`, `replyThreadId`) VALUES
+('06012026dda58441fcfb9daf135a5d4f', '29052026fc5fd02f31b3d6cb4946cbbb', 'taka21', 'Taka', 'Racism and discrimination is not tolerated here and generally anywhere else', '06/01/2026', 0, '', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -142,6 +168,13 @@ CREATE TABLE `forums` (
   `ForumAttachment` text NOT NULL DEFAULT 'empty.png'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `forums`
+--
+
+INSERT INTO `forums` (`ForumIds`, `ForumTitles`, `ForumCreator`, `ForumTopics`, `ForumDates`, `ForumContents`, `ForumState`, `ForumHighlight`, `ForumAttachment`) VALUES
+('29052026fc5fd02f31b3d6cb4946cbbb', 'welcome message & friendly reminder', 'taka21', 'CrossGateBugnFeedback-2362025', '05/29/2026', 'Regardless where you\'re coming from, all of you are welcomed here. I cannot ask more than to keep yourself mostly friendly here aight.', 'Publics', 'TRUE', 'empty.png');
+
 -- --------------------------------------------------------
 
 --
@@ -153,9 +186,17 @@ CREATE TABLE `groupaccess` (
   `profileTags` varchar(500) NOT NULL,
   `passkeys` text NOT NULL,
   `roles` varchar(30) NOT NULL,
-  `og_identification` varchar(1000) NOT NULL,
+  `og_identification` varchar(600) NOT NULL,
   `accountState` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `groupaccess`
+--
+
+INSERT INTO `groupaccess` (`ga_id`, `profileTags`, `passkeys`, `roles`, `og_identification`, `accountState`) VALUES
+(1, 'taka21', '3342ddebdc78ca54a1ee6434aafe9dac', 'founder', 'POROSIVE', 'approved'),
+(11, 'raka_NoynAOGKBx_1808', 'e5b2a975d9b73165bcc8b5e63ce488ff', 'administrator', 'POROSIVE', 'approved');
 
 -- --------------------------------------------------------
 
@@ -167,7 +208,7 @@ CREATE TABLE `groupinvite` (
   `iv_id` int(255) NOT NULL,
   `inviteToken` varchar(255) NOT NULL,
   `profileTags` varchar(500) NOT NULL,
-  `og_identification` varchar(1000) NOT NULL,
+  `og_identification` varchar(600) NOT NULL,
   `custom_msg` varchar(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -181,13 +222,21 @@ CREATE TABLE `groupsession` (
   `gs_id` int(255) NOT NULL,
   `token` varchar(100) NOT NULL,
   `profileTags` varchar(500) NOT NULL,
-  `og_identification` varchar(1000) NOT NULL,
+  `og_identification` varchar(600) NOT NULL,
   `addrss` varchar(255) NOT NULL,
   `osids` varchar(100) NOT NULL,
   `client` varchar(200) NOT NULL,
   `expirationDate` varchar(11) NOT NULL,
   `lastlogs` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `groupsession`
+--
+
+INSERT INTO `groupsession` (`gs_id`, `token`, `profileTags`, `og_identification`, `addrss`, `osids`, `client`, `expirationDate`, `lastlogs`) VALUES
+(93, '2aa28f5333f7da2d460b61772761ad3da142599b80f290670675d0afd095da1a', 'raka_NoynAOGKBx_1808', 'POROSIVE', '127.0.0.1', 'Windows 10', '', '2026/08/28', '13/08/2026 07:50'),
+(100, '021ea19fc5fc33632e304b2cb7f643b5f365be10ede4c7db547d450c93c96c98', 'taka21', 'POROSIVE', '127.0.0.1', 'Windows 10', '', '2026/09/02', '18/08/2026 04:56');
 
 -- --------------------------------------------------------
 
@@ -196,8 +245,8 @@ CREATE TABLE `groupsession` (
 --
 
 CREATE TABLE `libslist` (
-  `libsIds` varchar(100) NOT NULL,
-  `libsPublisher` varchar(100) NOT NULL,
+  `libsIds` varchar(200) NOT NULL,
+  `libsPublisher` varchar(600) NOT NULL,
   `libsVT` varchar(30) NOT NULL,
   `libsAttachs` text NOT NULL,
   `libsBanners` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`libsBanners`)),
@@ -211,12 +260,21 @@ CREATE TABLE `libslist` (
   `libsType` varchar(100) NOT NULL DEFAULT 'software',
   `libsCategorys` varchar(500) NOT NULL,
   `fdrLibs` text NOT NULL,
+  `rollbacks` text NOT NULL,
+  `detailData` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT ' { "fdrLibs":{"executables": "", "uninst": "none", "ver": ""}, "rollbacks":{"executables": "", "uninst": "none", "ver": ""}, "theme": "light" }',
+  `recspecs` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{ "cpu":"2 core/2 thread", "ram":"4GB DDR4", "gpu":"GTX 960 2GB/ RX 460 2GB", "win":"10 or Newer", "linux":"not supported", "mac":"not supported" }',
   `libsForum` text NOT NULL,
-  `recspecs` varchar(100) NOT NULL DEFAULT '24a2w11u22',
   `devstats` varchar(50) NOT NULL,
   `devstatdesc` text NOT NULL,
   `libsState` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `libslist`
+--
+
+INSERT INTO `libslist` (`libsIds`, `libsPublisher`, `libsVT`, `libsAttachs`, `libsBanners`, `libsTitles`, `libsDesc`, `repolink`, `libsMD`, `extlink`, `addedDates`, `cltNumbs`, `libsType`, `libsCategorys`, `fdrLibs`, `rollbacks`, `detailData`, `recspecs`, `libsForum`, `devstats`, `devstatdesc`, `libsState`) VALUES
+('NIIE393a570e02062026', 'POROSIVE', '', 'NIIE393a570e02062026_1781874301_86737ff0ed6038c4_NIElogotrsp.png', '[\"1_1780357641_0c238f46e42f2d87_NIEbanner.png\"]', 'N//E', 'Upcoming project soon to be made', 'https://github.com/Qwidio/NIE', 'https://raw.githubusercontent.com/Qwidio/CrossGate-Community-Collection/refs/heads/main/README.md', '{\"official website\":\"cgcc.porosive.com/client.php\"}', '02/06/2026', 0, 'game', 'GamesNugg', '1785084210_NIIE393a570e02062026_b5020ecd_NamelessLow.zip', '1785084210_NIIE393a570e02062026_b5020ecd_NamelessLow.zip', '{\"fdrLibs\":{\"executables\":\"NamelessLow.exe\",\"uninst\":\"none\",\"ver\":\"0.1.0\"},\"rollbacks\":{\"executables\":\"NamelessLow.exe\",\"uninst\":\"none\",\"ver\":\"0.1.0\"},\"theme\":\"dark\"}', '{\"cpu\":\"2 core/2 thread\",\"ram\":\"4GB DDR4\",\"gpu\":\"GTX 960 2GB/ RX 460 2GB\",\"win\":\"10 or Newer\",\"linux\":\"not supported\",\"mac\":\"not supported\"}', 'NIIE_topic_402e931d', 'earlyaccess', '-', 'publics');
 
 -- --------------------------------------------------------
 
@@ -226,18 +284,23 @@ CREATE TABLE `libslist` (
 
 CREATE TABLE `ogroup` (
   `og_id` int(255) NOT NULL,
-  `identification` varchar(1000) NOT NULL,
-  `names` varchar(500) NOT NULL,
+  `identification` varchar(600) NOT NULL,
+  `names` varchar(400) NOT NULL,
   `about` text NOT NULL,
   `founded` varchar(10) NOT NULL,
   `founder` varchar(500) NOT NULL,
-  `admins` varchar(500) NOT NULL,
   `members` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`members`)),
   `logo` text NOT NULL,
   `banner` text NOT NULL,
-  `sites` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `role_publish` varchar(1000) NOT NULL
+  `sites` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ogroup`
+--
+
+INSERT INTO `ogroup` (`og_id`, `identification`, `names`, `about`, `founded`, `founder`, `members`, `logo`, `banner`, `sites`) VALUES
+(1, 'POROSIVE', 'POROSIVE STUDIO', 'Lurking in hidden rows', '12/12/2025', 'taka21', '[\"taka21\",\"raka_NoynAOGKBx_1808\"]', '1782035651_f67a6221eb44cb2f_prsvlogobglight.png', 'porosive.png', '[{\"site\":\"porosive.com\",\"yt\":\"www.youtube.com/@porosive\"}]');
 
 -- --------------------------------------------------------
 
@@ -254,6 +317,13 @@ CREATE TABLE `prms` (
   `bannerDates` varchar(11) NOT NULL,
   `prmState` varchar(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prms`
+--
+
+INSERT INTO `prms` (`prmsIds`, `bannerRefImg`, `prmsArr`, `type`, `refLinks`, `bannerDates`, `prmState`) VALUES
+('clientCrgs', 'crossgateprms.png', '[]', 'client', 'homepage', '6/6/2026', 'active');
 
 -- --------------------------------------------------------
 
@@ -272,6 +342,14 @@ CREATE TABLE `profiles` (
   `mkot` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`mkot`)),
   `allowInvite` varchar(10) NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `profiles`
+--
+
+INSERT INTO `profiles` (`profileTags`, `profileAttachs`, `profileNames`, `profileBios`, `profileJDates`, `Badge`, `oState`, `mkot`, `allowInvite`) VALUES
+('raka_NoynAOGKBx_1808', 'empty', 'raka', '', '18/07/2026', '{\"1\":\"14/08/2026 05:37\"}', 'Offline', '{\"marked\":{\"NIIE393a570e02062026\":{\"libsIds\":\"NIIE393a570e02062026\",\"Hours\":126.24,\"lastLog\":\"13/08/2026 02:22:45\"}},\"private\":false,\"favbadge\":\"1\",\"themes\":\"4\"}', 'active'),
+('taka21', '1782035884_5a4f290b1d2b698b_cgcclogo.png', 'Taka', 'the first boi in here', '19/6/2025', '{\"1\":\"24/3/2026 01:23\"}', 'Offline', '{\"lastLogin\":\"20-1-2026 09:11\",\"marked\":{\"CrossGates\":{\"libsIds\":\"CrossGates\",\"Hours\":5252,\"lastLog\":\"20/1/2025 10:15\"},\"NIIE393a570e02062026\":{\"libsIds\":\"NIIE393a570e02062026\",\"Hours\":0,\"lastLog\":\"3/7/2026 11:12\"}},\"private\":false,\"favbadge\":\"none\",\"themes\":\"4\"}', 'inactive');
 
 -- --------------------------------------------------------
 
@@ -304,22 +382,9 @@ CREATE TABLE `sessionlogs` (
   `osids` varchar(100) NOT NULL DEFAULT 'unset',
   `client` varchar(200) NOT NULL DEFAULT 'unset',
   `expirationDate` varchar(11) NOT NULL,
-  `lastlogs` varchar(20) NOT NULL DEFAULT 'unset'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `specialbadge`
---
-
-CREATE TABLE `specialbadge` (
-  `badgeIds` int(100) NOT NULL,
-  `badgeName` varchar(1000) NOT NULL,
-  `badgeType` varchar(50) NOT NULL,
-  `badgeRefs` varchar(100) NOT NULL,
-  `badgeDesc` varchar(1000) NOT NULL,
-  `icon` varchar(1000) NOT NULL
+  `lastlogs` varchar(20) NOT NULL DEFAULT 'unset',
+  `isRunningClts` tinyint(1) NOT NULL DEFAULT 0,
+  `lastCltsRun` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -345,7 +410,6 @@ CREATE TABLE `topics` (
 INSERT INTO `topics` (`topicIds`, `topicTitles`, `topicDates`, `topicContents`, `topicState`, `topicAttachs`, `topicType`) VALUES
 ('codinghelp', 'Coding Help', '13/6/2026', 'Ask questions and get assistance with programming challenges', 'Publics', '\'empty.png\'', 'all'),
 ('cplusplus', 'C++ Programming', '13/6/2026', 'Topics covering C++ programming, algorithms, and software development', 'Publics', '\'empty.png\'', 'all'),
-('CrossGate-9999', 'CrossGate', '5/7/2025', 'Crossgate official forum topic', 'Publics', 'empty.png', 'publisherOnly'),
 ('CrossGateBugnFeedback-2362025', 'CrossGate Bug & Feedback', '23/6/2025', 'Dedicated topic for those stuff, if you encounter one please share it there about the detail and how can you encounter it ', 'Publics', 'empty.png', 'all'),
 ('cybersecurity', 'Cyber Security', '13/6/2026', 'Discussions about security, ethical hacking, and data protection', 'Publics', '\'empty.png\'', 'all'),
 ('databaseworld', 'Database Systems', '13/6/2026', 'Discussion about MySQL, PostgreSQL, database design, and optimization', 'Publics', '\'empty.png\'', 'all'),
@@ -378,26 +442,34 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`UserID`, `profileTags`, `username`, `password`, `Email`, `userState`) VALUES
+(99, 'taka21', 'taka', '3342ddebdc78ca54a1ee6434aafe9dac', 'qwidqwudpro@gmail.com', 'approved'),
+(118, 'raka_NoynAOGKBx_1808', 'raka', 'e5b2a975d9b73165bcc8b5e63ce488ff', 'rakaraka@raka.com', 'approved');
+
+--
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `achievement`
---
-ALTER TABLE `achievement`
-  ADD PRIMARY KEY (`achievementIds`);
-
---
--- Indexes for table `achieverlist`
---
-ALTER TABLE `achieverlist`
-  ADD PRIMARY KEY (`achieverIds`);
 
 --
 -- Indexes for table `api_keys`
 --
 ALTER TABLE `api_keys`
   ADD PRIMARY KEY (`apiId`);
+
+--
+-- Indexes for table `badgegroup`
+--
+ALTER TABLE `badgegroup`
+  ADD PRIMARY KEY (`bgIds`);
+
+--
+-- Indexes for table `badges`
+--
+ALTER TABLE `badges`
+  ADD PRIMARY KEY (`badgeIds`);
 
 --
 -- Indexes for table `categorys`
@@ -451,7 +523,7 @@ ALTER TABLE `libslist`
 --
 ALTER TABLE `ogroup`
   ADD PRIMARY KEY (`og_id`),
-  ADD UNIQUE KEY `identification` (`identification`) USING HASH;
+  ADD UNIQUE KEY `identification` (`identification`);
 
 --
 -- Indexes for table `prms`
@@ -479,12 +551,6 @@ ALTER TABLE `sessionlogs`
   ADD KEY `profileTags` (`profileTags`);
 
 --
--- Indexes for table `specialbadge`
---
-ALTER TABLE `specialbadge`
-  ADD PRIMARY KEY (`badgeIds`);
-
---
 -- Indexes for table `topics`
 --
 ALTER TABLE `topics`
@@ -502,28 +568,34 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT for table `badgegroup`
+--
+ALTER TABLE `badgegroup`
+  MODIFY `bgIds` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `groupaccess`
 --
 ALTER TABLE `groupaccess`
-  MODIFY `ga_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ga_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `groupinvite`
 --
 ALTER TABLE `groupinvite`
-  MODIFY `iv_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `iv_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `groupsession`
 --
 ALTER TABLE `groupsession`
-  MODIFY `gs_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `gs_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT for table `ogroup`
 --
 ALTER TABLE `ogroup`
-  MODIFY `og_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `og_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `reports`
@@ -535,19 +607,13 @@ ALTER TABLE `reports`
 -- AUTO_INCREMENT for table `sessionlogs`
 --
 ALTER TABLE `sessionlogs`
-  MODIFY `logids` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
-
---
--- AUTO_INCREMENT for table `specialbadge`
---
-ALTER TABLE `specialbadge`
-  MODIFY `badgeIds` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `logids` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
+  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
 
 --
 -- Constraints for dumped tables
@@ -558,12 +624,6 @@ ALTER TABLE `user`
 --
 ALTER TABLE `groupaccess`
   ADD CONSTRAINT `groupaccess_ibfk_1` FOREIGN KEY (`profileTags`) REFERENCES `profiles` (`profileTags`);
-
---
--- Constraints for table `groupsession`
---
-ALTER TABLE `groupsession`
-  ADD CONSTRAINT `groupsession_ibfk_2` FOREIGN KEY (`profileTags`) REFERENCES `profiles` (`profileTags`);
 
 --
 -- Constraints for table `sessionlogs`
