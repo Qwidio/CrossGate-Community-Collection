@@ -186,12 +186,12 @@ $stmt_insert_newClts = $connects->prepare("INSERT INTO libslist (libsIds, libsPu
 $stmt_insert_newClts->bind_param("ssssssssssssssss", $libsIds, $gids, $libsVT, $libsAttachs, $libsBanners, $libsTitles, $libsDesc, $repolink, $libsMD, $extLink, date('d/m/Y'), $libsType, $libsCatg, $libsTopics, $devstats, $devstatdesc);
 if($stmt_insert_newClts->execute()){
     $topicsTitles = $libsTitles . " announcement";
-    $topicsDesc = $libsTitles . "announcement topics";
+    $topicsDesc = $libsTitles . " announcement topics";
     $stmt_insert_newTopics = $connects->prepare("INSERT INTO topics (topicIds, topicTitles, topicDates, topicContents, topicState, topicAttachs, topicType) VALUES (?, ?, ?, ?, 'Publics', 'empty.png', 'publisherOnly')");
     $stmt_insert_newTopics->bind_param("ssss", $libsTopics, $topicsTitles, date('d/m/Y'), $topicsDesc);
     if($stmt_insert_newTopics->execute()){
         if ($errors != ""){
-            $_SESSION['corsmsg'] = $libsTitles . ' created, ' . foreach ($errors as $error) { echo $errors; };
+            $_SESSION['corsmsg'] = $libsTitles . ' created';
         } else {
             $_SESSION['corsmsg'] = 'created ' . $libsTitles;
         }

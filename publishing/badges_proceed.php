@@ -63,7 +63,7 @@ if ($initReq === "NewBadgeGroups" && isset($_POST['badgegrouptitle'])) {
         $badgegroupdesc = "";
     }
 
-    if (isset($_FILES["badgesgroupimg"]["name"]) ) {
+    if (isset($_FILES["badgesgroupimg"]["name"]) && $_FILES["badgesgroupimg"]["size"] > 100) {
         $targetdir = "../ab/" . $badgegroupids . "/";
         if (!file_exists($targetdir)) {
             mkdir($targetdir, 0777, true);
@@ -247,7 +247,7 @@ if ($initReq === "NewBadgeGroups" && isset($_POST['badgegrouptitle'])) {
         exit;
     }
 
-    if (isset($_FILES["badgesImage"]["name"])) {
+    if (isset($_FILES["badgesImage"]["name"]) && $_FILES["badgesImage"]["size"] > 100) {
         $targetdir = "../ab/" . $badgegroupids . "/";
         if (!file_exists($targetdir)) {
             mkdir($targetdir, 0777, true);
@@ -287,10 +287,10 @@ if ($initReq === "NewBadgeGroups" && isset($_POST['badgegrouptitle'])) {
                 $newBadgeList[] = $badgeListIndex;
             }
         }
-        $newBadgeList["$badgesids"];
+        $newBadgeList[] = $badgesids;
         $newBadgeList = json_encode($newBadgeList, JSON_UNESCAPED_SLASHES);
-        $update_badgelist = $connects->prepare("UPDATE badgegroup SET badgeList = ? WHERE libsIds = ? AND groupRefs = ? ;");
-        $update_badgelist->bind_param("sss", $newBadgeList , $libsIds, $badgegroupids);
+        $update_badgelist = $connects->prepare("UPDATE badgegroup SET badgeList = ? WHERE groupRefs = ? ;");
+        $update_badgelist->bind_param("ss", $newBadgeList, $badgegroupids);
         $update_badgelist->execute();
         if ($update_badgelist->affected_rows > 0) {
             $_SESSION['corsmsg'] = 'badges created. ' . $errors;
@@ -298,11 +298,12 @@ if ($initReq === "NewBadgeGroups" && isset($_POST['badgegrouptitle'])) {
             $update_badgelist->close();
             exit;
         } else {
-            $_SESSION['corsmsg'] = "Failed to add badge to badges group. " . $update_badgelist->error;
+            $_SESSION['corsmsg'] = "Failed to add badge to badges group. " . $newBadgeList . $update_badgelist->error;
             $update_badgelist->close();
             header ('location: badges.php?libsids='.$libsIds);
             exit;
         };
+        $create_badges->close();
     } else {
         $_SESSION['corsmsg'] = "Failed to create badges. " . $create_badges->error;
         $create_badges->close();

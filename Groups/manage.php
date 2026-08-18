@@ -136,8 +136,18 @@ foreach ($tempLibsArr as $datas) {
 }
 
 $apiData = [];
-$NDAPI = "Click on reset button to obtain";
-$NPAPI = "Click on reset button to obtain";
+$NDAPI = "Click on reset button to obtain Dev API";
+$NPAPI = "Click on reset button to obtain Prod API";
+$apiData[$NDAPI] = [
+"scope"       => "Development",
+"apiState"    => "Unobtained",
+"addedDate"   => "none"
+];
+$apiData[$NPAPI] = [
+"scope"       => "production",
+"apiState"    => "Unobtained",
+"addedDate"   => "none"
+];
 $check_api = $connects->prepare("SELECT * FROM api_keys WHERE og_identification = ? ;");
 $check_api->bind_param("s", $gids);
 $check_api->execute();

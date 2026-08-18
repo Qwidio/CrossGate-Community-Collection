@@ -72,7 +72,31 @@ if (isset($_POST['Register'])) {
                 $stmt_change_invite = $connects->prepare("UPDATE profiles SET allowInvite = 'inactive' WHERE profileTags = ?");
                 $stmt_change_invite->bind_param("s", $aidis);
                 if($stmt_change_invite->execute()){
-                    $_SESSION['corsmsg'] = 'Registration successfully executed.';
+                    $devApiId = generateApiKey(32);
+                    $devHash  = generateApiKey(64);
+                    $prodApiId = generateApiKey(32);
+                    $prodHash  = generateApiKey(64);
+                    $addedDate = date("Y/m/d H:i");
+                    $insert_api = $connects->prepare("INSERT INTO api_keys (apiId, og_identification, hashedKeys, useScope, addedDate) VALUES
+                            (?, ?, ?, 'Development', ?),
+                            (?, ?, ?, 'Production', ?)
+                            ");
+                    $insert_api->bind_param(
+                        "ssssssss",
+                        $devApiId,
+                        $gids,
+                        $devHash,
+                        $addedDate,
+                        $prodApiId,
+                        $gids,
+                        $prodHash,
+                        $addedDate
+                    );
+                    if ($insert_api->execute()) {
+                        $_SESSION['corsmsg'] = "Registration successfully executed, Development and Production API keys created." . $tempMsg;
+                    } else {
+                        $_SESSION['corsmsg'] = 'Registration successfully executed, Failed to create API keys.';
+                    }
                     header ('location: ../Groups/index.php');
                     $stmt_insert_access->close();
                     exit;

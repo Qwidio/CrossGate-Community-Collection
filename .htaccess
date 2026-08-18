@@ -9,7 +9,7 @@
 #RewriteCond %{HTTPS} off
 #RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-RewriteCond %{HTTP_REFERER} !^https?://(www\.)?yourdomain\.com [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?porosive\.com [NC]
 RewriteRule ^premium/.*\.(pdf|zip)$ - [F,L]
 
 #<IfModule Litespeed>
