@@ -10,6 +10,12 @@
 
 ## About this project?
   Originally created to announce update about upcoming project, CGCC now becomes Software & Game distribution platform with community forum to share interaction and feedback, the main component of the CrossGate desktop app API & utility
+  
+## Demo
+<div align="center">
+  
+[![](https://markdown-videos-api.jorgenkh.no/youtube/dQw4w9WgXcQ)](https://www.youtube.com/watch?v=4p1R0SJKGnc)
+</div>
 
 ## Documentation & Journals
   for documentation on how to use, please refer to [website documentation](https://porosive.com/documentation/docs.php)<br>
