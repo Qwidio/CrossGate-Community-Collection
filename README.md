@@ -10,6 +10,12 @@
 
 ## About this project?
   Originally created to announce update about upcoming project, CGCC now becomes Software & Game distribution platform with community forum to share interaction and feedback, the main component of the CrossGate desktop app API & utility
+  
+## Demo
+<div align="center">
+  
+[![](https://markdown-videos-api.jorgenkh.no/youtube/4p1R0SJKGnc)](https://youtu.be/v=4p1R0SJKGnc)
+</div>
 
 ## Documentation & Journals
   for documentation on how to use, please refer to [website documentation](https://porosive.com/documentation/docs.php)<br>
@@ -70,19 +76,16 @@
   XAMPP(version: 8.2.12, Control Panel version: 3.3.0) installed in your enviroment,
   <br>
   or the similiar server stack like below as alternative:
-    - Apache/2.4.58 (Win64)
-    - Database client version: libmysql - mysqlnd 8.2.12
-    - PHP 8.2.12
+  <br>
+  - Apache/2.4.58 (Win64)
+  - Database client version: libmysql - mysqlnd 8.2.12
+  - PHP 8.2.12
 
 ### Setup (Assumed using XAMPP)
-  1. Download the [project in zip file](https://github.com/Qwidio/CrossGate-Community-Collection/archive/refs/heads/main.zip) and extract
-   <br>
-   OR
-   <br>
-   Clone repository
-   ```bash
-   git clone https://github.com/Qwidio/CrossGate-Community-Collection.git
-   ```
+  1. Download the [project in zip file](https://github.com/Qwidio/CrossGate-Community-Collection/archive/refs/heads/main.zip) and extract, or Clone the repository:<br>
+     ```bash
+     git clone https://github.com/Qwidio/CrossGate-Community-Collection.git
+      ```
   2. move the downloaded/extracted repository to the public directory of you apache server (`htdocs/` in case of XAMPP)
   3. Import the `cgcc.sql` from the `sql` directory to your MySQL database and make sure the database name are the same in your database config file on `processes/database.php`.
   4. set your apache server to use the same configuration as `.htaccess` files in this repository
