@@ -19,23 +19,6 @@ if (isset($aidis) && $uDs === "self") {
     $allowEdits = true;
     $uDs = $_SESSION['profileTags'];
 };
-$check_user = $connects->prepare("SELECT userState FROM user WHERE profileTags = ? ;");
-$check_user->bind_param("s", $uDs);
-$check_user->execute();
-$result_check_user = $check_user->get_result();
-if ($result_check_user->num_rows == 1) {
-    $tempValue = $result_check_user->fetch_assoc();
-    $userState = $tempValue["userState"];
-    if ($userState != "approved") {
-        $_SESSION['corsmsg'] = "user account currently banned";
-        header ('location: index.php');
-        exit;
-    }
-} else {
-    $_SESSION['corsmsg'] = "user account does not exist";
-    header ('location: index.php');
-    exit;
-};
 $favbadge = "none";
 $check_profile = $connects->prepare("SELECT profiles.*, user.userState 
 FROM profiles INNER JOIN user on profiles.profileTags = user.profileTags
@@ -66,30 +49,54 @@ if ($result_check_profile->num_rows == 1) {
     $privated = $data['private'];
     $savedfavbadge = $data['favbadge'];
     $themes = $data['themes'];
-    if ($themes == 2) {
-        $themes = [
-            "bg" => "bg-prf-2",
-            "accent" => "bgc-blue",
-            "color" => "c-white"
-        ];
-    } else if ($themes == 3) {
-        $themes = [
-            "bg" => "bg-prf-3",
-            "accent" => "bgc-blue",
-            "color" => "c-white"
-        ];
-    } else if ($themes == 4) {
-        $themes = [
-            "bg" => "bg-prf-4",
-            "accent" => "bgc-gold",
-            "color" => "c-black"
-        ];
-    } else {
-        $themes = [
-            "bg" => "bg-prf-1",
-            "accent" => "bgc-purple",
-            "color" => "c-white"
-        ];
+    $borders = $data['borders'];
+    switch ($themes) {
+        case 2:
+            $themes = [
+                "bg" => "bg-prf-2",
+                "accent" => "bgc-blue",
+                "color" => "c-white"
+            ];
+            break;
+        case 3:
+            $themes = [
+                "bg" => "bg-prf-3",
+                "accent" => "bgc-blue",
+                "color" => "c-white"
+            ];
+            break;
+        case 4:
+            $themes = [
+                "bg" => "bg-prf-4",
+                "accent" => "bgc-gold",
+                "color" => "c-White"
+            ];
+            break;
+        case 5:
+            $themes = [
+                "bg" => "bg-prf-paper",
+                "accent" => "bgc-paper",
+                "color" => "c-black"
+            ];
+            break;
+        default:
+            $themes = [
+                "bg" => "bg-prf-1",
+                "accent" => "bgc-purple",
+                "color" => "c-white"
+            ];
+            break;
+    }
+    switch ($borders) {
+        case 1:
+            $customBorder = "borderpurple.png";
+            break;
+        case 2:
+            $customBorder = "border-paper.png";
+            break;
+        default:
+            $customBorder = "none";
+            break;
     }
     if (!empty($markedData) && $markedData != "empty") {
         $marked = [];
@@ -236,21 +243,26 @@ if ($result_check_profile->num_rows == 1) {
         <?php
         if (empty($pfAttachs) || $pfAttachs === "empty") {
         ?>
-            <img src="img/person.svg" class="autoMg r1-1 minh10 h80p flex acjc bg-half-white coverfit bora-s z4">
+            <img src="img/person.svg" class="posr autoMg r1-1 minh10 h80p flex acjc bg-half-white coverfit bora-s z4">
         <?php
         } else {
         ?>
-            <img src="zprpic/<?php echo $Tags . "/" . $pfAttachs;?>" alt="<?php echo $Names;?>" class="autoMg r1-1 minh10 h80p flex acjc bgc-purple coverfit z4">
+            <img src="zprpic/<?php echo $Tags . "/" . $pfAttachs;?>" alt="<?php echo $Names;?>" class="posr autoMg r1-1 minh10 h80p flex acjc bgc-purple coverfit z4">
+            <?php
+        };
+        if (!empty($borders) || $borders != "0") {
+        ?>
+                <img src="img/<?php echo $customBorder;?>" style="height: calc(80% + 20px);" class="posa c0 r1-1 minh10 flex acjc coverfit z5">
         <?php
         };
         ?>
         </div>
         <div class="posr vertiMg pad-n-v pad-sr w50p h80p flex fld z4">
-            <h2 class="posr topMg w100p txt-l"><?php echo $Names;?></h2>
+            <h2 class="posr topMg w100p txt-l <?php echo $themes["color"];?>"><?php echo $Names;?></h2>
             <div class="posr w100p flex">
-                <p class="posr rightMg txt-s">Joined since <?php echo $JDates;?></p>
+                <p class="posr rightMg txt-s <?php echo $themes["color"];?>">Joined since <?php echo $JDates;?></p>
             </div>
-            <div class="posr topMg-s5 pad-s-v wh100p minh20 maxh20 txt-s ovh-s"><?php echo $Bios;?></div>
+            <div class="posr topMg-s5 pad-s-v wh100p minh20 maxh20 txt-s <?php echo $themes["color"];?> ovh-s"><?php echo $Bios;?></div>
         </div>
         <div class="posr leftMg pad-n-v w30p h100p flex fld acjc gap5 z4">
 <?php
@@ -381,7 +393,7 @@ if ($result_check_userpost->num_rows > 0) {
         </div>
         <div class="posr sideMg pad-n-v pad-s-s w30p flex fld blurbg z3">
             <div class="bottomMg-s10 w100p flex">
-                <h2 class="rightMg pad-s txt-b">Currently <?php echo $oState;?></h2>
+                <h2 class="rightMg pad-s txt-b <?php echo $themes["color"];?>">Currently <?php echo $oState;?></h2>
             </div>
 <?php
 if (isset($aidis) && $uDs === "self") {
@@ -396,7 +408,7 @@ $result_check_Groups = $check_Groups->get_result();
 if ($result_check_Groups->num_rows > 0) {
 ?>
             <div class="w100p flex z4">
-                <h2 class="rightMg pad-s-s pad-m-v txt-n z5">Groups</h2>
+                <h2 class="rightMg pad-s-s pad-m-v txt-n <?php echo $themes["color"];?> z5">Groups</h2>
             </div>
 <?php
     while ($value = $result_check_Groups->fetch_assoc()) {
@@ -418,7 +430,7 @@ if ($result_check_Groups->num_rows > 0) {
         };
 ?>
                 <div class="posr w80p flex fld">
-                    <h2 class="topMg rightMg pad-s-s txt-s"><?php echo $groupsName;?></h2>
+                    <h2 class="topMg rightMg pad-s-s txt-s <?php echo $themes["color"];?>"><?php echo $groupsName;?></h2>
                     <h2 class="bottomMg rightMg pad-s-s txt-s c-gray"><?php echo $member_count;?> Members</h2>
                 </div>
                 <a href="Groups/profile.php?gids=<?php echo $groupIds;?>" class="link-cover hover-white">.</a>

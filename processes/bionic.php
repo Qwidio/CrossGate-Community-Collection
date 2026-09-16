@@ -130,6 +130,7 @@ if (isset($_POST['submit']) && isset($_SESSION['profileTags'])) {
             $private = $data['private'];
             $favbadge = $data['favbadge'];
             $themes = $data['themes'];
+            $borders = $data['borders'];
             $allowInvite = $value['allowInvite'];
         };
         if (isset($_POST["request"]) && $_POST["request"] === "selectBadges") {
@@ -148,8 +149,17 @@ if (isset($_POST['submit']) && isset($_SESSION['profileTags'])) {
             if (isset($_POST["selectedThemes"])) {
                 $newThemes = $_POST["selectedThemes"];
             }
-            if ($newThemes != $themes && $newThemes != "") {
+            if ($newThemes != $themes) {
                 $themes = $newThemes;
+                $totalChanges++;
+            }
+        }
+        if (isset($_POST["request"]) && $_POST["request"] === "selectBorders") {
+            if (isset($_POST["selectedBorders"])) {
+                $newBorders = $_POST["selectedBorders"];
+            }
+            if ($newBorders != $borders) {
+                $borders = $newBorders;
                 $totalChanges++;
             }
         }
@@ -182,7 +192,8 @@ if (isset($_POST['submit']) && isset($_SESSION['profileTags'])) {
             "marked"    => $markedData,
             "private"   => $private,
             "favbadge"  => $favbadge,
-            "themes"    => $themes
+            "themes"    => $themes,
+            "borders"    => $borders
         ];
         $usrDatTemp = json_encode($usrDatTemp, JSON_UNESCAPED_SLASHES);
 
