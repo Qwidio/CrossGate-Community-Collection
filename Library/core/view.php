@@ -98,6 +98,10 @@ switch ($Reqtype) {
             $libsForum = $value['libsForum'];
             $recspecs = json_decode($value['recspecs'], true);
             $extlinkArr = json_decode($value['extlink'], true);
+            $devstats = $value['devstats'];
+            $devstatdesc = $value['devstatdesc'];
+            $downloadDisabled = (int)($value['downloadDisabled'] ?? 0);
+
             $check_groups = $connects->prepare("SELECT names, sites FROM ogroup WHERE identification = ? ;");
             $check_groups->bind_param("s", $libsPublisher);
             $check_groups->execute();
@@ -202,10 +206,20 @@ switch ($Reqtype) {
             $refLinks = $value['refLinks'];
             $bannerDates = $value['bannerDates'];
             $uniTitles = $bannerDates;
-            if ($type === "sftprms") {
-                header ('location: view.php?type=clts&ids='.$refLinks);
-            } else if ($type === "client") {
-                header ('location: ../../client.php?reqs='.$refLinks);
+            switch ($type) {
+                case 'sftprms':
+                    header ('location: view.php?type=clts&ids='.$refLinks);
+                    break;
+                case 'client':
+                    header ('location: ../../client.php?reqs='.$refLinks);
+                    break;
+                case 'other':
+                    header ('location: ../../'.$refLinks);
+                    break;
+                
+                default:
+                    header ('location: ../../index.php');
+                    break;
             }
         } else {
             $_SESSION['corsmsg'] = "The event no longer exist";
@@ -229,24 +243,61 @@ switch ($Reqtype) {
     <link rel="stylesheet" href="../../styling/pallate.css">
     <link rel="stylesheet" href="../../styling/Mindex.css">
     <link rel="stylesheet" href="../../styling/footer.css">
-    <?php 
+        <?php 
     if ($Reqtype === "clts") {
     ?>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
-    <!-- <script src="../../scriptstuff/DOMPurify-3.4.13/dist/purify.min.js"></script> -->
+    <script src="../../scriptstuff/DOMPurify-3.4.13/dist/purify.min.js"></script>
     <script src="../../scriptstuff/Markdown-Tag-1.0.4/parsers/showdown.min.js"></script>
     <script src="../../scriptstuff/Markdown-Tag-1.0.4/markdown-tag-GitHub.js"></script>
     <script>
         function purify() {
-            fetch('<?php echo $libsMds;?>')
-                .then(response => response.text())
+            const markdownContent = document.getElementById('markdown-content');
+            const readmeUrl = <?php echo json_encode($libsMds);?>;
+            if (!readmeUrl || readmeUrl === "empty") {
+                markdownContent.textContent = 'No README available';
+                return;
+            }
+
+            let fetchUrl = readmeUrl;
+            try {
+                const parsedUrl = new URL(readmeUrl);
+
+                if (parsedUrl.hostname === "github.com") {
+                    const githubParts = parsedUrl.pathname.split("/").filter(Boolean);
+
+                    if (githubParts.length >= 5 && githubParts[2] === "blob") {
+                        fetchUrl = "https://raw.githubusercontent.com/"
+                            + githubParts[0] + "/"
+                            + githubParts[1] + "/"
+                            + githubParts.slice(3).join("/");
+                    }
+                }
+            } catch (error) {
+                console.error('Invalid README URL:', error);
+            }
+            fetch(fetchUrl, {
+                cache: 'no-store'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('README request failed');
+                    }
+                    return response.text();
+                })
                 .then(markdownText => {
-                    const sanitizedHTML = DOMPurify.sanitize(markdownText);
-                    document.getElementById('markdown-content').innerHTML = sanitizedHTML;
+                    const converter = new showdown.Converter({
+                        tables: true,
+                        tasklists: true,
+                        strikethrough: true,
+                        simplifiedAutoLink: true,
+                        ghCompatibleHeaderId: true
+                    });
+                    const convertedHTML = converter.makeHtml(markdownText);
+                    const sanitizedHTML = DOMPurify.sanitize(convertedHTML);
+                    markdownContent.innerHTML = sanitizedHTML;
                 })
                 .catch(error => {
-                    document.getElementById('markdown-content').innerHTML = 'Failed to load Markdown';
+                    markdownContent.textContent = 'Failed to load Markdown';
                     console.error('Error loading the Markdown file:', error);
                 });
         }
@@ -401,7 +452,7 @@ switch ($Reqtype) {
                     if (isset($indexes) ) {
                         if (!in_array($targetIds, $indexes)) {
                 ?>
-                <form class="posr topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
+                <form class="posr topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/test.php" method="post">
                     <input class="hiddeninp" type="text" name="libsids" value="<?php echo $targetIds?>" hidden>
                     <button class="posr pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s hover-ltr-purple points ovh z4" type="submit" name="MarkOut" value="MarkOut">MarkOut</button>
                 </form>
@@ -413,7 +464,7 @@ switch ($Reqtype) {
                         }
                     } else {
                 ?>
-                <form class="posr topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/markout.php" method="post">
+                <form class="posr topMg sideMg bottomMg-s10 w95p flex" name="markingout" action="../../processes/test.php" method="post">
                     <input class="hiddeninp" type="text" name="libsids" value="<?php echo $targetIds?>" hidden>
                     <button class="posr pad-s-v w100p txt-n txtc bold bg-1 c-white box-shad-black-1 border-1 bora-s hover-ltr-purple points ovh z4" type="submit" name="MarkOut" value="MarkOut">MarkOut</button>
                 </form>
@@ -428,8 +479,49 @@ switch ($Reqtype) {
             </div>
         </div>
         <div class="posr sideMg pad-st w75p flex">
-            <github-md class="posr pad-s w75p bg-3 bora-s" id="markdown-content">
-            </github-md>
+            <div class="posr w75p flex fld gap-s">
+                <div class="posr pad-s flex fld gap5 bg-3 border-3 bora-s box-shad-white-1">
+                    <?php
+                    if ($devstats != "Full Release") {
+                    ?>
+                    <h2 class="txt-b">Collection Status: <a href="../../documentation/docs.php#cltsDetail" class="posr txt-b c-lightpurple undline hover-text-white"><?php
+                        $statusLabels = [
+                            'earlyaccess' => 'Early Access',
+                            'beta'        => 'Beta',
+                            'full'        => 'Full Release'
+                        ];
+                        echo htmlspecialchars(
+                            $statusLabels[$devstats] ?? 'Unknown Status',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        );
+                        ?>
+                        </a>
+                    </h2>
+                    <p class="posr"><?php
+                    if ($devstatdesc != "-") {
+                        echo htmlspecialchars(
+                            $devstatdesc ?? 'No information about the development',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        );
+                    } else {
+                        echo 'No information about the development';
+                    }
+                    ?>
+                    </p>
+                    <?php
+                    }
+                    if ($downloadDisabled == 1) {
+                    ?>
+                    <a href="../../documentation/docs.php#cltsDetail" class="posr pad-s-v txt-b c-lightpurple undline hover-text-white">Download Disabled</a>
+                    <?php
+                    }
+                    ?>
+                </div>
+                <github-md class="posr pad-s w100p bg-3 bora-s ovh-s" id="markdown-content">
+                </github-md>
+            </div>
             <div class="leftMg-s10 bottomMg pad-n-v pad-s-s w30p bg-3 flex fld bora-s">
                 <?php
                 if ($signed == true) {
@@ -468,7 +560,7 @@ switch ($Reqtype) {
                     }
                     foreach ($extlinkArr as $sIndex => $vals) {
                         if (!empty($sIndex)) {
-                            $linkVal = $vals[0];
+                            $linkVal = $vals;
                 ?>
                 <div class="posr pad-s bottomMg-s5 w100p flex flex bgc-purple box-shad-black-1 bora-s ovh">
                     <h2 class="vertiMg w100p txt-s"><?php echo $sIndex;?></h2>
@@ -478,7 +570,7 @@ switch ($Reqtype) {
                         }
                     }
                 ?>
-                <!-- inclided badge -->
+                <!-- included badge -->
                 <?php
                 if (!empty($reservedArray)) {
                 ?>
@@ -552,8 +644,8 @@ switch ($Reqtype) {
     <section class="leftMg pad-s w79 h40"></section>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(purify(), 500);
-            setTimeout(renderMarkdown(), 2700);
+            purify();
+            renderMarkdown();
         });
     </script>
 <?php
