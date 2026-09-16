@@ -18,10 +18,9 @@
 </div>
 
 ## Documentation & Journals
-  for documentation on how to use, please refer to [website documentation](https://porosive.com/documentation/docs.php)<br>
-  changelog and in progress improvement can be seen on [this page](https://porosive.com/documentation/changelog.php)<br>
-  I'd write about all the past progression [on this journals](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/journals.md)
-
+  for documentation on how to use, please refer to [website documentation](https://cgccporosive.com/documentation/docs.php)<br>
+  I'd write about all the past progression [on this journals](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/journals.md)<br>
+  New update details are written in [this markdown](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/technical.md)
 
 ## Using the client
 ### Via release binaries (recommended)
