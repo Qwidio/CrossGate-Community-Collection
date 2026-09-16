@@ -290,7 +290,7 @@ if ($noMkot == true) {
             ?>
                 <div class="posr pad-s w30 r16-9 flex fld border-2 z1">
                     <?php
-                    if ($ForumAttachment != "empty.png" && isset($ForumAttachment)) {
+                    if ($ForumAttachment != "empty" && isset($ForumAttachment)) {
                     ?>
                     <img src="../../TS/img/<?php echo $ForumIds . '/' . $ForumAttachment;?>" alt="" class="posa ins0 r16-9 wh100p coverfit opacity5 z2">
                     <?php
