@@ -124,7 +124,6 @@ $previousLocation = getSafePreviousLocation();
 if (!isset($_POST['sessionless'])) {
     $_SESSION['profileTags'] = $profileTags;
     $_SESSION['corsmsg'] = 'Login successful';
-
     redirectTo('../' . $previousLocation);
 }
 
@@ -134,7 +133,6 @@ $checkSession = $connects->prepare(
      WHERE profileTags = ?
        AND expirationDate >= ?'
 );
-
 if (!$checkSession) {
     error_log('Session check prepare error: ' . $connects->error);
     $_SESSION['corsmsg'] = 'Unable to create session';

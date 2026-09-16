@@ -20,196 +20,324 @@ if (isset($_SESSION['profileTags'])) {
     <link rel="stylesheet" href="../styling/pallate.css">
     <link rel="stylesheet" href="../styling/Mindex.css">
     <script>
-    // I do not knows where originally this part is from, but I do know that IT WILL NEVER BE FROM AI
-    function jscd(window) {
-        {
-        var unknown = '-';
-        // screen
-        var screenSize = '';
-        if (screen.width) {
-            width = (screen.width) ? screen.width : '';
-            height = (screen.height) ? screen.height : '';
-            screenSize += '' + width + " x " + height;
-        }
-        // browser
-        var nVer = navigator.appVersion;
-        var nAgt = navigator.userAgent;
-        var browser = navigator.appName;
-        var version = '' + parseFloat(nVer);
-        var nameOffset, verOffset, ix;
-        // Yandex Browser
-        if ((verOffset = nAgt.indexOf('YaBrowser')) != -1) {
-          browser = 'Yandex';
-          version = nAgt.substring(verOffset + 10);
-        }
-        // Samsung Browser
-        else if ((verOffset = nAgt.indexOf('SamsungBrowser')) != -1) {
-          browser = 'Samsung';
-          version = nAgt.substring(verOffset + 15);
-        }
-        // UC Browser
-        else if ((verOffset = nAgt.indexOf('UCBrowser')) != -1) {
-          browser = 'UC Browser';
-          version = nAgt.substring(verOffset + 10);
-        }
-            // Opera Next
-            else if ((verOffset = nAgt.indexOf('OPR')) != -1) {
-                browser = 'Opera';
-                version = nAgt.substring(verOffset + 4);
-            }
-            // Opera
-            else if ((verOffset = nAgt.indexOf('Opera')) != -1) {
-                browser = 'Opera';
-                version = nAgt.substring(verOffset + 6);
-                if ((verOffset = nAgt.indexOf('Version')) != -1) {
-                    version = nAgt.substring(verOffset + 8);
-                }
-            }
-            // Legacy Edge
-            else if ((verOffset = nAgt.indexOf('Edge')) != -1) {
-                browser = 'Microsoft Legacy Edge';
-                version = nAgt.substring(verOffset + 5);
-            } 
-            // Edge (Chromium)
-            else if ((verOffset = nAgt.indexOf('Edg')) != -1) {
-                browser = 'Microsoft Edge';
-                version = nAgt.substring(verOffset + 4);
-            }
-            // MSIE
-            else if ((verOffset = nAgt.indexOf('MSIE')) != -1) {
-                browser = 'Microsoft Internet Explorer';
-                version = nAgt.substring(verOffset + 5);
-            }
-            // Chrome
-            else if ((verOffset = nAgt.indexOf('Chrome')) != -1) {
-                browser = 'Chrome';
-                version = nAgt.substring(verOffset + 7);
-            }
-            // Safari
-            else if ((verOffset = nAgt.indexOf('Safari')) != -1) {
-                browser = 'Safari';
-                version = nAgt.substring(verOffset + 7);
-                if ((verOffset = nAgt.indexOf('Version')) != -1) {
-                    version = nAgt.substring(verOffset + 8);
-                }
-            }
-            // Firefox
-            else if ((verOffset = nAgt.indexOf('Firefox')) != -1) {
-                browser = 'Firefox';
-                version = nAgt.substring(verOffset + 8);
-            }
-            // MSIE 11+
-            else if (nAgt.indexOf('Trident/') != -1) {
-                browser = 'Microsoft Internet Explorer';
-                version = nAgt.substring(nAgt.indexOf('rv:') + 3);
-            }
-            // Other browsers
-            else if ((nameOffset = nAgt.lastIndexOf(' ') + 1) < (verOffset = nAgt.lastIndexOf('/'))) {
-                browser = nAgt.substring(nameOffset, verOffset);
-                version = nAgt.substring(verOffset + 1);
-                if (browser.toLowerCase() == browser.toUpperCase()) {
-                    browser = navigator.appName;
-                }
-            }
-            // trim the version string
-            if ((ix = version.indexOf(';')) != -1) version = version.substring(0, ix);
-            if ((ix = version.indexOf(' ')) != -1) version = version.substring(0, ix);
-            if ((ix = version.indexOf(')')) != -1) version = version.substring(0, ix);
-            majorVersion = parseInt('' + version, 10);
-            if (isNaN(majorVersion)) {
-                version = '' + parseFloat(nVer);
-                majorVersion = parseInt(nVer, 10);
-            }
-            // mobile version
-            var mobile = /Mobile|mini|Fennec|Android|iP(ad|od|hone)/.test(nVer);
-            // cookie
-            var cookieEnabled = (navigator.cookieEnabled) ? true : false;
-            if (typeof navigator.cookieEnabled == 'undefined' && !cookieEnabled) {
-                document.cookie = 'testcookie';
-                cookieEnabled = (document.cookie.indexOf('testcookie') != -1) ? true : false;
-            }
-            // system
-            var os = unknown;
-            var clientStrings = [
-                {s:'Windows 10', r:/(Windows 10.0|Windows NT 10.0)/},
-                {s:'Windows 8.1', r:/(Windows 8.1|Windows NT 6.3)/},
-                {s:'Windows 8', r:/(Windows 8|Windows NT 6.2)/},
-                {s:'Windows 7', r:/(Windows 7|Windows NT 6.1)/},
-                {s:'Windows Vista', r:/Windows NT 6.0/},
-                {s:'Windows Server 2003', r:/Windows NT 5.2/},
-                {s:'Windows XP', r:/(Windows NT 5.1|Windows XP)/},
-                {s:'Windows 2000', r:/(Windows NT 5.0|Windows 2000)/},
-                {s:'Windows ME', r:/(Win 9x 4.90|Windows ME)/},
-                {s:'Windows 98', r:/(Windows 98|Win98)/},
-                {s:'Windows 95', r:/(Windows 95|Win95|Windows_95)/},
-                {s:'Windows NT 4.0', r:/(Windows NT 4.0|WinNT4.0|WinNT|Windows NT)/},
-                {s:'Windows CE', r:/Windows CE/},
-                {s:'Windows 3.11', r:/Win16/},
-                {s:'Android', r:/Android/},
-                {s:'Open BSD', r:/OpenBSD/},
-                {s:'Sun OS', r:/SunOS/},
-                {s:'Chrome OS', r:/CrOS/},
-                {s:'Linux', r:/(Linux|X11(?!.*CrOS))/},
-                {s:'iOS', r:/(iPhone|iPad|iPod)/},
-                {s:'Mac OS X', r:/Mac OS X/},
-                {s:'Mac OS', r:/(Mac OS|MacPPC|MacIntel|Mac_PowerPC|Macintosh)/},
-                {s:'QNX', r:/QNX/},
-                {s:'UNIX', r:/UNIX/},
-                {s:'BeOS', r:/BeOS/},
-                {s:'OS/2', r:/OS\/2/},
-                {s:'Search Bot', r:/(nuhk|Googlebot|Yammybot|Openbot|Slurp|MSNBot|Ask Jeeves\/Teoma|ia_archiver)/}
-            ];
-            for (var id in clientStrings) {
-                var cs = clientStrings[id];
-                if (cs.r.test(nAgt)) {
-                    os = cs.s;
-                    break;
-                }
-            }
-            var osVersion = unknown;
-            if (/Windows/.test(os)) {
-                osVersion = /Windows (.*)/.exec(os)[1];
-              if (osVersion == 10 && navigator.userAgentData) {
-                    navigator.userAgentData.getHighEntropyValues(["platformVersion"])
-                      .then((ua) => window.jscd.osVersion = (parseInt(ua.platformVersion.split('.')[0]) < 13 ? 10 : 11));
-                }
-                os = 'Windows';
+        // Updated detector, the output are still same as the main difference that it uses the newer navigator.userAgentData
+        function jscd(root = window) {
+            const nav = root.navigator;
+            const screenObject = root.screen;
+
+            const unknown = "-";
+            const userAgent = nav.userAgent || "";
+            const platform = nav.platform || "";
+
+            const result = {
+                screen: screenObject && screenObject.width && screenObject.height
+                    ? `${screenObject.width} x ${screenObject.height}`
+                    : unknown,
+
+                browser: unknown,
+                browserVersion: unknown,
+                browserMajorVersion: 0,
+
+                mobile: /Android|iPhone|iPad|iPod|Mobile/i.test(userAgent),
+
+                os: unknown,
+                osVersion: unknown,
+
+                cookies: typeof nav.cookieEnabled === "boolean"
+                    ? nav.cookieEnabled
+                    : unknown
+            };
+
+            function setBrowser(name, version) {
+                result.browser = name || unknown;
+                result.browserVersion = version || unknown;
+
+                const major = parseInt(String(version).split(".")[0], 10);
+                result.browserMajorVersion = Number.isNaN(major) ? 0 : major;
             }
 
-            switch (os) {
-                case 'Mac OS':
-                case 'Mac OS X':
-                case 'Android':
-                    osVersion = /(?:Android|Mac OS|Mac OS X|MacPPC|MacIntel|Mac_PowerPC|Macintosh) ([\.\_\d]+)/.exec(nAgt)[1];
-                    break;
-
-                case 'iOS':
-                    osVersion = /OS (\d+)_(\d+)_?(\d+)?/.exec(nVer);
-                    osVersion = osVersion[1] + '.' + osVersion[2] + '.' + (osVersion[3] | 0);
-                    break;
+            function versionFromMatch(match) {
+                return match && match[1] ? match[1] : unknown;
             }
-        }
 
-        window.jscd = {
-            screen: screenSize,
-            browser: browser,
-            browserVersion: version,
-            browserMajorVersion: majorVersion,
-            mobile: mobile,
-            os: os,
-            osVersion: osVersion,
-            cookies: cookieEnabled
-        };
-    }
-    jscd(this);
+            function detectBrowserFromUserAgent() {
+                let match;
+                match = userAgent.match(/EdgA?\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Microsoft Edge", match[1]);
+                    return;
+                }
+                match = userAgent.match(/Edge\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Microsoft Legacy Edge", match[1]);
+                    return;
+                }
+                match = userAgent.match(/OPR\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Opera", match[1]);
+                    return;
+                }
+                match = userAgent.match(/Opera Mini\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Opera Mini", match[1]);
+                    return;
+                }
+                match = userAgent.match(/SamsungBrowser\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Samsung Internet", match[1]);
+                    return;
+                }
+                match = userAgent.match(/YaBrowser\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Yandex", match[1]);
+                    return;
+                }
+                match = userAgent.match(/UCBrowser\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("UC Browser", match[1]);
+                    return;
+                }
+                match = userAgent.match(/FxiOS\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Firefox", match[1]);
+                    return;
+                }
+                match = userAgent.match(/Firefox\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Firefox", match[1]);
+                    return;
+                }
+                match = userAgent.match(/CriOS\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Google Chrome", match[1]);
+                    return;
+                }
+                match = userAgent.match(/Chrome\/([\d.]+)/i);
+                if (match) {
+                    setBrowser("Google Chrome", match[1]);
+                    return;
+                }
+                match = userAgent.match(/Trident\/.*rv:([\d.]+)/i);
+                if (match) {
+                    setBrowser("Microsoft Internet Explorer", match[1]);
+                    return;
+                }
+                match = userAgent.match(/MSIE\s([\d.]+)/i);
+                if (match) {
+                    setBrowser("Microsoft Internet Explorer", match[1]);
+                    return;
+                }
+                match = userAgent.match(/Version\/([\d.]+).*Mobile\/.*Safari/i);
+                if (match) {
+                    setBrowser("Safari", match[1]);
+                    return;
+                }
+                match = userAgent.match(/Version\/([\d.]+).*Safari/i);
+                if (match) {
+                    setBrowser("Safari", match[1]);
+                    return;
+                }
+                // Generic browser fallback
+                match = userAgent.match(/([A-Za-z]+)\/([\d.]+)/);
+                if (match) {
+                    setBrowser(match[1], match[2]);
+                }
+            }
+
+            function detectOSFromUserAgent() {
+                let match;
+                if (/iPhone|iPad|iPod/i.test(userAgent)) {
+                    result.os = "iOS";
+                    match = userAgent.match(/OS (\d+)[._](\d+)(?:[._](\d+))?/i);
+                    if (match) {
+                        result.osVersion = [
+                            match[1],
+                            match[2],
+                            match[3] || "0"
+                        ].join(".");
+                    }
+                    return;
+                }
+                match = userAgent.match(/Android[\s/]([\d.]+)/i);
+                if (match) {
+                    result.os = "Android";
+                    result.osVersion = match[1];
+                    return;
+                }
+                if (/Windows/i.test(userAgent)) {
+                    result.os = "Windows";
+                    if (/Windows NT 10\.0/i.test(userAgent)) {
+                        result.osVersion = "10";
+                    } else if (/Windows NT 6\.4/i.test(userAgent)) {
+                        result.osVersion = "10";
+                    } else if (/Windows NT 6\.3/i.test(userAgent)) {
+                        result.osVersion = "8.1";
+                    } else if (/Windows NT 6\.2/i.test(userAgent)) {
+                        result.osVersion = "8";
+                    } else if (/Windows NT 6\.1/i.test(userAgent)) {
+                        result.osVersion = "7";
+                    } else if (/Windows NT 6\.0/i.test(userAgent)) {
+                        result.osVersion = "Vista";
+                    } else if (/Windows NT 5\.1/i.test(userAgent)) {
+                        result.osVersion = "XP";
+                    }
+                    return;
+                }
+                if (/CrOS/i.test(userAgent)) {
+                    result.os = "Chrome OS";
+                    match = userAgent.match(/CrOS [^ ]+ ([\d.]+)/i);
+                    if (match) {
+                        result.osVersion = match[1];
+                    }
+                    return;
+                }
+                match = userAgent.match(/Mac OS X[\s/]([\d._]+)/i);
+                if (match) {
+                    result.os = "macOS";
+                    result.osVersion = match[1].replace(/_/g, ".");
+                    return;
+                }
+                if (/Linux/i.test(userAgent)) {
+                    result.os = "Linux";
+                    return;
+                }
+                if (/OpenBSD/i.test(userAgent)) {
+                    result.os = "OpenBSD";
+                    return;
+                }
+                if (/FreeBSD/i.test(userAgent)) {
+                    result.os = "FreeBSD";
+                    return;
+                }
+                // Use navigator.platform as a final fallback
+                if (/Win/i.test(platform)) {
+                    result.os = "Windows";
+                } else if (/Mac/i.test(platform)) {
+                    result.os = "macOS";
+                } else if (/Linux/i.test(platform)) {
+                    result.os = "Linux";
+                }
+            }
+            function detectBrowserFromClientHints() {
+                const uaData = nav.userAgentData;
+                if (!uaData) {
+                    return Promise.resolve();
+                }
+                const brands = Array.isArray(uaData.brands)
+                    ? uaData.brands
+                    : [];
+                const findBrand = (...names) => {
+                    const brand = brands.find(item =>
+                        names.some(name =>
+                            item.brand.toLowerCase().includes(name.toLowerCase())
+                        )
+                    );
+                    return brand || null;
+                };
+                let brand =
+                    findBrand("Microsoft Edge") ||
+                    findBrand("Opera") ||
+                    findBrand("Samsung Internet") ||
+                    findBrand("Yandex") ||
+                    findBrand("Google Chrome") ||
+                    findBrand("Firefox");
+                if (!brand) {
+                    brand = findBrand("Chromium");
+                }
+                if (brand) {
+                    let browserName = brand.brand;
+                    if (/Microsoft Edge/i.test(browserName)) {
+                        browserName = "Microsoft Edge";
+                    } else if (/Google Chrome/i.test(browserName)) {
+                        browserName = "Google Chrome";
+                    } else if (/Samsung/i.test(browserName)) {
+                        browserName = "Samsung Internet";
+                    } else if (/Chromium/i.test(browserName)) {
+                        browserName = "Chromium";
+                    }
+                    setBrowser(browserName, brand.version);
+                }
+                result.mobile = Boolean(uaData.mobile);
+                return uaData
+                    .getHighEntropyValues([
+                        "platform",
+                        "platformVersion",
+                        "fullVersionList"
+                    ])
+                    .then(ua => {
+                        // try to get browser version if it there.
+                        if (Array.isArray(ua.fullVersionList)) {
+                            const fullBrand =
+                                ua.fullVersionList.find(item =>
+                                    /Microsoft Edge|Google Chrome|Opera|Samsung Internet|Yandex|Firefox/i
+                                        .test(item.brand)
+                                ) ||
+                                ua.fullVersionList.find(item =>
+                                    /Chromium/i.test(item.brand)
+                                );
+                            if (fullBrand) {
+                                let browserName = fullBrand.brand;
+                                if (/Microsoft Edge/i.test(browserName)) {
+                                    browserName = "Microsoft Edge";
+                                } else if (/Google Chrome/i.test(browserName)) {
+                                    browserName = "Google Chrome";
+                                } else if (/Samsung/i.test(browserName)) {
+                                    browserName = "Samsung Internet";
+                                } else if (/Chromium/i.test(browserName)) {
+                                    browserName = "Chromium";
+                                }
+                                setBrowser(browserName, fullBrand.version);
+                            }
+                        }
+                        if (ua.platform) {
+                            const clientPlatform = ua.platform;
+                            if (/Windows/i.test(clientPlatform)) {
+                                result.os = "Windows";
+                                const majorPlatformVersion = parseInt(
+                                    String(ua.platformVersion || "").split(".")[0],
+                                    10
+                                );
+
+                                if (!Number.isNaN(majorPlatformVersion)) {
+                                    result.osVersion =
+                                        majorPlatformVersion >= 14 ? "11" : "10";
+                                }
+                            } else if (/Android/i.test(clientPlatform)) {
+                                result.os = "Android";
+                            } else if (/Chrome OS/i.test(clientPlatform)) {
+                                result.os = "Chrome OS";
+                            } else if (/Linux/i.test(clientPlatform)) {
+                                result.os = "Linux";
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        if (window.console && typeof console.debug === "function") {
+                            console.debug(
+                                "User-Agent Client Hints unavailable, User-Agent fallback got used.",
+                                error
+                            );
+                        }
+                    });
+            }
+            detectOSFromUserAgent();
+            detectBrowserFromUserAgent();
+            root.jscd = result;
+            detectBrowserFromClientHints().finally(() => {
+                root.jscd = result;
+            });
+            return result;
+        }
+        jscd(window);
     </script>
 <?php
 if ($state === 'login') {
 ?>
     <title>Login / CGCC</title>
 </head>
-<body class="h100 bg-def-1">
-    <form class="sideMg pad-b-s pad-n-v minw200 w40 h100p flex fld acjc gap10 bg-half-white border-custom-l border-custom-r" action="../processes/connect_login.php" method="post">
+<body class="h100 row bg-def-1">
+    <img src="../img/contour3bw.png" alt="" class="posf ins0 wh100 coverfit filInvert opacity1 z1">
+    <form class="rightMg pad-b-s pad-n-v minw200 w40 h100p flex fld acjc gap10 bgc-gray border-custom-l border-custom-r z5" action="../processes/connect_login.php" method="post">
         <h1 class="sideMg txtc txt-b bold">LOGIN</h1>
         <input class="hiddeninp" type="text" id="os" name="os" autocomplete="off" tabindex="999" required readonly>
         <input class="hiddeninp" type="text" id="browser" name="browser" autocomplete="off" tabindex="999" required readonly>
@@ -221,7 +349,7 @@ if ($state === 'login') {
         </div>
         <div class="sideMg w88p flex fld">
             <label for="password">Password</label>
-            <input class="inptxt border-b" type="password" id="password" name="password" placeholder="Give the correct password" autocomplete="off" tabindex="2" required>
+            <input class="inptxt border-b" type="password" id="password" name="password" minlength="8" placeholder="Give the correct password" autocomplete="off" tabindex="2" required>
         </div>
         <div class="sideMg pad-m-v w88p flex gap5">
             <input class="border-b" type="checkbox" checked="checked" id="sessionless" name="sessionless" autocomplete="off" tabindex="3">
@@ -232,16 +360,18 @@ if ($state === 'login') {
         </div>
         <div class="sideMg w88p flex fld">
           <p class="txtc">Don't have an Account? <a href="connect_it.php?state=register" class="c-orange hover-text-white" tabindex="5">Register here</a></p>
-          <p class="pad-m txtc">Having problem with your account?</br><a href="../documentation/docs.php#account" class="c-orange hover-text-white" tabindex="7">check docs</a> or <a href="dmlink" class="c-orange hover-text-white" tabindex="7">dm me</a></p>
+          <p class="pad-m txtc">Having problem with your account?</br><a href="../documentation/docs.php#account" class="c-orange hover-text-white" tabindex="7">check docs</a> or <a href="#" class="c-orange hover-text-white" tabindex="7">dm me</a></p>
         </div>
     </form>
+    <p class="posr w60 h100p blurbg z5"></p>
 <?php
 } else if ($state === 'register') {
 ?>
   <title>Register new account / CGCC</title>
 </head>
-<body class="h100 bg-def-1">
-    <form class="autoMg pad-b-s pad-n-v minw200 w40 h100p flex fld acjc gap10 bg-half-white border-custom-l border-custom-r" action="../processes/connect_regist.php" method="post" onsubmit="return checkMail()">
+<body class="h100 row bg-def-1">
+    <img src="../img/contour3bw.png" alt="" class="posf ins0 wh100 coverfit filInvert opacity1 z1">
+    <form class="rightMg pad-b-s pad-n-v minw200 w40 h100p flex fld acjc gap10 bgc-gray border-custom-l border-custom-r z5" action="../processes/connect_regist.php" method="post" onsubmit="return checkMail()">
         <h1 class="sideMg txtc txt-b bold">REGISTER</h1>
         <div class="form-input-row sideMg w88p flex fld">
           <label for="email">Email</label>
@@ -253,16 +383,17 @@ if ($state === 'login') {
         </div>
           <div class="form-input-row sideMg w88p flex fld">
           <label for="password">Password</label>
-        <input class="inptxt" type="password" id="password" name="password" placeholder="Choose a good password" autocomplete="off" tabindex="4" required>
+        <input class="inptxt" type="password" id="password" name="password" minlength="8" placeholder="Choose a good password" autocomplete="off" tabindex="4" required>
         </div>
           <div class="form-input-row sideMg w88p flex fld">
           <button type="submit" class="pad-s bgc-gold txt-n c-black" name="Register" tabindex="4">Register</button>
         </div>
         <div class="sideMg w88p flex fld">
           <p class="txtc">Already have Account? <a href="connect_it.php?state=login" class="c-orange hover-text-white" tabindex="7">then Log-In</a></p>
-          <p class="pad-m txtc">Having problem with your account?</br><a href="../documentation/docs.php#account" class="c-orange hover-text-white" tabindex="7">check docs</a> or <a href="dmlink" class="c-orange hover-text-white" tabindex="7">dm me</a></p>
+          <p class="pad-m txtc">Having problem with your account?</br><a href="../documentation/docs.php#account" class="c-orange hover-text-white" tabindex="7">check docs</a> or <a href="#" class="c-orange hover-text-white" tabindex="7">dm me</a></p>
         </div>
     </form>
+    <p class="posr w60 h100p blurbg z5"></p>
 <?php
 } else {
   header ('location: connect_it.php?state=login');
@@ -275,32 +406,53 @@ if ($state === 'login') {
     </div>
     <script>
         function outputData() {
+            const info = window.jscd || {};
+            const os = [info.os, info.osVersion]
+                .filter(value => value && value !== "-")
+                .join(" ");
+            const browserVersion =
+                info.browserVersion && info.browserVersion !== "-"
+                    ? ` (${info.browserVersion})`
+                    : "";
+            const majorVersion =
+                info.browserMajorVersion && info.browserMajorVersion !== 0
+                    ? ` ${info.browserMajorVersion}`
+                    : "";
             const data = {
-                os: jscd.os + ' ' + jscd.osVersion,
-                browser: jscd.browser + ' ' + jscd.browserMajorVersion + 
-                        ' (' + jscd.browserVersion + ')',
-                mobile: jscd.mobile,
-                uad: navigator.userAgent
+                os: os || "-",
+                browser: `${info.browser || "-"}${majorVersion}${browserVersion}`,
+                mobile: Boolean(info.mobile),
+                uad: navigator.userAgent || "-"
             };
             Object.keys(data).forEach((key) => {
                 const input = document.getElementById(key);
                 if (input) {
-                    input.value = data[key];
+                    input.value = String(data[key]);
                 }
             });
         }
-        window.addEventListener('DOMContentLoaded', outputData);
-        function checkMail() {
-            var at = document.getElementById("email").value.indexOf("@");
-            submitOK = "true";
-            if (at == -1) { 
-                alerter("Not a valid e-mail!");
-                submitOK = "false";
-            }
 
-            if (submitOK == "false") {
+        function clientData() {
+            jscd(window);
+            outputData();
+            setTimeout(outputData, 250);
+        }
+        if (document.readyState === "loading") {
+            window.addEventListener("DOMContentLoaded", clientData);
+        } else {
+            clientData();
+        }
+        function checkMail() {
+            const email = document.getElementById("email");
+            if (!email) {
                 return false;
             }
+            const at = email.value.indexOf("@");
+            if (at === -1) {
+                alerter("Not a valid e-mail!");
+                return false;
+            }
+            return true;
         }
     </script>
     <script src="../scriptstuff/alert.js"></script>

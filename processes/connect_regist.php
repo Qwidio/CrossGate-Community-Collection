@@ -32,6 +32,10 @@ if (mb_strlen($email) > 255) {
     $_SESSION['corsmsg'] = 'Email address is too long';
     redirectTo('../connect_it/connect_it.php?state=register');
 }
+if (mb_strlen($newPassword) < 8) {
+    $_SESSION['corsmsg'] = 'New password Must be atleast 8 characters';
+    redirectTo('../connect_it/connect_reset.php?state=reset');
+}
 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 if ($passwordHash === false) {
     $_SESSION['corsmsg'] = 'Unable to create account';
@@ -54,19 +58,13 @@ $encodedMkot = json_encode(
 );
 $activationToken = bin2hex(random_bytes(32));
 $activationTokenHash = hash('sha256', $activationToken);
-$activationExpires = date('Y-m-d H:i:s', time() + 3,600); // 1 hours
-
+$activationExpires = date('Y-m-d H:i:s', time() + 3600); // 1 hours
 try {
     $connects->begin_transaction();
-    $stmt = $connects->prepare(
-        'INSERT INTO user
-            (profileTags, username, password, Email, userState, activation_token_hash, activation_expires)
-         VALUES (?, ?, ?, ?, ?, ?, ?)'
-    );
+    $stmt = $connects->prepare('INSERT INTO user (profileTags, username, password, Email, userState, activation_token_hash, activation_expires) VALUES (?, ?, ?, ?, ?, ?, ?)');
     if (!$stmt) {
         throw new RuntimeException($connects->error);
     }
-
     $userState = 'pending';
     $stmt->bind_param(
         'sssssss',
@@ -90,11 +88,7 @@ try {
 
     $stmt->close();
     $profileBio = '';
-    $profileStmt = $connects->prepare(
-        'INSERT INTO profiles
-            (profileTags, profileNames, profileBios, profileJDates, mkot)
-         VALUES (?, ?, ?, ?, ?)'
-    );
+    $profileStmt = $connects->prepare('INSERT INTO profiles (profileTags, profileNames, profileBios, profileJDates, mkot) VALUES (?, ?, ?, ?, ?)');
     if (!$profileStmt) {
         throw new RuntimeException($connects->error);
     }
