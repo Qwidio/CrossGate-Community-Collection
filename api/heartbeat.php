@@ -161,7 +161,8 @@ if (!hash_equals($hashedKeys, $secret)) {
                         "marked"    => $marked,
                         "private"   => $private,
                         "favbadge"  => $favbadge,
-                        "themes"    => $themes
+                        "themes"    => $themes,
+                        "borders"    => $borders
                     ];
                     $encodedUsrDatTemp = json_encode($usrDatTemp, JSON_UNESCAPED_SLASHES);
                     $update_mkot = $connects->prepare("UPDATE profiles SET mkot = ? WHERE profileTags = ? ;");

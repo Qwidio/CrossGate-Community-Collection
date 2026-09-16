@@ -91,7 +91,7 @@ if ($method === "POST") {
     $types = str_repeat('s', count($targetlibs)) . 's';
     $params = $targetlibs;
     $params[] = $State;
-    $query = "SELECT libsIds, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsAttachs, libsPublisher, libsTitles, libsDesc, addedDates, fdrLibs, rollbacks, detailData FROM libslist WHERE libsIds IN ($placeholders) AND libsState = ?";
+    $query = "SELECT libsIds, JSON_EXTRACT(libsBanners, '$[0]') AS libsBanners, libsAttachs, libsPublisher, libsTitles, libsDesc, addedDates, fdrLibs, rollbacks, detailData, downloadDisabled FROM libslist WHERE libsIds IN ($placeholders) AND libsState = ?";
     $check_software = $connects->prepare($query);
     $check_software->bind_param($types, ...$params);
     $check_software->execute();
@@ -104,17 +104,18 @@ if ($method === "POST") {
             $bannerFile = str_replace('"', "", $value['libsBanners'] ?? '');
             $detailData = json_decode($value['detailData'], true);
             $appData = [
-                "libsIds"       => $libsIds,
-                "libsPublisher" => $publisher,
-                "libsIcon"      => $iconFile,
-                "libsBanners"   => $bannerFile,
-                "libsTitles"    => $value['libsTitles'],
-                "libsDesc"      => $value['libsDesc'],
-                "addedDates"    => $value['addedDates'],
-                "fdrLibs"       => $value['fdrLibs'],
-                "rollbacks"     => $value['rollbacks'],
-                "detailData"    => $value['detailData'],
-                "theme"         => $detailData["theme"]
+                "libsIds"           => $libsIds,
+                "libsPublisher"     => $publisher,
+                "libsIcon"          => $iconFile,
+                "libsBanners"       => $bannerFile,
+                "libsTitles"        => $value['libsTitles'],
+                "libsDesc"          => $value['libsDesc'],
+                "addedDates"        => $value['addedDates'],
+                "fdrLibs"           => $value['fdrLibs'],
+                "rollbacks"         => $value['rollbacks'],
+                "detailData"        => $value['detailData'],
+                "downloadDisabled"  => $value['downloadDisabled'],
+                "theme"             => $detailData["theme"]
             ];
             if ($fetchImages) {
                 $baseImgDir = "../Library/libsImg/" . $publisher . "/";
