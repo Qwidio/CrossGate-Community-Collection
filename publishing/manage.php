@@ -74,30 +74,69 @@ if (isset($_GET['ids'])) {
         $targetIds = null;
     }
 }
-switch ($FilterReq) {
-    case 'none':
-        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBannersFirst, libsBanners, libsTitles, libsDesc, repolink, libsMD, extlink, addedDates, cltNumbs, libsCategorys, libsType, libsForum, fdrLibs, recspecs, devstats, devstatdesc FROM libslist WHERE libsPublisher = ? AND libsState = ? ORDER BY addedDates DESC;");
-        $check_software->bind_param("ss", $gids, $viewState);
-        break;
-    case 'oldtonew':
-        $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBannersFirst, libsBanners, libsTitles, libsDesc, repolink, libsMD, extlink, addedDates, cltNumbs, libsCategorys, libsType, libsForum, fdrLibs, recspecs, devstats, devstatdesc FROM libslist WHERE libsPublisher = ? AND libsState = ? ORDER BY addedDates ASC;");
-        $check_software->bind_param("ss", $gids, $viewState);
-        break;
-    case 'search':
-        if($targetIds === "empty") {
-            $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBannersFirst, libsBanners, libsTitles, libsDesc, repolink, libsMD, extlink, addedDates, cltNumbs, libsCategorys, libsType, libsForum, fdrLibs, recspecs, devstats, devstatdesc FROM libslist WHERE libsPublisher = ? AND libsState = ? ORDER BY addedDates DESC;");
-        $check_software->bind_param("ss", $gids, $viewState);
-        } else {
-            $check_software = $connects->prepare("SELECT libsIds, libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS libsBannersFirst, libsBanners, libsTitles, libsDesc, repolink, libsMD, extlink, addedDates, cltNumbs, libsCategorys, libsType, libsForum, fdrLibs, recspecs, devstats, devstatdesc FROM libslist WHERE libsTitles LIKE ? AND libsPublisher = ? ORDER BY addedDates DESC;");
-            $check_software->bind_param("ss", $gids, $searchTarget);
-        }
-        break;
-    default:
-        $_SESSION['corsmsg'] = "Unknown filter";
-        header ('location: manage.php');
-        exit;
-        break;
+$select = "
+    SELECT
+        libsIds,
+        libsPublisher,
+        libsVT,
+        libsAttachs,
+        JSON_EXTRACT(libsBanners, '$[0]') AS libsBannersFirst,
+        libsBanners,
+        libsTitles,
+        libsDesc,
+        repolink,
+        libsMD,
+        extlink,
+        addedDates,
+        cltNumbs,
+        libsCategorys,
+        libsType,
+        libsForum,
+        fdrLibs,
+        recspecs,
+        devstats,
+        devstatdesc,
+        downloadDisabled
+    FROM libslist
+";
+$params = [];
+$types = "ss";
+$orderDirection = match ($FilterReq) {
+    'oldtonew' => 'ASC',
+    'none', 'search' => 'DESC',
+    default => null
+};
+if ($orderDirection === null) {
+    $_SESSION['corsmsg'] = "Unknown filter";
+    header('Location: manage.php');
+    exit;
 }
+if ($FilterReq === 'search' && $targetIds !== 'empty') {
+    $sql = $select . "WHERE libsTitles LIKE ? AND libsPublisher = ? AND libsState = ? ORDER BY addedDates $orderDirection ";
+    $params = [
+        '%' . $searchTarget . '%',
+        $gids,
+        $viewState
+    ];
+    $types = "sss";
+} else {
+    $sql = $select . "
+        WHERE libsPublisher = ?
+          AND libsState = ?
+        ORDER BY addedDates $orderDirection
+    ";
+    $params = [
+        $gids,
+        $viewState
+    ];
+}
+$check_software = $connects->prepare($sql);
+if (!$check_software) {
+    throw new RuntimeException(
+        'Prepare failed: ' . $connects->error
+    );
+}
+$check_software->bind_param($types, ...$params);
 $check_software->execute();
 $result_check_software = $check_software->get_result();
 if ($result_check_software->num_rows > 0) {
@@ -122,6 +161,8 @@ if ($result_check_software->num_rows > 0) {
         $fdrLibs = $value['fdrLibs'];
         $recspecs = $value['recspecs'];
         $devstats = $value['devstats'];
+        $devstatdesc = $value['devstatdesc'];
+        $downloadDisabled = (int)($value['downloadDisabled'] ?? 0);
         $BannersFirst = json_decode($BannersFirst, true);
         if (!in_array($ids, $tempLibsArr)) {
             $tempLibsArr[$ids] = [
@@ -143,7 +184,9 @@ if ($result_check_software->num_rows > 0) {
             "libsForum"         => "$libsForum",
             "fdrLibs"           => "$fdrLibs",
             "devstats"          => "$devstats",
-            "recspecs"          => "$recspecs"
+            "devstatdesc"       => "$devstatdesc",
+            "recspecs"          => "$recspecs",
+            "downloadDisabled"  => "$downloadDisabled"
             ];
         };
     };
@@ -268,6 +311,8 @@ if (!empty($tempLibsArr) && $publishing == true) {
         $fdrLibs        = $value['fdrLibs'];
         $recspecs       = $value['recspecs'];
         $devstats       = $value['devstats'];
+        $devstatdesc    = $value['devstatdesc'];
+        $downloadDisabled = $value['downloadDisabled'];
 ?>
         <div class="posr bottomMg w30p r16-9 flex fld bora-s ovh z2">
             <img src="../Library/libsImg/<?php echo $libsPublisher . "/" . $BannersFirst;?>" alt="" class="posa wh100p coverfit z1">
@@ -277,7 +322,7 @@ if (!empty($tempLibsArr) && $publishing == true) {
             </div>
             <div class="sideMg w100p flex z3">
                 <a href="file_manager.php?libsids=<?php echo $libsIds;?>" class="pad-s w40p txt-s txtc bgc-purple points hover-text-black z4">File Manager</a>
-                <button onclick="uniDisplaySwitch('cltEdit'); uniLoad(this, 'editForm'); uniReloadFile('<?php echo '../Library/libsImg/' . $libsPublisher . '/' . $attachs;?>', 'editAttachPrev'); createLinkElem(libsArr.<?php echo $libsIds;?>.extlink, 'extlinkContainer'); createBannerElem(libsArr.<?php echo $libsIds;?>.libsBanners, '<?php echo $libsPublisher;?>', 'bannerContainer2'); fillSpecInput(libsArr.<?php echo $libsIds;?>.recspecs);" class="pad-s w40p txt-s txtc bg-red border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-libsvt="<?php echo $libsVT;?>" data-newtitle="<?php echo $titles;?>" data-desc="<?php echo $desc;?>" data-ctype="<?php echo $ctype;?>" data-categoryIds="<?php echo $category;?>" data-repolink="<?php echo $repolink;?>" data-md="<?php echo $libsMD;?>">Edit</button>
+                <button onclick="uniDisplaySwitch('cltEdit'); uniLoad(this, 'editForm'); uniReloadFile('<?php echo '../Library/libsImg/' . $libsPublisher . '/' . $attachs;?>', 'editAttachPrev'); createLinkElem(libsArr.<?php echo $libsIds;?>.extlink, 'extlinkContainer'); createBannerElem(libsArr.<?php echo $libsIds;?>.libsBanners, '<?php echo $libsPublisher;?>', 'bannerContainer2'); fillSpecInput(libsArr.<?php echo $libsIds;?>.recspecs);" class="pad-s w40p txt-s txtc bg-red border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-libsvt="<?php echo $libsVT;?>" data-newtitle="<?php echo $titles;?>" data-desc="<?php echo $desc;?>" data-ctype="<?php echo $ctype;?>" data-categoryIds="<?php echo $category;?>" data-repolink="<?php echo $repolink;?>" data-md="<?php echo $libsMD;?>" data-devstats="<?php echo $devstats;?>" data-devstatdesc="<?php echo $devstatdesc;?>" data-downloaddisabled="<?php echo $downloadDisabled;?>">Edit</button>
                 <button onclick="uniDisplaySwitch('changeState'); uniLoad(this, 'predata');" class="pad-s w40p txt-s txtc txtnowrap bg-green border-none hover-text-black z4" data-libsids="<?php echo $libsIds;?>" data-titles="<?php echo $titles;?>" data-cltnumbs="<?php echo $cltNumbs;?>" data-devstats="<?php echo $devstats;?>" data-status="<?php echo $viewState;?>">Change State</button>
             </div>
         </div>
@@ -330,11 +375,11 @@ if (!empty($tempLibsArr) && $publishing == true) {
                 </div>
                 <div class="sideMg w88p flex fld">
                     <label for="repolink">Repository</label>
-                    <input type="text" name="repolink" class="inptxt" placeholder="add your repository Readme.MD link from github/your own git" auto-complete="off" maxlength="1000" required>
+                    <input type="text" name="repolink" class="inptxt" placeholder="Example: https://github.com/Qwidio/CrossGate-Community-Collection" auto-complete="off" maxlength="1000" required>
                 </div>
                 <div class="sideMg w88p flex fld">
                     <label for="md">MarkDown Link</label>
-                    <input type="text" name="md" class="inptxt" placeholder="add your repository Readme.MD link from github/your own git" auto-complete="off" maxlength="1000" required>
+                    <input type="text" name="md" class="inptxt" placeholder="Must use raw version: https://raw.githubusercontent.com/Qwidio/CrossGate-Community-Collection/main/README.md" auto-complete="off" maxlength="1000" required>
                 </div>
                 <div class="sideMg w88p flex fld">
                     <label for="cType">type</label>
@@ -379,7 +424,7 @@ if (!empty($tempLibsArr) && $publishing == true) {
                             <input type="text" name="extlink1" class="inptxt" placeholder="Link" auto-complete="off" maxlength="1000" required>
                         </div>
                     </div>
-                    <p class="w100p txt-l txtc bg-1 points" onclick="newElemt('newExtlinkContainer','link','extlink','none');">+</p>
+                    <p class="w100p txt-l txtc bg-1 points" onclick="newElemt('newExtlinkContainer','link','extlink','none');">Add more link</p>
                 </div>
                 <div class="sideMg w88p flex fld">
                     <input class="pad-s-v txt-n c-black bgc-gold" type="submit" name="submit" value="Create">
@@ -494,19 +539,20 @@ if (!empty($tempLibsArr) && $publishing == true) {
             <div class="posr pad-n w100p flex fld gap10">
                 <div class="sideMg w88p flex fld">
                     <label for="repolink">Repository</label>
-                    <input type="text" name="repolink" class="inptxt" placeholder="add your repository Readme.MD link from github/your own git" auto-complete="off" maxlength="1000">
+                    <input type="text" name="repolink" class="inptxt" placeholder="Example: https://github.com/Qwidio/CrossGate-Community-Collection" auto-complete="off" maxlength="1000">
                 </div>
                 <div class="sideMg w88p flex fld">
                     <label for="md">MarkDown Link</label>
-                    <input type="text" name="md" class="inptxt" placeholder="add your repository Readme.MD link from github/your own git" auto-complete="off" maxlength="1000" required>
+                    <input type="text" name="md" class="inptxt" placeholder="Must use raw version: https://raw.githubusercontent.com/Qwidio/CrossGate-Community-Collection/main/README.md" auto-complete="off" maxlength="1000" required>
                 </div>
                 <div class="sideMg w88p flex fld">
                     <label for="ctype">type</label>
                     <select name="ctype" class="inpselect" required>
                         <option value="" selected disabled>Select collection type</option>
-                        <option name="ctype" value="software" required>Software</option>
-                        <option name="ctype" value="game" required>Games</option>
-                        <option name="ctype" value="mods" required>Mods</option>
+                        <option value="software" required>Software</option>
+                        <option value="game" required>Games</option>
+                        <option value="website" required>Website</option>
+                        <option value="other" required>Other</option>
                     </select>
                 </div>
                 <div class="sideMg w88p flex fld">
@@ -542,20 +588,24 @@ if (!empty($tempLibsArr) && $publishing == true) {
                 <div class="sideMg w88p flex fld">
                     <label for="devstats">status</label>
                     <select name="devstats" class="inpselect" required>
-                        <option name='devstats' value='earlyaccess' required>Early Access</option>
-                        <option name='devstats' value='beta' required>Beta Access</option>
-                        <option name='devstats' value='full' required>Full Release</option>
+                        <option value='earlyaccess' required>Early Access</option>
+                        <option value='beta' required>Beta Access</option>
+                        <option value='full' required>Full Release</option>
                     </select>
                 </div>
                 <div id="dsd" class="sideMg w88p flex fld">
                     <label for="devstatdesc">Development state description</label>
                     <textarea type="text" name="devstatdesc" class="inptxt h10 ovh-s"  placeholder="give an explanation" auto-complete="off" required>-</textarea>
                 </div>
+                <div class="sideMg pad-n-v pad-s-s w88p flex gap10 space-between box-shad-black-1 bora-s">
+                    <label for="downloaddisabled" class="txt-n">Disable Download</label>
+                    <input type="checkbox" name="downloaddisabled" id="downloaddisabled" value="1">
+                </div>
                 <div class="posr sideMg pad-s w88p flex fld gap5 border-1 bora-s">
                     <p class="rightMg">Extra Link</p>
                     <div id="extlinkContainer" class="posr w100p flex fld">
                     </div>
-                    <p class="w100p txt-l txtc bg-1 points" onclick="newElemt('extlinkContainer','link','extlink','none');">+</p>
+                    <p class="w100p pad-s txt-n txtc bg-1 points" onclick="newElemt('extlinkContainer','link','extlink','none');">Add more link</p>
                 </div>
                 <div class="sideMg w88p flex fld">
                     <input class="pad-s-v txt-n c-black bgc-gold" type="submit" name="submit" value="Update">

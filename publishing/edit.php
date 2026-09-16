@@ -30,7 +30,10 @@ if (isset($_SESSION['profileTags']) && isset($_SESSION['GroupsToken'])) {
     header ('location: ../index.php');
     exit;
 }
-$check_software = $connects->prepare("SELECT libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') AS firstBanner, libsBanners, libsTitles, libsDesc, repolink, libsMD, addedDates, cltNumbs, libsCategorys, libsType, fdrLibs, detailData, recspecs, devstats, devstatdesc, libsState FROM libslist WHERE libsIds = ? AND libsPublisher = ? ;");
+$check_software = $connects->prepare("SELECT libsPublisher, libsVT, libsAttachs, JSON_EXTRACT(libsBanners, '$[0]') 
+ AS firstBanner, libsBanners, libsTitles, libsDesc, repolink, libsMD, addedDates, cltNumbs, libsCategorys, libsType, 
+ fdrLibs, detailData, recspecs, devstats, devstatdesc, downloadDisabled, libsState 
+ FROM libslist WHERE libsIds = ? AND libsPublisher = ? ;");
 $check_software->bind_param("ss", $libsIds, $gids);
 $check_software->execute();
 $result_check_software = $check_software->get_result();
@@ -58,6 +61,7 @@ if ($result_check_software->num_rows > 0) {
         $recspecs = $value['recspecs'];
         $devstats = $value['devstats'];
         $devstatdesc = $value['devstatdesc'];
+        $downloadDisabled = $value['downloadDisabled'];
         $libsState = $value['libsState'];
         $recspecs = json_decode($recspecs, true);
         $libsBanners = json_decode($libsBanners, true);
@@ -104,6 +108,7 @@ if ($initReq === "Update") {
     if (isset($_POST['devstatdesc']) && $_POST['devstatdesc'] != $devstatdesc) {
         $devstatdesc = $_POST['devstatdesc'];
     }
+    $downloadDisabled = isset($_POST['downloaddisabled']) ? 1 : 0;
     $libsVT = htmlspecialchars($libsVT, ENT_QUOTES, 'UTF-8');
     $libsTitles = htmlspecialchars($libsTitles, ENT_QUOTES, 'UTF-8');
     $libsDesc = htmlspecialchars($libsDesc, ENT_QUOTES, 'UTF-8');
@@ -213,8 +218,8 @@ if ($initReq === "Update") {
         $finalLibsBanners = $libsBanners;
     }
     $finalLibsBanners = json_encode($finalLibsBanners, JSON_UNESCAPED_SLASHES);
-    $stmt_update_clts = $connects->prepare("UPDATE libslist SET libsVT = ?, libsAttachs = ?, libsBanners = ?, libsTitles = ?, libsDesc = ?, repolink = ?, libsMD = ?, extlink = ?, libsType = ?, libsCategorys = ?, recspecs = ?, devstats = ?, devstatdesc = ? WHERE libsIds = ? AND libsPublisher = ? ;");
-    $stmt_update_clts->bind_param("sssssssssssssss", $libsVT, $libsAttachs, $finalLibsBanners, $libsTitles, $libsDesc, $repolink, $libsMD, $newExtLink, $libsType, $libsCatg, $finalSpec, $devstats, $devstatdesc ,$libsIds ,$gids);
+    $stmt_update_clts = $connects->prepare("UPDATE libslist SET libsVT = ?, libsAttachs = ?, libsBanners = ?, libsTitles = ?, libsDesc = ?, repolink = ?, libsMD = ?, extlink = ?, libsType = ?, libsCategorys = ?, recspecs = ?, devstats = ?, devstatdesc = ?, downloadDisabled = ? WHERE libsIds = ? AND libsPublisher = ? ;");
+    $stmt_update_clts->bind_param("sssssssssssssiss", $libsVT, $libsAttachs, $finalLibsBanners, $libsTitles, $libsDesc, $repolink, $libsMD, $newExtLink, $libsType, $libsCatg, $finalSpec, $devstats, $devstatdesc, $downloadDisabled, $libsIds, $gids);
     if($stmt_update_clts->execute()){
         if (!empty($errors)){
             $errors = json_decode($errors,true);
@@ -249,8 +254,8 @@ if ($initReq === "Update") {
         exit;
     }
 } else if ($initReq === "PUBLISH" && $libsState != "publics") {
-    if ($fdrLibs === "") {
-        $_SESSION['corsmsg'] = "Upload collection files before publishing";
+    if ($fdrLibs === "" && $downloadDisabled == 0) {
+        $_SESSION['corsmsg'] = "Upload collection files before publishing or disable downloads";
         header ('location: manage.php');
         exit;
     }
@@ -262,7 +267,7 @@ if ($initReq === "Update") {
         header('location: manage.php');
         exit;
     } else {
-        $_SESSION['corsmsg'] = "Failed to archive " . $stmt_publish->error;
+        $_SESSION['corsmsg'] = "Failed to Publish " . $stmt_publish->error;
         header ('location: manage.php');
         exit;
     }

@@ -1423,108 +1423,126 @@ class LauncherApp(QMainWindow):
             self.badges_layout.addWidget(group_box)
 
     def switch_to_home_app(self, app_data):
-            self.active_app_data = app_data
+        self.active_app_data = app_data
+        
+        detail_data_str = app_data.get("detailData", "{}")
+        if isinstance(detail_data_str, str):
+            try:
+                detail_data = json.loads(detail_data_str) if detail_data_str else {}
+            except json.JSONDecodeError:
+                detail_data = {}
+        else:
+            detail_data = detail_data_str
             
-            detail_data_str = app_data.get("detailData", "{}")
-            if isinstance(detail_data_str, str):
-                try:
-                    detail_data = json.loads(detail_data_str) if detail_data_str else {}
-                except json.JSONDecodeError:
-                    detail_data = {}
-            else:
-                detail_data = detail_data_str
-                
-            theme = detail_data.get("theme", "dark")
-            text_color = "white" if theme != "dark" else "black"
-            
-            self.home_title.setStyleSheet(f"font-size: 48px; font-weight: bold; color: {text_color}; background-color: transparent;")
-            self.home_desc.setStyleSheet(f"font-size: 16px; color: {text_color}; margin-top: 10px; background-color: transparent;")
-            
-            self.home_title.setText(app_data.get("libsTitles", "Untitled"))
-            self.home_desc.setText(app_data.get("libsDesc", "No description available."))
-            
-            local_banner = app_data.get("local_banner")
-            self.home_page.set_image(local_banner)
-            
-            lib_id = app_data.get("libsIds")
-            is_running = lib_id in getattr(self, 'running_processes', {})
-            state = self.get_app_install_state(app_data)
-            
-            if is_running:
-                self.home_btn_action.setText("STOP")
-                self.home_btn_action.setStyleSheet("QPushButton { background-color: #3c89e8; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #5e9dec; }")
-                self.home_btn_update.hide()
-            elif state == "LAUNCH":
-                self.home_btn_action.setText("LAUNCH")
-                self.home_btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
-                self.home_btn_update.hide()
-            elif state == "UPDATE":
-                self.home_btn_action.setText("LAUNCH")
-                self.home_btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
-                self.home_btn_update.show()
+        theme = detail_data.get("theme", "dark")
+        text_color = "white" if theme != "dark" else "black"
+        
+        self.home_title.setStyleSheet(f"font-size: 48px; font-weight: bold; color: {text_color}; background-color: transparent;")
+        self.home_desc.setStyleSheet(f"font-size: 16px; color: {text_color}; margin-top: 10px; background-color: transparent;")
+        
+        self.home_title.setText(app_data.get("libsTitles", "Untitled"))
+        self.home_desc.setText(app_data.get("libsDesc", "No description available."))
+        
+        local_banner = app_data.get("local_banner")
+        self.home_page.set_image(local_banner)
+        
+        lib_id = app_data.get("libsIds")
+        is_running = lib_id in getattr(self, 'running_processes', {})
+        state = self.get_app_install_state(app_data)
+        
+        if is_running:
+            self.home_btn_action.setText("STOP")
+            self.home_btn_action.setEnabled(True)
+            self.home_btn_action.setStyleSheet("QPushButton { background-color: #3c89e8; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #5e9dec; }")
+            self.home_btn_update.hide()
+        elif state == "LAUNCH":
+            self.home_btn_action.setText("LAUNCH")
+            self.home_btn_action.setEnabled(True)
+            self.home_btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
+            self.home_btn_update.hide()
+        elif state == "UPDATE":
+            self.home_btn_action.setText("LAUNCH")
+            self.home_btn_action.setEnabled(True)
+            self.home_btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 20px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
+            self.home_btn_update.show()
+        else:
+            is_disabled = app_data.get("downloadDisabled") in [1, "1", True, "true"]
+            if is_disabled:
+                self.home_btn_action.setText("UNAVAILABLE")
+                self.home_btn_action.setEnabled(False)
+                self.home_btn_action.setStyleSheet("QPushButton { background-color: #4e5158; color: #a6a9b6; font-size: 20px; font-weight: bold; border-radius: 6px; }")
             else:
                 self.home_btn_action.setText("DOWNLOAD")
+                self.home_btn_action.setEnabled(True)
                 self.home_btn_action.setStyleSheet("QPushButton { background-color: #00c853; color: black; font-size: 20px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #00e676; }")
-                self.home_btn_update.hide()
-                
-            self.page_stack.setCurrentIndex(0)
+            self.home_btn_update.hide()
+            
+        self.page_stack.setCurrentIndex(0)
     
     def switch_to_detail_page(self, app_data):
-            self.active_app_data = app_data
+        self.active_app_data = app_data
+        
+        detail_data_str = app_data.get("detailData", "{}")
+        if isinstance(detail_data_str, str):
+            try:
+                detail_data = json.loads(detail_data_str) if detail_data_str else {}
+            except json.JSONDecodeError:
+                detail_data = {}
+        else:
+            detail_data = detail_data_str
             
-            detail_data_str = app_data.get("detailData", "{}")
-            if isinstance(detail_data_str, str):
-                try:
-                    detail_data = json.loads(detail_data_str) if detail_data_str else {}
-                except json.JSONDecodeError:
-                    detail_data = {}
-            else:
-                detail_data = detail_data_str
-                
-            version = detail_data.get("fdrLibs", {}).get("ver", "Unknown")
-            self.lbl_version.setText(f"VERSION\n{version}")
+        version = detail_data.get("fdrLibs", {}).get("ver", "Unknown")
+        self.lbl_version.setText(f"VERSION\n{version}")
+        
+        rollbacks = app_data.get("rollbacks", "")
+        self.action_rollback.setVisible(bool(rollbacks))
+        
+        app_title = app_data.get("libsTitles", "Untitled")
+        self.detail_title.setText(f"{app_title} - Settings")
+        
+        playtime = app_data.get("playtime", "0")
+        last_login = app_data.get("last_login", "Never")
+        self.lbl_playtime.setText(f"PLAY TIME\n{playtime} Hours")
+        self.lbl_lastlogin.setText(f"LAST LOGIN\n{last_login}")
+        
+        local_banner = app_data.get("local_banner")
+        self.detail_banner.set_image(local_banner)
+        
+        lib_id = app_data.get("libsIds")
+        is_running = lib_id in getattr(self, 'running_processes', {})
+        state = self.get_app_install_state(app_data)
             
-            rollbacks = app_data.get("rollbacks", "")
-            self.action_rollback.setVisible(bool(rollbacks))
-            
-            app_title = app_data.get("libsTitles", "Untitled")
-            self.detail_title.setText(f"{app_title} - Settings")
-            
-            playtime = app_data.get("playtime", "0")
-            last_login = app_data.get("last_login", "Never")
-            self.lbl_playtime.setText(f"PLAY TIME\n{playtime} Hours")
-            self.lbl_lastlogin.setText(f"LAST LOGIN\n{last_login}")
-            
-            local_banner = app_data.get("local_banner")
-            self.detail_banner.set_image(local_banner)
-            
-            lib_id = app_data.get("libsIds")
-            is_running = lib_id in getattr(self, 'running_processes', {})
-            state = self.get_app_install_state(app_data)
-            
-            if is_running:
-                self.btn_action.setText("STOP")
-                self.btn_action.setStyleSheet("QPushButton { background-color: #3c89e8; color: white; font-size: 16px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #5e9dec; }")
-                self.btn_update.hide()
-                self.action_uninstall.setVisible(True)
-            elif state == "LAUNCH":
-                self.btn_action.setText("LAUNCH")
-                self.btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 16px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
-                self.btn_update.hide()
-                self.action_uninstall.setVisible(True)
-            elif state == "UPDATE":
-                self.btn_action.setText("LAUNCH")
-                self.btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 16px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
-                self.btn_update.show()
-                self.action_uninstall.setVisible(True)
+        if is_running:
+            self.btn_action.setText("STOP")
+            self.btn_action.setEnabled(True)
+            self.btn_action.setStyleSheet("QPushButton { background-color: #3c89e8; color: white; font-size: 16px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #5e9dec; }")
+            self.btn_update.hide()
+            self.action_uninstall.setVisible(True)
+        elif state == "LAUNCH":
+            self.btn_action.setText("LAUNCH")
+            self.btn_action.setEnabled(True)
+            self.btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 16px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
+            self.btn_update.hide()
+            self.action_uninstall.setVisible(True)
+        elif state == "UPDATE":
+            self.btn_action.setText("LAUNCH")
+            self.btn_action.setEnabled(True)
+            self.btn_action.setStyleSheet("QPushButton { background-color: #5865f2; color: white; font-size: 16px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #4752c4; }")
+            self.btn_update.show()
+            self.action_uninstall.setVisible(True)
+        else:
+            is_disabled = app_data.get("downloadDisabled") in [1, "1", True, "true"]
+            if is_disabled:
+                self.btn_action.setText("UNAVAILABLE")
+                self.btn_action.setEnabled(False)
+                self.btn_action.setStyleSheet("QPushButton { background-color: #4e5158; color: #a6a9b6; font-size: 16px; font-weight: bold; border-radius: 6px; }")
             else:
                 self.btn_action.setText("DOWNLOAD")
+                self.btn_action.setEnabled(True)
                 self.btn_action.setStyleSheet("QPushButton { background-color: #00c853; color: black; font-size: 16px; font-weight: bold; border-radius: 6px; } QPushButton:hover { background-color: #00e676; }")
-                self.btn_update.hide()
-                self.action_uninstall.setVisible(False)
-                
-            self.render_badges_section(lib_id)
-            self.page_stack.setCurrentIndex(1)
+            self.btn_update.hide()
+            self.action_uninstall.setVisible(False)
+        self.page_stack.setCurrentIndex(1)
     
     def set_custom_app_dir(self):
         if not self.active_app_data: return
