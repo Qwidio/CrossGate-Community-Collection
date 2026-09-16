@@ -152,19 +152,26 @@ if (isset($aidis)) {
             <div class="posr pad-n bg-thin-gray border-purple bora-m box-shad-black-1" id="LibForum">
                 <h2 class="pad-s-v txt-l c-lightpurple border-purple-b">Collection Management & Forums</h2>
                 
-                <div class="posr border-purple-t" id="markout">
+                <div class="posr pad-b-v flex fld gap10 border-purple-t" id="markout">
                     <h3 class="posr pad-s-v txt-b c-blue">MarkOut</h3>
-                    <p class="pad-n-v txt-n"><span class="posr bg-half-gray c-white pad-s-s bora-s bold">Use Case Context</span> any software/games listed that wanted to get downloaded must first get added to user MarkedOut library before it will showing up on the client installer.</p>
-                    <p class="pad-n-v txt-n"><span class="posr bg-half-gray c-white pad-s-s bora-s bold">How to add a collection into my MarkOut?</span> open view page of the said collection and it will show view page like this, Click the "MarkOut" button and you'll be directed to MarkOut page after the collection get added</p>
+                    <p class="txt-n"><span class="posr bg-half-gray c-white pad-s-s bora-s bold">Use Case Context</span> any software/games listed that wanted to get downloaded must first get added to user MarkedOut library before it will showing up on the client installer.</p>
+                    <p class="txt-n"><span class="posr bg-half-gray c-white pad-s-s bora-s bold">How to add a collection into my MarkOut?</span> open view page of the said collection and it will show view page like this, Click the "MarkOut" button and you'll be directed to MarkOut page after the collection get added</p>
+                    <div class="posr flex acjc bg-1 border-purple"><img src="markingout.png" class="w100p maxh50 containfit" alt="Markout Action"></div>
+                </div>
+
+                <div class="posr pad-b-v flex fld gap10 border-purple-t" id="cltsDetail">
+                    <h3 class="posr pad-s-v txt-b c-blue">Details That might be missed</h3>
+                    <p class="txt-n"><span class="posr bg-half-gray c-white pad-s-s bora-s bold">Collection Status</span> is a development status from collection publisher about the stage that the collection currently is in</p>
+                    <p class="txt-n"><span class="posr bg-half-gray c-white pad-s-s bora-s bold">Download Disabled</span> Means that the collection publisher is disabling the download option either via api or client, this might be done for when the collection executables contain critical bug and fixes is not yet available</p>
                     <div class="posr flex acjc bg-1 border-purple"><img src="markingout.png" class="w100p maxh50 containfit" alt="Markout Action"></div>
                 </div>
                 
-                <div class="posr border-purple-t" id="forumposting">
+                <div class="posr pad-b-v flex fld gap10 border-purple-t" id="forumposting">
                     <h3 class="posr pad-s-v txt-b c-blue">Forum Posting</h3>
                     <div class="posr flex acjc bg-1 border-purple"><img src="postnewforum.png" class="w100p maxh50 containfit" alt="New Content Block"></div>
-                    <p class="pad-n-v txt-n">Access forum hub dashboard and click on "Post New Forum" button.</p>
+                    <p class="txt-n">Access forum hub dashboard and click on "Post New Forum" button.</p>
                     <div class="posr flex acjc bg-1 border-purple"><img src="forumdashboard.png" class="w100p maxh50 containfit" alt="Feed View"></div>
-                    <p class="pad-n-v txt-n">Fill in the title, description, and bind to the desired topics. Images are optional and aren't needed for posting new forum</p>
+                    <p class="txt-n">Fill in the title, description, and bind to the desired topics. Images are optional and aren't needed for posting new forum</p>
                 </div>
             </div>
 
@@ -181,7 +188,7 @@ if (isset($aidis)) {
                     <h3 class="posr pad-s-v txt-b c-blue">FAQ</h3>
                     <p class="pad-n-v txt-n">
                         <span class="posr bg-half-gray c-white pad-s-s bora-s bold">Collection does not show up in the launcher:</span>
-                         check your MarkedOut collection on the website and if it doesn't show up in the MarkOut page that means you haven't added them thus it won't shows in the launcher
+                         check your MarkedOut collection on the website and if it did not get listed in your MarkOut page that means the collection haven't been added and it will not get listed in the launcher either
                          , be sure that what you logged the same account as the one you're currently logged in the website.
                     </p>
                 </div>

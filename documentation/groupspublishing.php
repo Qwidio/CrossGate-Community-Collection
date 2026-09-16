@@ -141,7 +141,8 @@ if (isset($aidis)) {
                     <p class="pad-n-v txt-n">Trailer link are for displaying your collection video demo/trailer on the view pages, be aware that currently it's only tested with link for Youtube video embedding format.</p>
                     <p class="pad-n-v txt-n">Filled out external link "name" and "link" will be displayed your collection view page, up to ten link can exist in one collection.</p>
                     <p class="pad-n-v txt-n">After successfully created the new collection is saved and visible as "draft" collection, to publish or archive the collection click "change state" button and the two option will be visible. Note that collection software file must uploaded before changing the state to "Publics".</p>
-                    <p class="pad-n-v txt-n">Publishing collection with "Archived" state will require you to draft it first before it can be published.</p>
+                    <p class="pad-n-v txt-n">Collections with "Archived" state will require you to draft it first before it can be published.</p>
+                    <p class="pad-n-v txt-n">Publishing a collection will require you set an active file to be downloaded, If needed you can disable download with the option available on collection edit form</p>
                 </div>
                 
                 <div class="pad-st" id="uploadingfile">
