@@ -5,21 +5,17 @@ if (isset($_COOKIE['sessionToken'])) {
     $token = $_COOKIE['sessionToken'];
     $logout = $connects->prepare("DELETE FROM sessionlogs WHERE sessiontokens = ? AND profileTags = ?");
     $logout->bind_param("ss", $token, $aidis);
-    if($logout->execute()){
-        unset($_SESSION['GroupsToken']);
-        unset($_SESSION["gids"]);
-        unset($_SESSION["roles"]);
-        unset($_COOKIE['sessionToken']);
-        setcookie('sessionToken', '', 1, "/",);
-        unset($_SESSION['profileTags']);
-        header('Location: ../index.php');
-        exit;
-    }else{
-        $_SESSION['corsmsg'] = 'Failed to delete this tokens';
-        header('Location: ../index.php');
-        exit;
+    if(!$logout->execute()){
+        $_SESSION['corsmsg'] = 'Account password has been changed successfully, Failed to delete session token';
     };
     $logout->close();
+    unset($_SESSION['profileTags']);
+    unset($_SESSION['GroupsToken']);
+    unset($_SESSION["gids"]);
+    unset($_SESSION["roles"]);
+    unset($_COOKIE['sessionToken']);
+    setcookie('sessionToken', '', 1, "/",);
+    redirectTo('../connect_it/connect_it.php?state=login');
     exit;
 }else{
     unset($_SESSION['profileTags']);

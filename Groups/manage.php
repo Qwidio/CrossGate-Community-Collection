@@ -253,10 +253,6 @@ if (isset($_SESSION['resetPass']) && $_SESSION['resetPass'] == true) {
                 <h2 class="txt-n txtc semibold">DOCS</h2>
                 <a href="../documentation/docs.php" class="link-cover hover-white">.</a>
             </div>
-            <!-- <div class="posr pad-n flex fld acjc bg-half-gray">
-                <h2 class="txt-n txtc semibold">OPTIONS</h2>
-                <a class="link-cover hover-white" onclick="uniDisplaySwitch('options');">.</a>
-            </div> -->
         </div>
     </div>
     <!-- settings/option -->

@@ -6,7 +6,6 @@ if (isset($_POST['submit'])) {
         header('location: manage.php');
         exit;
     }
-    // checks before check
     $root_route = "../";
     require_once '../secureSession.php';
     require_once 'ReAuth.php';
@@ -20,8 +19,8 @@ if (isset($_POST['submit'])) {
         header ('location: ../index.php');
         exit;
     }
-    $profileTags = $_POST['profiletags'];
-    $newpasskeys = $_POST['newpasskeys'];
+    $profileTags = (string)($_POST['profileTags'] ?? '');
+    $newpasskeys = (string)($_POST['newpasskeys'] ?? '');
     $initReq = $_POST['submit'];
     $initReq = htmlspecialchars($initReq, ENT_QUOTES, 'UTF-8');
     $stmt_check_access = $connects->prepare("SELECT roles FROM groupaccess WHERE profileTags = ? AND og_identification = ? AND accountState = 'approved';");
@@ -43,31 +42,43 @@ if (isset($_POST['submit'])) {
         header ('location: manage.php');
         exit;
     }
+    if ($newpasskeys === '') {
+        $_SESSION['corsmsg'] = 'New passkey is required.';
+        header('Location: manage.php');
+        exit;
+    }
+    if (mb_strlen($newpasskeys) < 8) {
+        $_SESSION['corsmsg'] = 'New passkey must be at least 8 characters.';
+        header('Location: manage.php');
+        exit;
+    }
+    $hashedPasskey = password_hash($newpasskeys, PASSWORD_DEFAULT);
+    if ($hashedPasskey === false) {
+        $_SESSION['corsmsg'] = 'Failed to secure the new passkey.';
+        header('Location: manage.php');
+        exit;
+    }
     if ($initReq === "Reset") {
-        $stmt_update_passkeys = $connects->prepare("UPDATE groupaccess SET passkeys = MD5(?) WHERE profileTags = ? and og_identification = ? AND accountState = 'approved';");
-        $stmt_update_passkeys->bind_param("sss", $newpasskeys, $aidis, $gids);
-        $stmt_update_passkeys->execute();
-        if ($stmt_update_passkeys->affected_rows > 0) {
-            $_SESSION['corsmsg'] = "Passkeys changed";
-            header('location: manage.php');
-            exit;
-        } else {
+        $stmt_update_passkeys = $connects->prepare("UPDATE groupaccess SET passkeys = ? WHERE profileTags = ? and og_identification = ? AND accountState = 'approved';");
+        $stmt_update_passkeys->bind_param("sss", $hashedPasskey, $aidis, $gids);
+        if (!$stmt_update_passkeys->execute()) {
             $_SESSION['corsmsg'] = "Failed to update account passkeys " . $stmt_update_passkeys->error;
             header ('location: manage.php');
             exit;
         }
+        $_SESSION['corsmsg'] = "Passkeys changed";
+        header('location: manage.php');
+        exit;
     } else if ($initReq === "Change") {
-        $stmt_update_passkeys = $connects->prepare("UPDATE groupaccess SET passkeys = MD5(?) WHERE profileTags = ? and og_identification = ? AND accountState = 'approved';");
-        $stmt_update_passkeys->bind_param("sss", $newpasskeys, $profileTags, $gids);
-        $stmt_update_passkeys->execute();
-        if ($stmt_update_passkeys->affected_rows > 0) {
-            $_SESSION['corsmsg'] = "Password successfully changed";
-            header('location: manage.php');
-            exit;
-        } else {
+        $stmt_update_passkeys = $connects->prepare("UPDATE groupaccess SET passkeys = ? WHERE profileTags = ? and og_identification = ? AND accountState = 'approved';");
+        $stmt_update_passkeys->bind_param("sss", $hashedPasskey, $profileTags, $gids);
+        if (!$stmt_update_passkeys->execute()) {
             $_SESSION['corsmsg'] = "Failed to update account passkeys " . $stmt_update_passkeys->error;
             header ('location: ../index.php');
             exit;
         }
+        $_SESSION['corsmsg'] = "Password successfully changed";
+        header('location: manage.php');
+        exit;
     }
 }

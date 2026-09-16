@@ -38,6 +38,7 @@ if (isset($_POST['Register'])) {
     $GDescs = $_POST['GDescs'];
     $GDescs = htmlspecialchars($GDescs, ENT_QUOTES, 'UTF-8');
     $passkeys = $_POST['passkeys'];
+    $hashedPasskeys = password_hash($passkeys, PASSWORD_DEFAULT);
     if (empty($GName) || empty($passkeys) || empty($GDescs)) {
         $_SESSION['corsmsg'] = "missing credentials";
         header('location: ../Groups/index.php');
@@ -66,8 +67,8 @@ if (isset($_POST['Register'])) {
         $stmt_insert = $connects->prepare("INSERT INTO ogroup(identification, names, about, founder, founded, members, sites) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt_insert->bind_param("sssssss", $new_gids, $GName, $GDescs, $aidis, date('d/m/Y'), $members, $sites);
         if ($stmt_insert->execute()) {
-            $stmt_insert_access = $connects->prepare("INSERT INTO groupaccess (profileTags, passkeys, roles, og_identification, accountState) VALUES (?, MD5(?), 'founder', ?, 'approved')");
-            $stmt_insert_access->bind_param("sss", $aidis, $passkeys, $new_gids);
+            $stmt_insert_access = $connects->prepare("INSERT INTO groupaccess (profileTags, passkeys, roles, og_identification, accountState) VALUES (?, ?, 'founder', ?, 'approved')");
+            $stmt_insert_access->bind_param("sss", $aidis, $hashedPasskeys, $new_gids);
             if ($stmt_insert_access->execute()) {
                 $stmt_change_invite = $connects->prepare("UPDATE profiles SET allowInvite = 'inactive' WHERE profileTags = ?");
                 $stmt_change_invite->bind_param("s", $aidis);
@@ -146,13 +147,21 @@ if (isset($_POST['Register'])) {
         exit;
     }
     $passkeys = $_POST['passkeys'];
+    $hashedPasskeys = password_hash($passkeys, PASSWORD_DEFAULT);
     $selectedGids = $_POST['selectedGids'];
-    $stmt_check_passkeys = $connects->prepare("SELECT roles FROM groupaccess WHERE og_identification = ? AND profileTags = ? AND passkeys = MD5(?) AND accountState = 'approved';");
-    $stmt_check_passkeys->bind_param("sss", $selectedGids, $aidis, $passkeys);
+    $stmt_check_passkeys = $connects->prepare("SELECT roles, passkeys FROM groupaccess WHERE og_identification = ? AND profileTags = ? AND accountState = 'approved';");
+    $stmt_check_passkeys->bind_param("ss", $selectedGids, $aidis);
     $stmt_check_passkeys->execute();
     $result_check_passkeys = $stmt_check_passkeys->get_result();
     if ($result_check_passkeys->num_rows == 1) {
         $tempCheckPassValue = $result_check_passkeys->fetch_assoc();
+        $storedPasskey = (string)$tempCheckPassValue['passkeys'];
+        $isValidPasskey = password_verify($passkeys, $storedPasskey);
+        if (!$isValidPasskey) {
+            $_SESSION['corsmsg'] = 'Invalid passkey, try again.';
+            header('Location: ../Groups/index.php');
+            exit;
+        }
         $gids = $selectedGids;
         $roles = $tempCheckPassValue['roles'];
         $check_session = $connects->prepare("SELECT token FROM groupsession WHERE profileTags = ? AND og_identification = ?;");
