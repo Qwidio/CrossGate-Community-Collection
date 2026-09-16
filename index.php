@@ -186,7 +186,7 @@ if (!isset($_SESSION['profileTags'])) {
         </div>
     </div>
 <!-- banner stuff -->
-    <section class="posr pad-sl w100 r4-1 flex z4">
+    <section class="posr pad-sl w100 flex z4" style="aspect-ratio: 10/3;">
         <div class="posa t0 r0 wh100p flex" id="slides">
         </div>
         <button class="prev">&#10094;</button>

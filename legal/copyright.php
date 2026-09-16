@@ -46,14 +46,7 @@ if (isset($aidis)) {
                 <a href="../profile.php?user=self" class="link-cover">.</a>
             </div>
 <?php
-    $prebind = '"' . $aidis . '"';
-    $check_orgs = $connects->prepare("SELECT identification FROM ogroup WHERE founder = ? OR JSON_CONTAINS(members, ?);");
-    $check_orgs->bind_param("ss", $aidis, $prebind);
-    $check_orgs->execute();
-    $result_check_orgs = $check_orgs->get_result();
-    if ($result_check_orgs->num_rows > 0) {
-        $value = $result_check_orgs->fetch_assoc();
-        $identification = $value['identification'];
+    if (isset($_SESSION['GroupsToken']) && $_SESSION['gids']) {
 ?>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">GROUPS</h2>
@@ -70,13 +63,7 @@ if (isset($aidis)) {
         </div>
 <?php
 if (isset($aidis)) {
-    $inGroups = false;
     if (isset($_SESSION['GroupsToken']) && $_SESSION['gids']) {
-        $check_orgs = $connects->prepare("SELECT og_identification FROM groupaccess WHERE profileTags = ? AND og_identification = ?;");
-        $check_orgs->bind_param("ss", $aidis, $_SESSION['gids']);
-        $check_orgs->execute();
-        $result_check_orgs = $check_orgs->get_result();
-        if ($result_check_orgs->num_rows > 0) {
 ?>
             <div class="leftMg flex acjc gap10">
                 <p class="posr pad-n-s pad-s-v txtc txt-n bg-3 border-1 bora-s">Open Dashboard
@@ -84,8 +71,6 @@ if (isset($aidis)) {
                 </p>
             </div>
 <?php
-        }
-        $inGroups = true; 
     }
 }
 ?>
@@ -132,13 +117,13 @@ if (isset($aidis)) {
                     <li class='posr txt-n'>A statement that you consent to the jurisdiction of Federal District Court for the judicial district in which your address is located (or if your address is outside of the United States, for any judicial district in which you may be found) and that you will accept service of process from the person who provided us with the complaint at issue.</li>
                 </ol> 
         </h3>
-        <h3 class='posr w100p txt-n txtjustify'>Deliver this Notice, with all items completed, to our dmca's email</h3>
+        <h3 class='posr w100p txt-n txtjustify'>Deliver this Notice, with all items completed, to our dmca's email <span>dmca@cgcc.porosive.com</span></h3>
         <h3 class='posr w100p txt-n txtjustify'>Please allow 1-4 business days for an email response. Note that emailing your complaint to other parties such as our Internet Service Provider will not expedite your request and may result in a delayed response due to the complaint not being filed properly.</h3>
         <h2 class='posr rightMg txt-b bold txtnowrap ovh'>Consequences of Infringement</h2>
         <h3 class='posr w100p txt-n txtjustify'>If it is determined that you are a repeat offender, your access to our website may be terminated, with or without notice, and all infringing material removed or access disabled.</h3>
         <h2 class='posr rightMg txt-b bold txtnowrap ovh'>Changes to this DMCA Policy</h2>
         <h3 class='posr w100p txt-n txtjustify'>Please note that this DMCA Policy may be amended from time to time. Any changes will be posted on this page. It is your responsibility to review this DMCA Policy periodically for updates.</h3>
-        <h3 class='posr w100p txt-n txtjustify'>This DMCA Policy was last updated on June 1st 2026</h3>
+        <h3 class='posr w100p txt-n txtjustify'>This DMCA Policy was last updated on September 14th 2026</h3>
     </div>
     <?php include_once '../extra/footers.php';?>
 </body>

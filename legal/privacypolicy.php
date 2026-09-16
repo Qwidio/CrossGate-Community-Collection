@@ -46,14 +46,7 @@ if (isset($aidis)) {
                 <a href="../profile.php?user=self" class="link-cover">.</a>
             </div>
 <?php
-    $prebind = '"' . $aidis . '"';
-    $check_orgs = $connects->prepare("SELECT identification FROM ogroup WHERE founder = ? OR JSON_CONTAINS(members, ?);");
-    $check_orgs->bind_param("ss", $aidis, $prebind);
-    $check_orgs->execute();
-    $result_check_orgs = $check_orgs->get_result();
-    if ($result_check_orgs->num_rows > 0) {
-        $value = $result_check_orgs->fetch_assoc();
-        $identification = $value['identification'];
+    if (isset($_SESSION['GroupsToken']) && $_SESSION['gids']) {
 ?>
             <div class="posr pad-s flex fld acjc">
                 <h2 class="txt-n txtc semibold">GROUPS</h2>
@@ -70,13 +63,7 @@ if (isset($aidis)) {
         </div>
 <?php
 if (isset($aidis)) {
-    $inGroups = false;
     if (isset($_SESSION['GroupsToken']) && $_SESSION['gids']) {
-        $check_orgs = $connects->prepare("SELECT og_identification FROM groupaccess WHERE profileTags = ? AND og_identification = ?;");
-        $check_orgs->bind_param("ss", $aidis, $_SESSION['gids']);
-        $check_orgs->execute();
-        $result_check_orgs = $check_orgs->get_result();
-        if ($result_check_orgs->num_rows > 0) {
 ?>
             <div class="leftMg flex acjc gap10">
                 <p class="posr pad-n-s pad-s-v txtc txt-n bg-3 border-1 bora-s">Open Dashboard
@@ -84,8 +71,6 @@ if (isset($aidis)) {
                 </p>
             </div>
 <?php
-        }
-        $inGroups = true; 
     }
 }
 ?>
@@ -104,7 +89,7 @@ if (isset($aidis)) {
         Our website may link to external sites that are not operated by us. Please be aware that we have no control over the content and practices of these sites, and cannot accept responsibility or liability for their respective privacy policies.<br><br>
         You are free to refuse our request for your personal information, with the understanding that we may be unable to provide you with some of your desired services.<br><br>
         Your continued use of our website will be regarded as acceptance of our practices around privacy and personal information. If you have any questions about how we handle user data and personal information, feel free to contact us.<br><br>
-        This policy is effective as of June 1st 2026.<br>
+        This policy is effective as of September 14th 2026.<br>
         </h3>
     </div>
     <?php include_once '../extra/footers.php';?>

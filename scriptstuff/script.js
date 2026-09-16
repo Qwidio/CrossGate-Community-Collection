@@ -288,10 +288,15 @@ function uniLoad(ReqstData, ids) {
     const values = ReqstData.dataset;
     Object.keys(values).forEach((key) => {
         const field = form.elements[key];
-        if (field) {
-            field.value = values[key];
-        } else {
+        if (!field) {
             console.warn(`Field "${key}" not found in form "${ids}"`);
+            return;
+        }
+        if (field.type === "checkbox") {
+            const value = String(values[key]).toLowerCase();
+            field.checked = (value === "1" || value === "true" || value === "yes" || value === "on");
+        } else {
+            field.value = values[key] ?? "";
         }
     });
 };
