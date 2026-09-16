@@ -9,7 +9,7 @@
 <br>
 
 ## About this project?
-  Originally created to announce update about upcoming project, CGCC now becomes Software & Game distribution platform with community forum to share interaction and feedback, the main component of the CrossGate desktop app API & utility
+  Originally created to announce update about upcoming project, CGCC now becomes Software & Game distribution platform with community forum to share interaction and feedback. Bundled with it are the CGCC launcher for installing and launching the collection software, available on the release page.
   
 ## Demo
 <div align="center">

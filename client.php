@@ -112,7 +112,7 @@ if ($result_getStats->num_rows > 0) {
                     <p class="posr w50p txt-b txtnowrap"><?php echo $totalplaying;?></p>
                 </div>
                 <div class="posr topMg-s5 bottomMg w100p flex fld gap5">
-                    <a href="https://github.com/Qwidio/CrossGate-Community-Collection/releases/download/v1.0.0/cgcc_v1.0.0.zip" class="posr rightMg pad-b-s pad-s-v flex acjc gap10 bgc-blue txt-b txtc c-white box-shad-black-1 border-purple bora-s hover-ltr-blue ovh z4">
+                    <a href="https://github.com/Qwidio/CrossGate-Community-Collection/releases/latest" class="posr rightMg pad-b-s pad-s-v flex acjc gap10 bgc-blue txt-b txtc c-white box-shad-black-1 border-purple bora-s hover-ltr-blue ovh z4">
                         Download Launcher
                         <img src="img/logo-windows.svg" class="posr leftMg-s10x icon-t containfit z4">
                     </a>
