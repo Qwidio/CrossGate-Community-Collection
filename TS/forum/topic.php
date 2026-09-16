@@ -97,7 +97,7 @@ $requestedItem = htmlspecialchars($requestedItem, ENT_QUOTES, 'UTF-8');
         ?>
         <div class="posr pad-s w20p r16-9 flex fld border-1 gap5">
         <?php
-                    if ($attachs != "empty.png" && isset($attachs)) {
+                    if ($attachs != "empty" && isset($attachs)) {
         ?>
             <img src="../topicImg/<?php echo $attachs;?>" alt="" class="posa c0 coverfit">
         <?php

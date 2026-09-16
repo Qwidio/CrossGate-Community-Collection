@@ -136,7 +136,7 @@ if (isset($_POST['submit'])) {
                     exit;
                 };
             } else {
-                $Fattach = "empty.png";
+                $Fattach = "empty";
                 $stmt_frmPost = $connects->prepare("INSERT INTO forums (ForumIds, ForumTitles, ForumCreator, ForumTopics, ForumContents, ForumAttachment, ForumDates, ForumState,ForumHighlight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt_frmPost->bind_param("sssssssss", $FoIds, $Ftitles, $Fcreators, $Ftopics, $Fdescs, $Fattach, $dates, $Fstate, $FHighlight);
                 if($stmt_frmPost->execute()){
@@ -152,7 +152,7 @@ if (isset($_POST['submit'])) {
                 };  
             };
         } else { 
-            $Fattach = "empty.png";
+            $Fattach = "empty";
             $stmt_frmPost = $connects->prepare("INSERT INTO forums (ForumIds, ForumTitles, ForumCreator, ForumTopics, ForumContents, ForumAttachment, ForumDates, ForumState,ForumHighlight) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
             $stmt_frmPost->bind_param("ssssssss", $FoIds, $Ftitles, $Fcreators, $Ftopics, $Fdescs, $Fattach, $Fstate, $FHighlight);
             if($stmt_frmPost->execute()){

@@ -62,7 +62,7 @@ if ($initReq === "NewBadgeGroups" && isset($_POST['badgegrouptitle'])) {
     } else {
         $badgegroupdesc = "";
     }
-
+    $empty = "empty";
     if (isset($_FILES["badgesgroupimg"]["name"]) && $_FILES["badgesgroupimg"]["size"] > 100) {
         $targetdir = "../ab/" . $badgegroupids . "/";
         if (!file_exists($targetdir)) {
@@ -93,15 +93,12 @@ if ($initReq === "NewBadgeGroups" && isset($_POST['badgegrouptitle'])) {
             $create_badgeGroup->bind_param("sssss", $badgegroupids, $libsIds, $badgegrouptitle, $badgegroupdesc, $tempFile);
         } else {
             $create_badgeGroup = $connects->prepare("INSERT INTO badgegroup(groupRefs, libsIds, badgeGroupTitle, badgeGroupDesc, icons, state) VALUES (?, ?, ?, ?, ?, 'publics')");
-            $create_badgeGroup->bind_param("sssss", $badgegroupids, $libsIds, $badgegrouptitle, $badgegroupdesc, "empty");
-
+            $create_badgeGroup->bind_param("sssss", $badgegroupids, $libsIds, $badgegrouptitle, $badgegroupdesc, $empty);
             $errors = "An error occured when uploading $tempFile";
         };
     } else {
         $create_badgeGroup = $connects->prepare("INSERT INTO badgegroup(groupRefs, libsIds, badgeGroupTitle, badgeGroupDesc, icons, state) VALUES (?, ?, ?, ?, ?, 'publics')");
-        $create_badgeGroup->bind_param("sssss", $badgegroupids, $libsIds, $badgegrouptitle, $badgegroupdesc, "empty");
-
-        $errors = "Cannot load the uploaded icons";
+        $create_badgeGroup->bind_param("sssss", $badgegroupids, $libsIds, $badgegrouptitle, $badgegroupdesc, $empty);
     };
     if($create_badgeGroup->execute()){
         $_SESSION['corsmsg'] = 'badges group created. ' . $errors;

@@ -100,6 +100,11 @@ $devstatdesc = "";
 if (isset($_POST['devstatdesc'])) {
     $devstatdesc = $_POST['devstatdesc'];
 }
+if (isset($_POST['downloaddisabled'])) {
+    $downloadDisabled = $_POST['downloaddisabled'];
+} else {
+    $downloadDisabled = 0;
+}
 $libsDesc = htmlspecialchars($libsDesc, ENT_QUOTES, 'UTF-8');
 $repolink = htmlspecialchars($repolink, ENT_QUOTES, 'UTF-8');
 $libsMD = htmlspecialchars($libsMD, ENT_QUOTES, 'UTF-8');
@@ -186,7 +191,7 @@ $stmt_insert_newClts->bind_param("ssssssssssssssss", $libsIds, $gids, $libsVT, $
 if($stmt_insert_newClts->execute()){
     $topicsTitles = $libsTitles . " announcement";
     $topicsDesc = $libsTitles . " announcement topics";
-    $stmt_insert_newTopics = $connects->prepare("INSERT INTO topics (topicIds, topicTitles, topicDates, topicContents, topicState, topicAttachs, topicType) VALUES (?, ?, ?, ?, 'Publics', 'empty.png', 'publisherOnly')");
+    $stmt_insert_newTopics = $connects->prepare("INSERT INTO topics (topicIds, topicTitles, topicDates, topicContents, topicState, topicAttachs, topicType) VALUES (?, ?, ?, ?, 'Publics', 'empty', 'publisherOnly')");
     $stmt_insert_newTopics->bind_param("ssss", $libsTopics, $topicsTitles, date('d/m/Y'), $topicsDesc);
     if($stmt_insert_newTopics->execute()){
         if ($errors != ""){

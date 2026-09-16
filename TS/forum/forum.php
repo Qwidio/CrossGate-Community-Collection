@@ -289,7 +289,7 @@ if ($result_check_topic->num_rows > 0) {
         };
         ?>
         <?php
-        if ($attachs != "empty.png" && isset($attachs)) {
+        if ($attachs != "empty" && isset($attachs)) {
         ?>
         <h2 class="sideMg topMg-s10 w95p"><?php echo $descs;?></h2>
         <img src="../img/<?php echo $fids . '/' . $attachs;?>" alt="<?php echo $titles;?>" class="sideMg topMg-s10 w50p r16-9 containfit">

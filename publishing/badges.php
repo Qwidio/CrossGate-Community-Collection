@@ -190,7 +190,7 @@ if ($result_check_software->num_rows > 0) {
                             <?php
                                 if (empty($reservedIcon) || $reservedIcon === "empty") {
                             ?>
-                                <img src="../img/cgcclogo.png" class="autoMg r1-1 h10 flex acjc bgc-purple containfit bora-s z4">
+                                <img src="#" alt="no_image" class="autoMg r1-1 h10 flex acjc bgc-purple containfit bora-s z4">
                             <?php
                                 } else {
                             ?>

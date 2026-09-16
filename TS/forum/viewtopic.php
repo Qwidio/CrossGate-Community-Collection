@@ -129,7 +129,7 @@ if ($result_check_Topic->num_rows == 1) {
         ?>
         <div class="posr pad-s w20p r16-9 flex fld border-1 gap5">
         <?php
-                    if ($attachs != "empty.png" && isset($attachs)) {
+                    if ($attachs != "empty" && isset($attachs)) {
         ?>
             <img src="img/<?php echo $ids . '/' . $attachs;?>" alt="" class="posa c0 coverfit">
         <?php

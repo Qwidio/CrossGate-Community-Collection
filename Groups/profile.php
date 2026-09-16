@@ -266,7 +266,7 @@ if (isset($aidis)) {
             ?>
                 <div class="posr pad-s minw15 w50p r16-9 flex fld bg-half-gray border-1 gap5">
             <?php
-                            if ($attachs != "empty.png" && isset($attachs)) {
+                            if ($attachs != "empty" && isset($attachs)) {
             ?>
                     <img src="../TS/img/<?php echo $ids . '/' . $attachs;?>" alt="" class="posa c0 w100p r16-9 coverfit opacity3 z2">
             <?php
