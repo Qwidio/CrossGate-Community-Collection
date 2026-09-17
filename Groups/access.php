@@ -94,8 +94,9 @@ if (isset($_POST['submit'])) {
                 $convertedexpdate = DateTime::createFromFormat('Y/m/d', $expdate);
                 $unixexpdate = $convertedexpdate->getTimestamp();
                 $osids = "browser";
+                $date_now = date('d/m/Y h:i');
                 $insert_session = $connects->prepare("INSERT INTO groupsession(token, profileTags, og_identification, addrss, osids, expirationDate, lastlogs) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $insert_session->bind_param("sssssss", $tokens, $aidis, $gids, $addrss, $osids, $expdate, date('d/m/Y h:i'));
+                $insert_session->bind_param("sssssss", $tokens, $aidis, $gids, $addrss, $osids, $date_now);
                 if($insert_session->execute()){
                     $delete_invite = $connects->prepare("DELETE FROM groupinvite WHERE profileTags = ? and inviteToken = ? ;");
                     $delete_invite->bind_param("ss", $aidis, $inviteToken);

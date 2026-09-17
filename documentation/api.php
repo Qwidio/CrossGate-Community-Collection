@@ -1,14 +1,7 @@
 <?php
 require_once '../processes/database.php';
-$errors = array();
-$root_route = "../";
 if (isset($_SESSION['profileTags'])) {
-    require_once '../secureSession.php';
-    require_once '../Groups/ReAuth.php';
     $aidis = $_SESSION['profileTags'];
-}
-if (isset($_SESSION['GroupsToken'])) {
-    $gToken = $_SESSION['GroupsToken'];
 }
 ?>
 <!DOCTYPE html>

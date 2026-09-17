@@ -5,7 +5,7 @@ $root_route = "../";
 if (isset($_SESSION['profileTags'])) {
     $aidis = $_SESSION['profileTags'];
 } else {
-    require_once 'secureSession.php';
+    require_once '../secureSession.php';
 };
 if (!isset($_GET['gids'])) {
     $_SESSION['corsmsg'] = "denied request";
