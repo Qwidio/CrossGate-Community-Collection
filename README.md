@@ -18,7 +18,7 @@
 </div>
 
 ## Documentation & Journals
-  for documentation on how to use, please refer to [website documentation](https://cgccporosive.com/documentation/docs.php)<br>
+  for documentation on how to use, please refer to [website documentation](https://cgcc.qwidqwudpro.hackclub.app//documentation/docs.php)<br>
   I'd write about all the past progression [on this journals](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/journals.md)<br>
   New update details are written in [this markdown](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/technical.md)
 
