@@ -12,10 +12,7 @@
   Originally created to announce update about upcoming project, CGCC now becomes Software & Game distribution platform with community forum to share interaction and feedback. Bundled with it are the CGCC launcher for installing and launching the collection software, available on the release page.
   
 ## Demo
-<div align="center">
-  
-[![](https://markdown-videos-api.jorgenkh.no/youtube/4p1R0SJKGnc)](https://youtu.be/v=4p1R0SJKGnc)
-</div>
+[demo link, preview unavailable](https://youtu.be/4p1R0SJKGnc?si=BUn47BHVuvGLqiC6)
 
 ## Documentation & Journals
   for documentation on how to use, please refer to [website documentation](https://cgcc.qwidqwudpro.hackclub.app//documentation/docs.php)<br>
