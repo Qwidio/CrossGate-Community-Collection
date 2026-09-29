@@ -20,7 +20,7 @@
   New update details are written in [this markdown](https://github.com/Qwidio/CrossGate-Community-Collection/blob/main/technical.md)
 
 ## Using the client
-### Via release binaries (recommended)
+### A. Via release binaries (recommended)
   1. **Prerequisite**: Using windows 10 or newer (Linux/macOS release unavailable)
   2. Download release for from the [release page](https://github.com/Qwidio/CrossGate-Community-Collection/releases/)
   3. extract the files
@@ -32,7 +32,7 @@
   * note: do not extract the release files into program folder in windows or any other folder that required admin level access as it can cause to break the program even given administrator access
 
 
-### Building from Source
+### B. Building from Source
   1. **Prerequisite**: Python 3.12(64-bit)
   2. Clone, install dependencies:
    ```bash
@@ -93,4 +93,4 @@
 
 
 ## License
-  Distributed under the MIT License. See [LICENSE](./LICENSE) for details.
+  Distributed under the Apache 2.0 License. See [LICENSE](./LICENSE) for details.
